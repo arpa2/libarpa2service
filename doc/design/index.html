@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Upcoming ARPA2 Projects</title>
+
+
+<style type="text/css">
+body {
+  font-family: Helvetica, arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background-color: white;
+  padding: 30px; }
+
+body > *:first-child {
+  margin-top: 0 !important; }
+body > *:last-child {
+  margin-bottom: 0 !important; }
+
+a {
+  color: #4183C4; }
+a.absent {
+  color: #cc0000; }
+a.anchor {
+  display: block;
+  padding-left: 30px;
+  margin-left: -30px;
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0; }
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 20px 0 10px;
+  padding: 0;
+  font-weight: bold;
+  -webkit-font-smoothing: antialiased;
+  cursor: text;
+  position: relative; }
+
+h1:hover a.anchor, h2:hover a.anchor, h3:hover a.anchor, h4:hover a.anchor, h5:hover a.anchor, h6:hover a.anchor {
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA09pVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoMTMuMCAyMDEyMDMwNS5tLjQxNSAyMDEyLzAzLzA1OjIxOjAwOjAwKSAgKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OUM2NjlDQjI4ODBGMTFFMTg1ODlEODNERDJBRjUwQTQiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OUM2NjlDQjM4ODBGMTFFMTg1ODlEODNERDJBRjUwQTQiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo5QzY2OUNCMDg4MEYxMUUxODU4OUQ4M0REMkFGNTBBNCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo5QzY2OUNCMTg4MEYxMUUxODU4OUQ4M0REMkFGNTBBNCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PsQhXeAAAABfSURBVHjaYvz//z8DJYCRUgMYQAbAMBQIAvEqkBQWXI6sHqwHiwG70TTBxGaiWwjCTGgOUgJiF1J8wMRAIUA34B4Q76HUBelAfJYSA0CuMIEaRP8wGIkGMA54bgQIMACAmkXJi0hKJQAAAABJRU5ErkJggg==) no-repeat 10px center;
+  text-decoration: none; }
+
+h1 tt, h1 code {
+  font-size: inherit; }
+
+h2 tt, h2 code {
+  font-size: inherit; }
+
+h3 tt, h3 code {
+  font-size: inherit; }
+
+h4 tt, h4 code {
+  font-size: inherit; }
+
+h5 tt, h5 code {
+  font-size: inherit; }
+
+h6 tt, h6 code {
+  font-size: inherit; }
+
+h1 {
+  font-size: 28px;
+  color: black; }
+
+h2 {
+  font-size: 24px;
+  border-bottom: 1px solid #cccccc;
+  color: black; }
+
+h3 {
+  font-size: 18px; }
+
+h4 {
+  font-size: 16px; }
+
+h5 {
+  font-size: 14px; }
+
+h6 {
+  color: #777777;
+  font-size: 14px; }
+
+p, blockquote, ul, ol, dl, li, table, pre {
+  margin: 15px 0; }
+
+hr {
+  background: transparent url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAECAYAAACtBE5DAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OENDRjNBN0E2NTZBMTFFMEI3QjRBODM4NzJDMjlGNDgiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OENDRjNBN0I2NTZBMTFFMEI3QjRBODM4NzJDMjlGNDgiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo4Q0NGM0E3ODY1NkExMUUwQjdCNEE4Mzg3MkMyOUY0OCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo4Q0NGM0E3OTY1NkExMUUwQjdCNEE4Mzg3MkMyOUY0OCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PqqezsUAAAAfSURBVHjaYmRABcYwBiM2QSA4y4hNEKYDQxAEAAIMAHNGAzhkPOlYAAAAAElFTkSuQmCC) repeat-x 0 0;
+  border: 0 none;
+  color: #cccccc;
+  height: 4px;
+  padding: 0;
+}
+
+body > h2:first-child {
+  margin-top: 0;
+  padding-top: 0; }
+body > h1:first-child {
+  margin-top: 0;
+  padding-top: 0; }
+  body > h1:first-child + h2 {
+    margin-top: 0;
+    padding-top: 0; }
+body > h3:first-child, body > h4:first-child, body > h5:first-child, body > h6:first-child {
+  margin-top: 0;
+  padding-top: 0; }
+
+a:first-child h1, a:first-child h2, a:first-child h3, a:first-child h4, a:first-child h5, a:first-child h6 {
+  margin-top: 0;
+  padding-top: 0; }
+
+h1 p, h2 p, h3 p, h4 p, h5 p, h6 p {
+  margin-top: 0; }
+
+li p.first {
+  display: inline-block; }
+li {
+  margin: 0; }
+ul, ol {
+  padding-left: 30px; }
+
+ul :first-child, ol :first-child {
+  margin-top: 0; }
+
+dl {
+  padding: 0; }
+  dl dt {
+    font-size: 14px;
+    font-weight: bold;
+    font-style: italic;
+    padding: 0;
+    margin: 15px 0 5px; }
+    dl dt:first-child {
+      padding: 0; }
+    dl dt > :first-child {
+      margin-top: 0; }
+    dl dt > :last-child {
+      margin-bottom: 0; }
+  dl dd {
+    margin: 0 0 15px;
+    padding: 0 15px; }
+    dl dd > :first-child {
+      margin-top: 0; }
+    dl dd > :last-child {
+      margin-bottom: 0; }
+
+blockquote {
+  border-left: 4px solid #dddddd;
+  padding: 0 15px;
+  color: #777777; }
+  blockquote > :first-child {
+    margin-top: 0; }
+  blockquote > :last-child {
+    margin-bottom: 0; }
+
+table {
+  padding: 0;border-collapse: collapse; }
+  table tr {
+    border-top: 1px solid #cccccc;
+    background-color: white;
+    margin: 0;
+    padding: 0; }
+    table tr:nth-child(2n) {
+      background-color: #f8f8f8; }
+    table tr th {
+      font-weight: bold;
+      border: 1px solid #cccccc;
+      margin: 0;
+      padding: 6px 13px; }
+    table tr td {
+      border: 1px solid #cccccc;
+      margin: 0;
+      padding: 6px 13px; }
+    table tr th :first-child, table tr td :first-child {
+      margin-top: 0; }
+    table tr th :last-child, table tr td :last-child {
+      margin-bottom: 0; }
+
+img {
+  max-width: 100%; }
+
+span.frame {
+  display: block;
+  overflow: hidden; }
+  span.frame > span {
+    border: 1px solid #dddddd;
+    display: block;
+    float: left;
+    overflow: hidden;
+    margin: 13px 0 0;
+    padding: 7px;
+    width: auto; }
+  span.frame span img {
+    display: block;
+    float: left; }
+  span.frame span span {
+    clear: both;
+    color: #333333;
+    display: block;
+    padding: 5px 0 0; }
+span.align-center {
+  display: block;
+  overflow: hidden;
+  clear: both; }
+  span.align-center > span {
+    display: block;
+    overflow: hidden;
+    margin: 13px auto 0;
+    text-align: center; }
+  span.align-center span img {
+    margin: 0 auto;
+    text-align: center; }
+span.align-right {
+  display: block;
+  overflow: hidden;
+  clear: both; }
+  span.align-right > span {
+    display: block;
+    overflow: hidden;
+    margin: 13px 0 0;
+    text-align: right; }
+  span.align-right span img {
+    margin: 0;
+    text-align: right; }
+span.float-left {
+  display: block;
+  margin-right: 13px;
+  overflow: hidden;
+  float: left; }
+  span.float-left span {
+    margin: 13px 0 0; }
+span.float-right {
+  display: block;
+  margin-left: 13px;
+  overflow: hidden;
+  float: right; }
+  span.float-right > span {
+    display: block;
+    overflow: hidden;
+    margin: 13px auto 0;
+    text-align: right; }
+
+code, tt {
+  margin: 0 2px;
+  padding: 0 5px;
+  white-space: nowrap;
+  border: 1px solid #eaeaea;
+  background-color: #f8f8f8;
+  border-radius: 3px; }
+
+pre code {
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+  border: none;
+  background: transparent; }
+
+.highlight pre {
+  background-color: #f8f8f8;
+  border: 1px solid #cccccc;
+  font-size: 13px;
+  line-height: 19px;
+  overflow: auto;
+  padding: 6px 10px;
+  border-radius: 3px; }
+
+pre {
+  background-color: #f8f8f8;
+  border: 1px solid #cccccc;
+  font-size: 13px;
+  line-height: 19px;
+  overflow: auto;
+  padding: 6px 10px;
+  border-radius: 3px; }
+  pre code, pre tt {
+    background-color: transparent;
+    border: none; }
+
+sup {
+    font-size: 0.83em;
+    vertical-align: super;
+    line-height: 0;
+}
+
+kbd {
+  display: inline-block;
+  padding: 3px 5px;
+  font-size: 11px;
+  line-height: 10px;
+  color: #555;
+  vertical-align: middle;
+  background-color: #fcfcfc;
+  border: solid 1px #ccc;
+  border-bottom-color: #bbb;
+  border-radius: 3px;
+  box-shadow: inset 0 -1px 0 #bbb
+}
+
+* {
+	-webkit-print-color-adjust: exact;
+}
+@media screen and (min-width: 914px) {
+    body {
+        width: 854px;
+        margin:0 auto;
+    }
+}
+@media print {
+	table, pre {
+		page-break-inside: avoid;
+	}
+	pre {
+		word-wrap: break-word;
+	}
+}
+</style>
+
+
+</head>
+
+<body>
+
+<h1 id="toc_0">Upcoming ARPA2 Projects</h1>
+
+<h5 id="toc_1">(October 29, 2017)</h5>
+
+<blockquote>
+<p><em>This document describes upcoming work that we
+intend to do as part of our second phase,
+IdentityHub.  Services can prepare for ARPA2
+integration by linking in these ARPA2 facilities.
+Through that, the benefits of control over identity
+would become available to those services.</em></p>
+</blockquote>
+
+<p>The IdentityHub is our
+<a href="http://internetwide.org/blog/2016/12/20/idhub-2-middleware.html">perceived platform</a>
+for
+<a href="http://internetwide.org/tag/identity.html">identity management</a>
+in our domain management platform.  In our
+<a href="http://internetwide.org/blog/2016/06/24/iwo-phases.html">vision</a>,
+the empowerment of the hosting industry is paramount in giving end users more control over their online identity, and regain a first-class citizen status.</p>
+
+<p>In our proposed
+<a href="http://internetwide.org/tag/architecture.html">architecture</a>,
+hosting is conceptually split into
+<a href="http://internetwide.org/blog/2014/11/19/back-to-hosting.html">two kinds</a>,
+each of which can profile themselves through distinguishing factors as price, storage space and reliability of services and storage.  One kind of hosting deals with identity, and being able to plugin a variety of services; the other kind of hosting provides specific plugin services.  This enables users to choose open protocols which are hosted locally; massive service providers remain a valid choice to make for one&#39;s own domain, but there should be no put pressure on others that wish to communicate with it; open protocols provide a way out of that.</p>
+
+<h2 id="toc_2">Mostly Generic Facilitation</h2>
+
+<p>Most of what is described below, is generic in nature.  This is very good news; it means that services can share a broad basis of code.  Indeed, the identity facilitation has always been designed without too much specificity of protocols in mind.</p>
+
+<p>In the diagrams below, yellow indicates application-specific code portions, and green indicates support that is largely generic, with possibly a few parameters that vary behavioural classes for services.</p>
+
+<ul>
+<li><code>libarpa2signid</code> deals with addresses that have
+built-in signatures to constrain message content</li>
+<li><code>libarpa2acl</code> deals with access control lists,
+and finds aliases that match with it</li>
+<li><code>libarpa2group</code> deals with group and role logic,
+including member/occupant addresses and their
+mapping to delivery addresses</li>
+<li><code>libarpa2kv</code> deals with key/value databases with
+light-weight encryption, and <code>arpa2kvsend</code> with
+<code>arpa2kvrecv</code> deal with exchanging them</li>
+<li><code>Comm ACL</code> lists ACL entries for Communication
+Services (such as email, chat, telephony)</li>
+<li><code>Resource ACL</code> lists ACL entries for Resource
+Services (such as websites, or directories)</li>
+<li><code>Group DB</code> lists group members / role occupants</li>
+</ul>
+
+<p><img src="library-connect.pdf" alt="Libraries, databases and their connections to services"></p>
+
+<h2 id="toc_3">Library: Encrypted Key/Value Lookup</h2>
+
+<p>We need a library <code>libarpa2kv</code> in several programming languages (at least C, Python and Go) for looking up key/value mappings in a database (at least, BerkeleyDB).</p>
+
+<p>The key and value are encrypted, so as to make the information available on a need-to-know basis only.  This is meant to stop invasions on privacy, as well as limit the use for crackers stealing these data sets.  Imagine the damage done when contact data is stolen &mdash; spam could not only be sent to you, but also on behalf of someone you know!</p>
+
+<p>This library fulfils a number of recurring tasks for our platform:</p>
+
+<ul>
+<li>Receive prepared keyed-hash contexts from another
+process</li>
+<li>Find an encrypted index key based on a prepared
+keyed-hash context</li>
+<li>Incorporate an application-specific string into the
+index key</li>
+<li>Incorporate lookup data into the index key</li>
+<li>Derive an encryption key from the keyed hash
+derivation of the index key</li>
+<li>Support iteration over variations of lookup keys
+that may occur (such as, on an ACL) using an
+efficient technique of cloned keyed-hash contexts</li>
+<li>Ignore initial 32 bits in retrieved database values</li>
+<li>Decrypt values retrieved from the database</li>
+<li>Validate message authentication codes on
+retrieved database values</li>
+<li>Tolerate mixed database content (implied by
+application-specific string and index key size)</li>
+</ul>
+
+<p>Future versions can improve the scalability of the mechanisms dramatically through:</p>
+
+<ul>
+<li>Bloom filters to quickly see if an entry is present</li>
+<li>Clustered storage, where N out of M nodes hold a key/value mapping</li>
+<li>Possibly a demand-driven retrieval method using Diameter</li>
+<li>Distributed assignment of IdentityHub upstreams over nodes</li>
+</ul>
+
+<h2 id="toc_4">Library: Access Control &amp; Aliases</h2>
+
+<p>We need a library <code>libarpa2acl</code> in several programming languages (at least C, Python and Go) for manipulating identities, including aliases and access control lists for each of them.</p>
+
+<p>This library fulfils a number of recurring tasks for our platform:</p>
+
+<ul>
+<li>Functionality for handling
+<a href="http://donai.arpa2.net">DoNAI</a> and
+<a href="http://donai.arpa2.net/selector.html">DoNAI Selector</a>
+concepts, including matching and iteration.</li>
+<li>Matching entries against the
+<a href="http://donai.arpa2.net/acl.html">ACLs</a>
+for various
+<a href="http://internetwide.org/blog/2015/04/23/id-3-idforms.html">aliases</a>
+and selecting one while at it, based on
+<code>libarpa2kv</code></li>
+<li>Checking if a considered / requested alias from
+external sources is welcomed by the ACLs</li>
+</ul>
+
+<h2 id="toc_5">Library: Signed Identities</h2>
+
+<p>We need a library <code>libarpa2sigid</code> in several programming languages (at least C, Python and Go) for processing identities containing (light-weight) signatures.</p>
+
+<p>These libraries fulfil a number of recurring tasks for our platform:</p>
+
+<ul>
+<li>Testing for full <code>+</code> and stripped <code>++</code> forms
+of signed identity in a DoNAI&#39;s local part</li>
+<li>Stripping of the signature and result in a static
+identity (with signing flags) that can be used in
+ACLs</li>
+<li>Generation of signed identities from a field
+holding flags and in interaction with the context
+of a particular service</li>
+<li>Verification of signed identities against a field
+holding flags and in interaction with the context
+of a particular service</li>
+<li>Some mechanism is needed for setting up a static
+key used to generate symmetric-key signatures in
+the signature of a signed identity</li>
+<li>This is a stand-alone mechanism that needs to be
+fed with protocol-specific information from the
+calling context (which usually is a service)</li>
+</ul>
+
+<h2 id="toc_6">Library: Service Identities</h2>
+
+<p><strong>TODO:</strong> We MAY need a library  <code>libarpa2service</code> to deal with local parts that start with a <code>+</code> symbol.  On the other hand, handling those may also be service-specific.  Or is it something to route to a local handling party?  This will probably not become clear before we definately entire into ServiceHub, as part of our third phase.</p>
+
+<p>For now, we shall treat service identities as local to a service.  In the future, we may decide to forward service requests over AMQP 1.0, to a central switchboard in the identity host, which may relay it to a subscribing service node.  While registering a service with the ServiceHub, a &quot;prefix&quot; in the service identity space may then be configured.  If anything, this library would wrap around generic message handling aspects (if that surpasses AMQP 1.0 at all) and make it easy to link to service-specific interfaces, such as LMTP delivery addresses.</p>
+
+<p>Note that an identity may be both a service and a signed identity.  The signed identity is then applied, as is the ACL, without realising the identity represents a service.  Only when an accepted communication attempt is relayed to a handling place will it matter if it is a service.</p>
+
+<h2 id="toc_7">Library: Groups and Roles</h2>
+
+<p>We need a library <code>libarpa2group</code> in several programming languages (at least C, Python and Go) for manipulating groups and roles.</p>
+
+<p>This library fulfils a number of recurring tasks for our platform:</p>
+
+<ul>
+<li>Assumption to operate after the library for
+access control &amp; aliases</li>
+<li>Iteration over members for communication services,
+based on <code>libarpa2kv</code></li>
+<li>Shared access control for resource services, based
+on <code>libarpa2kv</code></li>
+<li>Shielding off the identities of members/occupants</li>
+</ul>
+
+<h2 id="toc_8">Tooling: Encrypted Key/Value Databases</h2>
+
+<p>We need tools <code>arpa2kvsend</code> and <code>arpa2kvrecv</code> in several programming languages (at least C) for encryption and for decryption of key/value databases, and reliably transporting them over
+<a href="http://steamworks.arpa2.net">SteamWorks</a>.</p>
+
+<p>The encryption tool fulfils the following recurring tasks for our platform:</p>
+
+<ul>
+<li>Support of SyncRepl for (authenticated) clients</li>
+<li>Encryption for key/value databases with public-key
+cryptography to share a session secret for a
+subset of the key/value mappings in the database</li>
+<li>Employing this encryption on-the-fly while traffic
+of certain attributes passes through over LDAP</li>
+<li>This will most likely be based on LillyDAP and sit in the traffic flow from SteamWorks Crank</li>
+<li> framework</li>
+</ul>
+
+<p>The decryption tool fulfils the following recurring tasks for our platform:</p>
+
+<ul>
+<li>Subscription to key/value databases via SteamWorks,
+notably a backend to a PulleyScript; subscription
+may be to an individual database or multiple that
+allow being combined</li>
+<li>Storage of subscribed, encrypted key/value mappings
+into local databases</li>
+<li>Decryption of private-key encrypted session keys,
+and their dissimination to server processes as
+prepared keyed-hashing context</li>
+<li>Decryption of key/value database entries with the
+keyed hashing context, based on service-presented
+contact information</li>
+<li>Insert a sender-specific value of 32 bits before
+each value inserted into the database</li>
+<li>Match this 32-bit sender-specific value before
+removing values from the database</li>
+<li>Offer a way to remove every database value that
+starts with a given 32-bit sender-specific value</li>
+</ul>
+
+<h2 id="toc_9">Application Pattern: Communication Services</h2>
+
+<p>A communication service is an application pattern, where communication is passed into a service, and actively moved out over an open protocol to reach indicated recipients.  Some of the traffic may be locally delivered, but that is usually just an optimisation pattern.</p>
+
+<p>Communication services enforce the Communication ACL, where it is decided whether a remote party is welcomed to access a local user.  Outward processing ensures using sender addresses that welcome the corresponding reply traffic.</p>
+
+<p><img src="communication-service.pdf" alt="Communication service general structure"></p>
+
+<h3 id="toc_10">Outward Processing</h3>
+
+<p>When a user passes data out through a communication service, the ACLs for its own identity are used to determine the best alias to use.</p>
+
+<p>When no alias was originally provided, then it will now be added; when an alias was provided, then the Communication ACL serves as a verification that the recipient may actually respond.  If not, interaction with the user may be needed, depending on the nature of the communication service.</p>
+
+<p>Users may send addresses containing signatures, either using a previously used signature, or without a signature.  The latter ends in <code>++</code> while the former only ends in a single <code>+</code> symbol.  Pre-existing signatures are validated to ensure the possibility of responses; when provided, the signature is temporarily removed for ACL checking; an ACL can be used to match signed addresses ending in <code>++</code> but the ACL then remains static.</p>
+
+<p>Users may pose as group members, either by presenting their own alias setup for use in a group, or by automatically selecting it as part of ACL processing.  Usually, access to a group will be most concrete in the alias setup for group interaction.</p>
+
+<p>When communicating data through a group, the sender identity may be replaced with the <code>group+member</code> address for the sender.  Any descriptive user name and/or comments may also be replaced.  All this is possible because the <code>group+member</code> address translates back to the user&#39;s own alias.  For reasons of privacy it is vital to do this for both user-readable and machine-readable addresses, if those differ.  Note that non-members may also be permitted access to a group; in this case, the sending user may not have a <code>group+member</code> address to use in protection of their identity.  Also note that users may have multiple subscriptions to a group, each with a separate mapping, although that barely seems useful.</p>
+
+<p>Outward processing of a group by a communication service involves iteration over member addresses, and matching each against the recipient address(es).  When matched, traffic is forward to the member&#39;s delivery address, which is mentioned in the group iteration data.  Each group member should receive at most one message through the group mechanism.</p>
+
+<p>Outward processing of a role may be different from outward processing of a group, depending on the nature of a service.  The idea is that any role occupant suffices to act on behalf of a role, whereas all members are usually involved as part of group communication.</p>
+
+<h3 id="toc_11">Inward Processing</h3>
+
+<p>When an open protocol port receives data intended for a user, inward processing is enacted.  Usually the intention is local delivery, but group and role processing may cause a loopback to the outward path.  Note that we treat things like email forwarding are managed as group/role mechanisms.  This ensures that the addresses are rewritten and appear to have come from the local environment, in support of symmetric paths for inward and outward traffic, and through that, better support for all sorts of traffic filters and origin validation.</p>
+
+<p>As part of accepting inboud data, the Communication ACLs are queried for a matching entry.  This entry should welcome the remote sender address for the intended address.  Since an ACL expresses
+<a href="http://donai.arpa2.net/selector.html">DoNAI Selector patterns</a>,
+it can select specific senders or anyone at all.  This allows us to detect how closely a sender is matched with the ACL, which may be helpful in limiting or redirecting access attempts; think of spam filtering.</p>
+
+<p>When the inward receiving address ends in <code>+</code>, it is a signed address.  This means that its signature is removed to make it end in <code>++</code> for matching with the Communication ACL.  This removal is usually temporary, intended for ACL matching alone, though services may independently choose otherwise.  It stands to reason that the signature must be validated as part of the access control process.  Whether that happens before or after checking the Communication ACL depends on the service.  Ideally, success or failure are reported without distinction between the two access requirements but, once more, this may vary for the pragmatics of a service protocol.  <strong>TODO:</strong> We may want to put specific signed addresses on the black list in the Communication ACL, so as to block abusive patterns.  Alternatively, we may add blockage in a specific blacklisting mechanism for signed address ingredients, where it might involve most of the signed information and therefore range over any signed messages supplied under those conditions.  To be determined yet!</p>
+
+<p>The remote sender may have specified a recipient with or without an alias.  When no alias was provided, one is found through the Communication ACL, and silently added.  Future return traffic is bound to mention the alias.  When an alias was provided, but the Communication ACL does not match it, then another alias will be assigned instead.  At this point however, most services should report back to the sender.  Whether this is done through a notice or by blocking access to the service is an open matter.  This may be a measure for fighting spam, for instance.</p>
+
+<p>The recipient address may be a group or role address.  Once accepted, inward data may be passed through group or role processing.  This may involve setting up a <code>group+member</code> address under the group&#39;s domain name for the remote user, thereby granting group membership or role occupancy to remote users, along with the privacy towards other members or occupants.  Note that remote users are potential abusers, and for that reason such aliasing tends to require registration as a group member or role occupant, so administrative staff can track abusers.</p>
+
+<h3 id="toc_12">Concrete Application: Email</h3>
+
+<p>Email is an application of the application pattern for communication services.  To keep it most portable, the recommended implementation would be in the form of a few
+<a href="https://pythonhosted.org/pymilter/milter_api/api.html">milters</a>
+and general routing protocols:</p>
+
+<ul>
+<li>One milter for outward access control &amp; aliases</li>
+<li>One milter for inward access control &amp; aliases</li>
+<li>One milter for groups and roles</li>
+<li>Services should be relayed over LMTP</li>
+<li>Outbound messages encryption, DKIM and SPF through
+SMTP filters</li>
+</ul>
+
+<p>There can be various LMTP components to service ARPA2 components, and more specifically email; it should be noted that we will probably need to change this to a service that is forwarded over AMQP 1.0 in the future, where LMTP is just a service-specific connector for mail.</p>
+
+<ul>
+<li>Adding and removing, as well as inviting and
+rejecting group members / role occupants</li>
+<li>Storing MIME attachments in the
+<a href="http://reservoir.arpa2.net">Reservoir</a>
+for those that lack AMQP support</li>
+<li>Setting up OpenPGP keys for automated encryption</li>
+</ul>
+
+<h3 id="toc_13">Concrete Application: Message Queueing</h3>
+
+<p>Message queueing is the communication service connected to the
+<a href="http://reservoir.arpa2.net">Reservoir</a>
+service.  It routes messages over AMQP 1.0, using a
+DoNAI to locate remote servers for pushing and pulling
+documents.  The mechanism encrypts with TLS and
+authenticates with SASL, where SASL EXTERNAL is supported for clients that validated over TLS.</p>
+
+<h2 id="toc_14">Application Pattern: Resource Services</h2>
+
+<p>Resource services are of much simpler structure than communication services.  The method of passing data from one party to another is passive, by making it available and allowing the other party to read it from its resource location.</p>
+
+<p>Resource services enforce a Resource ACL, expressing the rights to make changes to resources in a collection such as under the
+<a href="http://reservoir.arpa2.net">Reservoir</a>.</p>
+
+<p><img src="resource-service.pdf" alt="Resource service general structure"></p>
+
+<h3 id="toc_15">Resource Access</h3>
+
+<p>Resource services access resources, for things like reading and writing data, creation and deletion, and so on.  A generic one-letter encoding of
+<a href="http://idp.arpa2.net/radius.html">access rights</a>
+is used and interpreted within the context of a concrete service.  To select a resource, a UUID for the application, and possibly an additional UUID for a resource instance, are concatenated and used against the user who wishes to connect to the resource.  These are used to find a Resource ACL to apply.</p>
+
+<p>Resource ACLs deliver a set of rights; so the requested access rights are not input to the ACL query, but rather their result.  As in the Communication ACL, lookups also don&#39;t mention the ACL to use; these values are returned alongside the rights.  The most powerful alias is selected for the requesting user, so that maximally potent access rights may be cached on their connection.</p>
+
+<p>It is possible for a Resource ACL to grant access rights to remote users as well as to local users.  Remote users may be selected with a very specific pattern or a very general, with access to all as the most general pattern possible.  Given that the rights are assigned by an ACL too, the search for a match from the most concrete address form in the direction of more generic ones is helpful in finding the most concrete (and often the most empowering, but always the most applicable) access rights.</p>
+
+<p>Shared access is used for groups and roles.  Interestingly, the only aspect that is special for here is the use of the special alias <code>group+member</code> or <code>role+occupant</code> instead of a (local or remote) user&#39;s address.  This means that the service aspects like storage are allocated under the group; furthermore, uploads, ownership and such are assigned to a group member instead of to a common <code>user</code> or <code>user+alias</code>.  Only access-granted (local or remote) visitors who did not register as group members (or role occupants) will be shown with their full address; they are not granted the privacy of their delivery address.</p>
+
+<h3 id="toc_16">Concrete Application: Reservoir</h3>
+
+<p>Reservoir is resource service that does not implement a new concept, but a technically different way of achieving an object store.  It consists of the following components:</p>
+
+<ul>
+<li>Backend storage is the Riak KV object store</li>
+<li>Searchable index is an LDAP meta-data store</li>
+<li>Web frontend is made through WebDAV</li>
+<li>Input and output queues are made with AMQP 1.0</li>
+</ul>
+
+<p>The result should allow standards-based searches, either the simplistic way through WebDAV or much more advanced through LDAP.  The use of Riak KV lends us with replications facilities, one feature that hosting providers may use to improve the reliability of their service, a helpful factor for diversification of the market and price structures.  AMQP 1.0 finally, is intended to be a secure manner of authenticated and encrypted object passing between users and domains.  It may be used locally as an &quot;upload&quot; mechanism, or remotely as an &quot;object push&quot; mechanism.  In general, it is meant as a mature replacement of MIME attachments in email, which are neither natural nor practical for these usage patterns.</p>
+
+<h2 id="toc_17">Management Software</h2>
+
+<p>Lastly, we turn to the the hosting components that help to manage structures.  In the IdentityHub, this mainly concerns the management of identities that may be incorporated into services as specified above.</p>
+
+<p><img src="identityhub2service.pdf" alt="IdentityHub to services"></p>
+
+<h3 id="toc_18">Stuff put to Good Use</h3>
+
+<p>The proposed components that are silently assumed in the things described above; in other words, we are building on top of prior and current ARPA2 projects:</p>
+
+<ul>
+<li>TLS-KDH (such as via the TLS Pool)</li>
+<li>Kerberos Realm Crossover or <code>kxover</code></li>
+<li>Remote PKCS #11 now known as <code>keehub</code></li>
+<li>SteamWorks</li>
+<li>LillyDAP</li>
+</ul>
+
+<p>The diagrams have a few blocks <code>Authentication</code> that includes a lot of our prior work.  The various mechanisms explored there are available for the purpose of authentication.  Where authorisation identities may be used, suggestions may be made about aliases (also for linked pseudonyms) including group aliases.  Specific services may include yet more authorisation identity information, for example in resource paths or sender addresses.  These may be subject to an authorisation inquiry, but simpler cases may be covered by an ACL or simply a comparison of the user part (both through <code>libarpa2acl</code>) may suffice.  Note that there is a difference between the following:</p>
+
+<ul>
+<li>Authentication says who you are</li>
+<li>Authorisation says as who you may pose (in ARPA2)</li>
+<li>Access Control says what you may do</li>
+</ul>
+
+<p>It is common for the last two to be combined, and we shall do it too; but it should be emphasised that in ARPA2 we have a part that evaluates whether an authenticated user may also act under another identity.  It is the result of our rich identity model, which surpasses the most-occurring form (no identity changes).</p>
+
+<h3 id="toc_19">IdentityHub</h3>
+
+<p>IdentityHub is the component through which domain administrators and users can add users, pseudonyms, groups, aliases, groups and roles.</p>
+
+<p>Along with these identities there are Communication ACLs and Resource ACLs; these too will be managed under the framework.</p>
+
+<p>As part of its responsibilities, the IdentityHub will make information about ACLs, groups and roles available to subscribing services.</p>
+
+<p>The API to the IdentityHub can be viewed as a resource service; access to it is granted through the Resource ACL.</p>
+
+<h3 id="toc_20">ServiceHub</h3>
+
+<p>ServiceHub is the component that manages services that are made available under the domain.  Although it is destined for the
+<a href="http://internetwide.org/blog/2016/06/24/iwo-phases.html">next project phase</a>,
+we already need some support for the facilitation of services through encrypted key/value databases.</p>
+
+<p>The API to the ServiceHub can be viewed as a resource service; access to it is granted through the Resource ACL.</p>
+
+<p>Not all the interfacing of ServiceHub will be provided during the IdentityHub project phase; orange marks things where we will show restraint until the next project phase.</p>
+
+
+
+
+</body>
+
+</html>
