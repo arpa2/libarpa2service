@@ -45,7 +45,7 @@ In the diagrams below, yellow indicates application-specific code portions, and 
     Services (such as webservices, directories)
   * `Group DB` lists group members / role occupants
 
-![Libraries, databases and their connections to services](library-connect.pdf)
+![Libraries, databases and their connections to services](library-connect.svg)
 
 ## Library: Encrypted Key/Value Lookup
 
@@ -189,7 +189,7 @@ A communication service is an application pattern, where communication is passed
 
 Communication services enforce the Communication ACL, where it is decided whether a remote party is welcomed to access a local user.  Outward processing ensures using sender addresses that welcome the corresponding reply traffic.
 
-![Communication service general structure](communication-service.pdf)
+![Communication service general structure](communication-service.svg)
 
 ### Outward Processing
 
@@ -259,7 +259,7 @@ Resource services are of much simpler structure than communication services.  Th
 Resource services enforce a Resource ACL, expressing the rights to make changes to resources in a collection such as under the
 [Reservoir](http://reservoir.arpa2.net).
 
-![Resource service general structure](resource-service.pdf)
+![Resource service general structure](resource-service.svg)
 
 ### Resource Access
 
@@ -288,7 +288,7 @@ The result should allow standards-based searches, either the simplistic way thro
 
 Lastly, we turn to the the hosting components that help to manage structures.  In the IdentityHub, this mainly concerns the management of identities that may be incorporated into services as specified above.
 
-![IdentityHub to services](identityhub2service.pdf)
+![IdentityHub to services](identityhub2service.svg)
 
 ### Stuff put to Good Use
 
