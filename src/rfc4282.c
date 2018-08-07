@@ -206,6 +206,7 @@ rfc4282_parsestr(const char *input, const char **username, const char **realm)
 				state = REALM1;
 			} else if (*cp == '\0') {
 				state = E;
+				goto done;
 			} else
 				goto done;
 			break;
@@ -253,7 +254,9 @@ rfc4282_parsestr(const char *input, const char **username, const char **realm)
 				if (*(cp + 1) == '.') {
 					state = REALM3;
 				} else if (*(cp + 1) == '\0') {
+					cp++;
 					state = E;
+					goto done;
 				}
 			} else if (*cp == '-') {
 				/* OK, stay in LABEL3 */
@@ -265,11 +268,10 @@ rfc4282_parsestr(const char *input, const char **username, const char **realm)
 				state = REALM2;
 			} else if (*cp == '\0') {
 				state = E;
+				goto done;
 			} else
 				goto done;
 			break;
-		case E:
-			goto done;
 		default:
 			abort();
 		}
