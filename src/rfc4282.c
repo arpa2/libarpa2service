@@ -285,6 +285,9 @@ done:
 		 * "input".
 		 */
 
+		*username = NULL;
+		*realm = NULL;
+
 		switch (state) {
 		case S:
 			*username = cp;
