@@ -7,7 +7,7 @@ nai.o: src/nai.c src/nai.h
 testnai: nai.o test/nai.c
 	cc -Wall nai.o test/nai.c -o $@
 
-test:	testnai
+test:	testnai naiverify
 	./testnai
 	./test/naiverify
 
