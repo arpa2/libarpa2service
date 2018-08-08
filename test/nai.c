@@ -1,5 +1,4 @@
 #include <assert.h>
-#include <err.h>
 
 #include "../src/nai.h"
 
@@ -11,44 +10,29 @@ main(void)
 	/* Run some tests. */
 
 	input = "foo! bar~\177";
-	if (nai_parsestr(input, &username, &realm) == -1 &&
-	    &username[0] == &input[4] &&
-	    realm == NULL)
-		warnx("SUCCESS %s", input);
-	else
-		warnx("FAIL %s", input);
+	assert(nai_parsestr(input, &username, &realm) == -1);
+	assert(&username[0] == &input[4]);
+	assert(realm == NULL);
 
 	input = "foo!bar~\177";
-	if (nai_parsestr(input, &username, &realm) == -1 &&
-	    &username[0] == &input[8] &&
-	    realm == NULL)
-		warnx("SUCCESS %s", input);
-	else
-		warnx("FAIL %s", input);
+	assert(nai_parsestr(input, &username, &realm) == -1);
+	assert(&username[0] == &input[8]);
+	assert(realm == NULL);
 
 	input = "foo!bar@\177";
-	if (nai_parsestr(input, &username, &realm) == -1 &&
-	    &username[0] == &input[0] &&
-	    &realm[0] == &input[8])
-		warnx("SUCCESS %s", input);
-	else
-		warnx("FAIL %s", input);
+	assert(nai_parsestr(input, &username, &realm) == -1);
+	assert(&username[0] == NULL);
+	assert(&realm[0] == &input[8]);
 
 	input = "foo!bar@com";
-	if (nai_parsestr(input, &username, &realm) == -1 &&
-	    &username[0] == &input[0] &&
-	    &realm[0] == &input[11])
-		warnx("SUCCESS %s", input);
-	else
-		warnx("FAIL %s", input);
+	assert(nai_parsestr(input, &username, &realm) == -1);
+	assert(&username[0] == NULL);
+	assert(&realm[0] == &input[11]);
 
 	input = "foo@example.com";
-	if (nai_parsestr(input, &username, &realm) == 0 &&
-	    &username[0] == &input[0] &&
-	    &realm[0] == &input[4])
-		warnx("SUCCESS %s", input);
-	else
-		warnx("FAIL %s", input);
+	assert(nai_parsestr(input, &username, &realm) == 0);
+	assert(&username[0] == &input[0]);
+	assert(&realm[0] == &input[4]);
 
 	return 0;
 }
