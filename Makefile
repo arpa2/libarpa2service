@@ -1,19 +1,23 @@
 naiverify: nai.o src/naiverify.c
-	cc -Wall -g nai.o src/naiverify.c -o $@
+	cc -Wall nai.o src/naiverify.c -o $@
 
 nai.o: src/nai.c src/nai.h
-	cc -Wall -g src/nai.c -c
+	cc -Wall src/nai.c -c
 
-testnai: ./nai.o
-	cc -Wall -g src/nai.c test/nai.c
-	./a.out
+testnai: nai.o test/nai.c
+	cc -Wall nai.o test/nai.c -o $@
 
-testnaiverify: naiverify
-	test/naiverify
+test:	testnai
+	./testnai
+	./test/naiverify
 
 naifsm:
 	dot -Tpng doc/design/naifsm.gv -o doc/design/naifsm.png
 	dot -Tsvg doc/design/naifsm.gv -o doc/design/naifsm.svg
 
-naiverifyfuzz: src/nai.c src/naivstdin.c
+# create instrumented binary for use by afl-fuzz
+naiverifyafl: src/nai.c src/naivstdin.c
 	afl-clang -Wall src/nai.c src/naivstdin.c -o $@
+
+clean:
+	rm -f naiverify nai.o testnai naiverifyafl
