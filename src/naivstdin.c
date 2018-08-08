@@ -7,7 +7,10 @@
 
 #include "../src/nai.h"
 
+static const char *progname;
 static int verbose;
+
+void printusage(FILE *);
 
 /*
  * Verify if a given input is a valid NAI by feeding it to the parser. Reads one
@@ -19,7 +22,7 @@ int
 main(int argc, char *argv[])
 {
 	char input[1024];
-	const char *progname, *username, *realm, *err;
+	const char *username, *realm, *err;
 	int c;
 
 	if ((progname = basename(argv[0])) == NULL) {
@@ -30,7 +33,7 @@ main(int argc, char *argv[])
 	while ((c = getopt(argc, argv, "hqv")) != -1) {
 		switch (c) {
 		case 'h':
-			fprintf(stdout, "usage: %s [-hv]\n", progname);
+			printusage(stdout);
 			exit(0);
 		case 'q':
 			verbose--;
@@ -39,7 +42,7 @@ main(int argc, char *argv[])
 			verbose++;
 			break;
 		default:
-			fprintf(stderr, "usage: %s [-hv]\n", progname);
+			printusage(stderr);
 			exit(1);
 		}
 	}
@@ -48,7 +51,7 @@ main(int argc, char *argv[])
 	argv += optind;
 
 	if (argc != 0) {
-		fprintf(stderr, "usage: %s [-hv]\n", progname);
+		printusage(stderr);
 		exit(1);
 	}
 
@@ -92,4 +95,10 @@ main(int argc, char *argv[])
 	}
 
 	return 0;
+}
+
+void
+printusage(FILE *stream)
+{
+	fprintf(stream, "usage: %s [-hqv]\n", progname);
 }
