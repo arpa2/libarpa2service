@@ -111,9 +111,7 @@ t="fo@ex.co"
 ###
 # Finish up
 
-if [ "$_haserr" -eq 0 ]; then
-	echo OK
-else
+if [ "$_haserr" -ne 0 ]; then
 	# assume errors are already printed
 	exit 1
 fi
