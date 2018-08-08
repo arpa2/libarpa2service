@@ -1,0 +1,119 @@
+#!/bin/sh
+
+######
+# Test the naiverify binary
+###
+
+naiverify="$(dirname $0)/../naiverify"
+
+_haserr=0
+
+# Print error for an erroneously accepted string.
+# $1 - the tested string
+function perr_accept {
+	_haserr=1
+	echo ERROR \""$1"\" accepted
+}
+
+# Print error for an erroneously unaccepted string.
+# $1 - the tested string
+function perr_notaccept {
+	_haserr=1
+	echo ERROR \""$1"\" not accepted
+}
+
+
+######
+# First test a bunch of invalid NAIs
+###
+
+t=""
+"$naiverify" -q "$t" && perr_accept "$t"
+
+t="."
+"$naiverify" -q "$t" && perr_accept "$t"
+
+t="f."
+"$naiverify" -q "$t" && perr_accept "$t"
+
+t="fo."
+"$naiverify" -q "$t" && perr_accept "$t"
+
+t=".f"
+"$naiverify" -q "$t" && perr_accept "$t"
+
+t=".fo"
+"$naiverify" -q "$t" && perr_accept "$t"
+
+t="@"
+"$naiverify" -q "$t" && perr_accept "$t"
+
+t="f@"
+"$naiverify" -q "$t" && perr_accept "$t"
+
+t="@c"
+"$naiverify" -q "$t" && perr_accept "$t"
+
+t="@co"
+"$naiverify" -q "$t" && perr_accept "$t"
+
+t="@."
+"$naiverify" -q "$t" && perr_accept "$t"
+
+t="@.c"
+"$naiverify" -q "$t" && perr_accept "$t"
+
+t="@.co"
+"$naiverify" -q "$t" && perr_accept "$t"
+
+t="@e."
+"$naiverify" -q "$t" && perr_accept "$t"
+
+t="@ex."
+"$naiverify" -q "$t" && perr_accept "$t"
+
+
+######
+# Now test some valid NAIs
+###
+
+t="foo"
+"$naiverify" -q "$t" || perr_notaccept "$t"
+
+t="@example.com"
+"$naiverify" -q "$t" || perr_notaccept "$t"
+
+t="foo@example.com"
+"$naiverify" -q "$t" || perr_notaccept "$t"
+
+t="f"
+"$naiverify" -q "$t" || perr_notaccept "$t"
+
+t="fo"
+"$naiverify" -q "$t" || perr_notaccept "$t"
+
+t="f.b"
+"$naiverify" -q "$t" || perr_notaccept "$t"
+
+t="fo.ba"
+"$naiverify" -q "$t" || perr_notaccept "$t"
+
+t="f@e.c"
+"$naiverify" -q "$t" || perr_notaccept "$t"
+
+t="@e.x"
+"$naiverify" -q "$t" || perr_notaccept "$t"
+
+t="fo@ex.co"
+"$naiverify" -q "$t" || perr_notaccept "$t"
+
+
+###
+# Finish up
+
+if [ "$_haserr" -eq 0 ]; then
+	echo OK
+else
+	# assume errors are already printed
+	exit 1
+fi
