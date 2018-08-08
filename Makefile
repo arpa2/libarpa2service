@@ -1,4 +1,4 @@
-verifynai: rfc4282.o src/rfc4282_verify.c
+naiverify: rfc4282.o src/rfc4282_verify.c
 	cc -Wall -g rfc4282.o src/rfc4282_verify.c -o $@
 
 rfc4282.o: src/rfc4282.c src/rfc4282.h

@@ -23,14 +23,17 @@ main(int argc, char *argv[])
 		exit(1);
 	}
 
-	while ((c = getopt(argc, argv, "hv")) != -1) {
+	while ((c = getopt(argc, argv, "hqv")) != -1) {
 		switch (c) {
-		case 'v':
-			verbose++;
-			break;
 		case 'h':
 			fprintf(stdout, "usage: %s [-hv] nai\n", progname);
 			exit(0);
+		case 'q':
+			verbose--;
+			break;
+		case 'v':
+			verbose++;
+			break;
 		default:
 			fprintf(stderr, "usage: %s [-hv] nai\n", progname);
 			exit(1);
@@ -48,34 +51,37 @@ main(int argc, char *argv[])
 	input = argv[0];
 
 	if (rfc4282_parsestr(input, &username, &realm) == -1) {
-		if (verbose > 0) {
-			err = NULL;
-			if (username != NULL) {
-				err = username;
-			} else if (realm != NULL) {
-				err = realm;
-			}
+		if (verbose > -1)
+			printf("FAIL");
 
-			if (err) {
-				if (*err == '\0') {
-					printf("unexpected end of %s: %s\n",
-					    username ? "username" : (realm ?
-					    "realm" : "input"), input);
-				} else {
-					printf("invalid character %ld \"%c\": "
-					    "%s\n", (err - input) + 1, *err,
-					    input);
-				}
+		err = NULL;
+		if (username != NULL) {
+			err = username;
+		} else if (realm != NULL) {
+			err = realm;
+		}
+
+		if (err && verbose > 0) {
+			if (*err == '\0') {
+				printf(" unexpected end of %s",
+				    username ? "username" : (realm ? "realm" :
+				    "input"));
 			} else {
-				printf("invalid: %s\n", input);
+				printf(" \"%c\" is an invalid character at "
+				    "position %ld in \"%s\"", *err,
+				    (err - input) + 1,
+				    input);
 			}
 		}
+
+		if (verbose > -1)
+			printf("\n");
 
 		exit(1);
 	}
 
-	if (verbose > 0)
-		printf("valid: %s\n", input);
+	if (verbose > -1)
+		printf("OK\n");
 
 	return 0;
 }
