@@ -14,3 +14,6 @@ testnaiverify: naiverify
 rfc4282fsm:
 	dot -Tpng doc/design/rfc4282_fsm.gv -o doc/design/rfc4282_fsm.png
 	dot -Tsvg doc/design/rfc4282_fsm.gv -o doc/design/rfc4282_fsm.svg
+
+naiverifyfuzz: src/rfc4282.c src/naivstdin.c
+	afl-clang -Wall src/rfc4282.c src/naivstdin.c -o $@
