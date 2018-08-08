@@ -170,8 +170,8 @@ static const char userchar[256] = {
 int
 rfc4282_parsestr(const char *input, const char **username, const char **realm)
 {
-	enum states { S, USERNAME, USERESC, REALM1, LABEL1, REALM2, LABEL2 }
-	    state;
+	enum states { S, USERNAME, USERESC, USERDOT, REALM1, LABEL1, REALM2,
+	    LABEL2 } state;
 	const char *cp;
 
 	*username = NULL;
@@ -196,7 +196,7 @@ rfc4282_parsestr(const char *input, const char **username, const char **realm)
 			break;
 		case USERNAME:
 			/* fast-forward USERNAME characters */
-			while (userchar[(int)*cp] || *cp == '.')
+			while (userchar[(int)*cp])
 				cp++;
 			/*
 			 * After while: prevent dangerous subsequent cp++ in
@@ -207,6 +207,8 @@ rfc4282_parsestr(const char *input, const char **username, const char **realm)
 
 			if (*cp == '\\') {
 				state = USERESC;
+			} else if (*cp == '.') {
+				state = USERDOT;
 			} else if (*cp == '@') {
 				*realm = cp + 1;
 				state = REALM1;
@@ -216,6 +218,12 @@ rfc4282_parsestr(const char *input, const char **username, const char **realm)
 		case USERESC:
 			/* \x00-\xFF allowed */
 			state = USERNAME;
+			break;
+		case USERDOT:
+			if (userchar[(int)*cp]) {
+				state = USERNAME;
+			} else
+				goto done;
 			break;
 		case REALM1:
 			if (alphadig[(int)*cp]) {
@@ -293,6 +301,8 @@ done:
 		case USERNAME:
 			 /* FALLTHROUGH */
 		case USERESC:
+			 /* FALLTHROUGH */
+		case USERDOT:
 			*username = cp;
 			break;
 		case REALM1:
