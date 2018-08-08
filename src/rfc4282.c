@@ -170,8 +170,8 @@ static const char userchar[256] = {
 int
 rfc4282_parsestr(const char *input, const char **username, const char **realm)
 {
-	enum states { S, USERNAME, USERESC, REALM1, LABEL1, LABEL2, REALM2,
-	    LABEL3, REALM3, E } state = S;
+	enum states { S, USERNAME, USERESC, REALM1, LABEL1, REALM2, LABEL2, E }
+	    state;
 	const char *cp;
 
 	*username = NULL;
@@ -180,7 +180,7 @@ rfc4282_parsestr(const char *input, const char **username, const char **realm)
 	if (input == NULL)
 		return -1;
 
-	for (cp = input; *cp != '\0'; cp++) {
+	for (state = S, cp = input; *cp != '\0'; cp++) {
 		switch (state) {
 		case S:
 			if (userchar[(int)*cp]) {
@@ -198,15 +198,20 @@ rfc4282_parsestr(const char *input, const char **username, const char **realm)
 			/* fast-forward USERNAME characters */
 			while (userchar[(int)*cp] || *cp == '.')
 				cp++;
+			/*
+			 * After while: prevent dangerous subsequent cp++ in
+			 * for-loop, never let cp point beyond the input.
+			 */
+			if (*cp == '\0') {
+				state = E;
+				goto done;
+			}
 
 			if (*cp == '\\') {
 				state = USERESC;
 			} else if (*cp == '@') {
 				*realm = cp + 1;
 				state = REALM1;
-			} else if (*cp == '\0') {
-				state = E;
-				goto done;
 			} else
 				goto done;
 			break;
@@ -221,54 +226,46 @@ rfc4282_parsestr(const char *input, const char **username, const char **realm)
 				goto done;
 			break;
 		case LABEL1:
-			if (alphadig[(int)*cp]) {
-				/*
-				 * OK, either stay in LABEL1 or proceed to
-				 * LABEL2 depending on look-ahead.
-				 */
-				if (*(cp + 1) == '.')
-					state = LABEL2;
-			} else if (*cp == '-') {
-				/* OK, stay in LABEL1 */
-			} else
+			/* fast-forward LABEL1 characters */
+			while (alphadig[(int)*cp])
+				cp++;
+			/*
+			 * After while: prevent dangerous subsequent cp++ in
+			 * for-loop, never let cp point beyond the input.
+			 */
+			if (*cp == '\0')
 				goto done;
-			break;
-		case LABEL2:
-			if (*cp == '.') {
+
+			if (*cp == '-') {
+				state = REALM1;
+			} else if (*cp == '.') {
 				state = REALM2;
 			} else
 				goto done;
 			break;
 		case REALM2:
 			if (alphadig[(int)*cp]) {
-				state = LABEL3;
+				state = LABEL2;
 			} else
 				goto done;
 			break;
-		case LABEL3:
-			if (alphadig[(int)*cp]) {
-				/*
-				 * OK, either stay in LABEL3, proceed to
-				 * REALM3 or proceed depending on look-ahead.
-				 */
-				if (*(cp + 1) == '.') {
-					state = REALM3;
-				} else if (*(cp + 1) == '\0') {
-					cp++;
-					state = E;
-					goto done;
-				}
-			} else if (*cp == '-') {
-				/* OK, stay in LABEL3 */
-			} else
-				goto done;
-			break;
-		case REALM3:
-			if (*cp == '.') {
-				state = REALM2;
-			} else if (*cp == '\0') {
+		case LABEL2:
+			/* fast-forward LABEL2 characters */
+			while (alphadig[(int)*cp])
+				cp++;
+			/*
+			 * After while: prevent dangerous subsequent cp++ in
+			 * for-loop, never let cp point beyond the input.
+			 */
+			if (*cp == '\0') {
 				state = E;
 				goto done;
+			}
+
+			if (*cp == '-') {
+				state = REALM2;
+			} else if (*cp == '.') {
+				state = REALM2;
 			} else
 				goto done;
 			break;
@@ -305,10 +302,6 @@ done:
 		case LABEL2:
 			 /* FALLTHROUGH */
 		case REALM2:
-			 /* FALLTHROUGH */
-		case LABEL3:
-			 /* FALLTHROUGH */
-		case REALM3:
 			*realm = cp;
 			break;
 		case E:
