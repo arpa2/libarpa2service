@@ -14,15 +14,12 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <errno.h>
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "nai.h"
 
 /*
  * A RFC 4282 NAI compliant parser.
  *
- * FSM: doc/design/rfc4282_fsm.*
+ * FSM: doc/design/naifsm.*
  */
 
 /*
@@ -168,7 +165,7 @@ static const char userchar[256] = {
  * character in the input, depending on where the error occurred.
  */
 int
-rfc4282_parsestr(const char *input, const char **username, const char **realm)
+nai_parsestr(const char *input, const char **username, const char **realm)
 {
 	enum states { S, USERNAME, USERESC, USERDOT, REALMHOST, LABEL1,
 	    REALMDOM, LABEL2 } state;
@@ -322,14 +319,4 @@ done:
 	}
 
 	return 0;
-}
-
-void
-printcharmap(const char *input, int len)
-{
-	for (int i = 0; i < len; i++)
-		if (input[i] == 1)
-			printf("YES %d %c\n", i, i);
-		else
-			printf("NO %d\n", i);
 }

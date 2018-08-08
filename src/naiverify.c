@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "../src/rfc4282.h"
+#include "../src/nai.h"
 
 static int verbose;
 
@@ -50,7 +50,7 @@ main(int argc, char *argv[])
 
 	input = argv[0];
 
-	if (rfc4282_parsestr(input, &username, &realm) == -1) {
+	if (nai_parsestr(input, &username, &realm) == -1) {
 		if (verbose > -1)
 			printf("FAIL");
 

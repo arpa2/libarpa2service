@@ -1,19 +1,19 @@
-naiverify: rfc4282.o src/rfc4282_verify.c
-	cc -Wall -g rfc4282.o src/rfc4282_verify.c -o $@
+naiverify: nai.o src/naiverify.c
+	cc -Wall -g nai.o src/naiverify.c -o $@
 
-rfc4282.o: src/rfc4282.c src/rfc4282.h
-	cc -Wall -g src/rfc4282.c -c
+nai.o: src/nai.c src/nai.h
+	cc -Wall -g src/nai.c -c
 
-testrfc4282: ./rfc4282.o
-	cc -Wall -g src/rfc4282.c test/rfc4282.c
+testnai: ./nai.o
+	cc -Wall -g src/nai.c test/nai.c
 	./a.out
 
 testnaiverify: naiverify
 	test/naiverify
 
-rfc4282fsm:
-	dot -Tpng doc/design/rfc4282_fsm.gv -o doc/design/rfc4282_fsm.png
-	dot -Tsvg doc/design/rfc4282_fsm.gv -o doc/design/rfc4282_fsm.svg
+naifsm:
+	dot -Tpng doc/design/naifsm.gv -o doc/design/naifsm.png
+	dot -Tsvg doc/design/naifsm.gv -o doc/design/naifsm.svg
 
-naiverifyfuzz: src/rfc4282.c src/naivstdin.c
-	afl-clang -Wall src/rfc4282.c src/naivstdin.c -o $@
+naiverifyfuzz: src/nai.c src/naivstdin.c
+	afl-clang -Wall src/nai.c src/naivstdin.c -o $@

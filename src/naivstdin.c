@@ -5,7 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "../src/rfc4282.h"
+#include "../src/nai.h"
 
 static int verbose;
 
@@ -56,7 +56,7 @@ main(int argc, char *argv[])
 		/* replace potential \n */
 		input[strcspn(input, "\n")] = '\0';
 
-		if (rfc4282_parsestr(input, &username, &realm) == 0) {
+		if (nai_parsestr(input, &username, &realm) == 0) {
 			printf("OK\n");
 			continue;
 		}

@@ -22,7 +22,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int rfc4282_parsestr(const char *, const char **, const char **);
-void printcharmap(const char *, int);
+int nai_parsestr(const char *, const char **, const char **);
 
 #endif /* RFC4282_H */
