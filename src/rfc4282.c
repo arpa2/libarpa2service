@@ -170,8 +170,8 @@ static const char userchar[256] = {
 int
 rfc4282_parsestr(const char *input, const char **username, const char **realm)
 {
-	enum states { S, USERNAME, USERESC, USERDOT, REALM1, LABEL1, REALM2,
-	    LABEL2 } state;
+	enum states { S, USERNAME, USERESC, USERDOT, REALMHOST, LABEL1,
+	    REALMDOM, LABEL2 } state;
 	const char *cp;
 
 	*username = NULL;
@@ -190,7 +190,7 @@ rfc4282_parsestr(const char *input, const char **username, const char **realm)
 				state = USERESC;
 			} else if (*cp == '@') {
 				*realm = cp + 1;
-				state = REALM1;
+				state = REALMHOST;
 			} else
 				goto done;
 			break;
@@ -211,7 +211,7 @@ rfc4282_parsestr(const char *input, const char **username, const char **realm)
 				state = USERDOT;
 			} else if (*cp == '@') {
 				*realm = cp + 1;
-				state = REALM1;
+				state = REALMHOST;
 			} else
 				goto done;
 			break;
@@ -225,7 +225,7 @@ rfc4282_parsestr(const char *input, const char **username, const char **realm)
 			} else
 				goto done;
 			break;
-		case REALM1:
+		case REALMHOST:
 			if (alphadig[(int)*cp]) {
 				state = LABEL1;
 			} else
@@ -243,13 +243,13 @@ rfc4282_parsestr(const char *input, const char **username, const char **realm)
 				goto done;
 
 			if (*cp == '-') {
-				state = REALM1;
+				state = REALMHOST;
 			} else if (*cp == '.') {
-				state = REALM2;
+				state = REALMDOM;
 			} else
 				goto done;
 			break;
-		case REALM2:
+		case REALMDOM:
 			if (alphadig[(int)*cp]) {
 				state = LABEL2;
 			} else
@@ -267,9 +267,9 @@ rfc4282_parsestr(const char *input, const char **username, const char **realm)
 				goto done;
 
 			if (*cp == '-') {
-				state = REALM2;
+				state = REALMDOM;
 			} else if (*cp == '.') {
-				state = REALM2;
+				state = REALMDOM;
 			} else
 				goto done;
 			break;
@@ -305,13 +305,13 @@ done:
 		case USERDOT:
 			*username = cp;
 			break;
-		case REALM1:
+		case REALMHOST:
 			 /* FALLTHROUGH */
 		case LABEL1:
 			 /* FALLTHROUGH */
 		case LABEL2:
 			 /* FALLTHROUGH */
-		case REALM2:
+		case REALMDOM:
 			*realm = cp;
 			break;
 		default:

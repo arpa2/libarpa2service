@@ -11,14 +11,14 @@ digraph finite_state_machine {
 		qi	-> S;
 
 		/* First do realm. */
-		S	-> REALM1 [ label = "@" ];
-		REALM1	-> LABEL1 [ label = "0-9A-Za-z" ];
+		S	-> REALMHOST [ label = "@" ];
+		REALMHOST	-> LABEL1 [ label = "0-9A-Za-z" ];
 		LABEL1	-> LABEL1 [ label = "0-9A-Za-z" ];
-		LABEL1	-> REALM1 [ label = "-" ];
-		LABEL1	-> REALM2 [ label = "." ];
-		REALM2	-> LABEL2 [ label = "0-9A-Za-z" ];
+		LABEL1	-> REALMHOST [ label = "-" ];
+		LABEL1	-> REALMDOM [ label = "." ];
+		REALMDOM	-> LABEL2 [ label = "0-9A-Za-z" ];
 		LABEL2	-> LABEL2 [ label = "0-9A-Za-z" ];
-		LABEL2	-> REALM2 [ label = ". -" ];
+		LABEL2	-> REALMDOM [ label = ". -" ];
 		LABEL2	-> E [ label = "&epsilon;" ];
 
 		/* Then username. */
@@ -29,7 +29,7 @@ digraph finite_state_machine {
 		USERESC	-> USERNAME [ label = "%x00-FF" ];
 		USERNAME	-> USERDOT [ label = "." ];
 		USERDOT	-> USERNAME [ label = "userchar" ];
-		USERNAME	-> REALM1 [ label = "@" ];
+		USERNAME	-> REALMHOST [ label = "@" ];
 		USERNAME	-> E [ label = "&epsilon;" ];
 
 	node[ shape=box, margin="0.2,0.2" ];
