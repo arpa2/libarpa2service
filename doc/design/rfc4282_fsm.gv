@@ -1,8 +1,8 @@
 digraph finite_state_machine {
 	rankdir=LR
 	node [shape = doublecircle];
-		S;
-		E;
+		USERNAME;
+		LABEL2;
 
 	node [shape = point ];
 		qi
@@ -19,7 +19,6 @@ digraph finite_state_machine {
 		REALMDOM	-> LABEL2 [ label = "0-9A-Za-z" ];
 		LABEL2	-> LABEL2 [ label = "0-9A-Za-z" ];
 		LABEL2	-> REALMDOM [ label = ". -" ];
-		LABEL2	-> E [ label = "&epsilon;" ];
 
 		/* Then username. */
 		S	-> USERNAME [ label = "userchar" ];
@@ -30,7 +29,6 @@ digraph finite_state_machine {
 		USERNAME	-> USERDOT [ label = "." ];
 		USERDOT	-> USERNAME [ label = "userchar" ];
 		USERNAME	-> REALMHOST [ label = "@" ];
-		USERNAME	-> E [ label = "&epsilon;" ];
 
 	node[ shape=box, margin="0.2,0.2" ];
 		userchar[ label = "userchar \n\n!#$%&'*+-/=?^_`{}|~\n%x80-FF\n0-9A-Za-z" ];
