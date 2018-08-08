@@ -170,7 +170,7 @@ static const char userchar[256] = {
 int
 rfc4282_parsestr(const char *input, const char **username, const char **realm)
 {
-	enum states { S, USERNAME, USERESC, REALM1, LABEL1, REALM2, LABEL2, E }
+	enum states { S, USERNAME, USERESC, REALM1, LABEL1, REALM2, LABEL2 }
 	    state;
 	const char *cp;
 
@@ -202,10 +202,8 @@ rfc4282_parsestr(const char *input, const char **username, const char **realm)
 			 * After while: prevent dangerous subsequent cp++ in
 			 * for-loop, never let cp point beyond the input.
 			 */
-			if (*cp == '\0') {
-				state = E;
+			if (*cp == '\0')
 				goto done;
-			}
 
 			if (*cp == '\\') {
 				state = USERESC;
@@ -257,10 +255,8 @@ rfc4282_parsestr(const char *input, const char **username, const char **realm)
 			 * After while: prevent dangerous subsequent cp++ in
 			 * for-loop, never let cp point beyond the input.
 			 */
-			if (*cp == '\0') {
-				state = E;
+			if (*cp == '\0')
 				goto done;
-			}
 
 			if (*cp == '-') {
 				state = REALM2;
@@ -275,7 +271,11 @@ rfc4282_parsestr(const char *input, const char **username, const char **realm)
 	}
 
 done:
-	if (state != E || *cp != '\0') {
+	/*
+	 * Make sure the end of the input is reached and the state is one of the
+	 * final states.
+	 */
+	if (*cp != '\0' || (state != USERNAME && state != LABEL2)) {
 
 		/*
 		 * Let "username" and/or "realm" point to first erroneous character in
@@ -304,13 +304,6 @@ done:
 		case REALM2:
 			*realm = cp;
 			break;
-		case E:
-			/*
-			 * Did not expect to reach state E without reaching the
-			 * end of the input.
-			 */
-
-			 /* FALLTHROUGH */
 		default:
 			abort();
 		}
