@@ -24,9 +24,11 @@ digraph finite_state_machine {
 		/* Then username. */
 		S	-> USERNAME [ label = "userchar" ];
 		S	-> USERESC [ label = "\\" ];
-		USERNAME	-> USERNAME [ label = "userchar ." ];
+		USERNAME	-> USERNAME [ label = "userchar" ];
 		USERNAME	-> USERESC [ label = "\\" ];
 		USERESC	-> USERNAME [ label = "%x00-FF" ];
+		USERNAME	-> USERDOT [ label = "." ];
+		USERDOT	-> USERNAME [ label = "userchar" ];
 		USERNAME	-> REALM1 [ label = "@" ];
 		USERNAME	-> E [ label = "&epsilon;" ];
 
