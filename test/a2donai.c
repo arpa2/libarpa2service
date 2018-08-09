@@ -5,35 +5,6 @@
 
 #include "../src/a2donai.h"
 
-/*
- * Test a2donai_fromstr with a certain set of parameters.
- */
-void
-test_run_a2donai_fromstr(const char *input, int expretnull,
-    const char *expusername, const char *exprealm)
-{
-	struct a2donai *donai;
-
-	donai = a2donai_fromstr(input);
-
-	if (expretnull)
-		assert(donai == NULL);
-	else
-		assert(donai != NULL);
-
-	if (expusername) {
-		assert(donai->username != NULL);
-		assert(strcmp(donai->username, expusername) == 0);
-	} else
-		assert(donai->username == NULL);
-
-	if (exprealm) {
-		assert(donai->realm != NULL);
-		assert(strcmp(donai->realm, exprealm) == 0);
-	} else
-		assert(donai->realm == NULL);
-}
-
 /* Test if a string can be converted to a DoNAI structure. */
 void
 test_a2donai_fromstr(void)
@@ -202,8 +173,6 @@ main(void)
 {
 	test_a2donai_fromstr();
 	test_a2donai_dettype();
-
-	fprintf(stderr, "ok\n");
 
 	return 0;
 }
