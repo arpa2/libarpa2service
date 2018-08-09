@@ -116,53 +116,81 @@ a2donai_fromstr(const char *donaistr)
 {
 	struct a2donai *donai;
 	const char *up, *rp;
-	char *tmp;
+	char *donaistrcpy;
+	size_t len;
 
 	donai = NULL;
 	up = rp = NULL;
-	tmp = NULL;
+	donaistrcpy = NULL;
+	len = 0;
 
 	if (donaistr == NULL) {
 		errno = EINVAL;
 		return NULL;
 	}
 
-	if (strlen(donaistr) > A2DONAI_MAXLEN) {
+	if ((len = strlen(donaistr)) > A2DONAI_MAXLEN) {
 		errno = EINVAL;
 		return NULL;
 	}
 
 	/*
-	 * Determine if this is a Domain or NAI and parse accordingly.
+	 * Determine if this is a Domain or NAI and parse accordingly. Create a
+	 * mutable copy of the input.
 	 *
 	 * If the string contains an '@', treat it as a NAI, if it does not
 	 * contain an '@', treat it as a realm-only part of a NAI.
 	 */
 
 	if (strchr(donaistr, '@') == NULL) {
-		/* Prepend a '@' and process as a realm-only NAI. */
-		if (asprintf(&tmp, "@%s", donaistr) <= 0) {
-			/*
-			 * XXX Non-POSIX but at least it's in GNU, BSD, Solaris.
-			 */
+		/*
+		 * Temp prepend an '@' so that we can still use the NAI parser.
+		 */
+
+		assert(INT_MAX - 2 > len);
+		if ((donaistrcpy = malloc(len + 2)) == NULL)
+			return NULL; /* errno set by malloc */
+
+		if (snprintf(donaistrcpy, len + 2, "@%s", donaistr) >=
+		    len + 2) {
 			errno = EINVAL;
-			goto done;
+			goto err;
 		}
+	} else {
+		if ((donaistrcpy = strdup(donaistr)) == NULL)
+			return NULL; /* errno set by strdup */
 	}
 
-	if (nai_parsestr(tmp ? tmp : donaistr, &up, &rp) == -1) {
+	if (nai_parsestr(donaistrcpy, &up, &rp) == -1) {
 		errno = EINVAL;
-		goto done;
+		goto err;
 	}
 
-	/* no need to check return this close to the end */
-	donai = a2donai_alloc(up, rp);
+	/*
+	 * Strip realm from the the username if both exist. up and rp point into
+	 * donaistrcpy when set.
+	 */
+	if (up && rp) {
+		assert(rp > up);
+		donaistrcpy[rp - up - 1] = '\0';
+	}
 
-done:
-	if (tmp)
-		free(tmp);
+	if ((donai = a2donai_alloc(up, rp)) == NULL)
+		goto err;
+
+	/* SUCCESS */
+
+	free(donaistrcpy);
+	donaistrcpy = NULL;
 
 	return donai;
+
+err:
+	if (donaistrcpy)
+		free(donaistrcpy);
+	donaistrcpy = NULL;
+
+	return NULL;
 }
 
 /*

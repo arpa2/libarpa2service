@@ -8,10 +8,10 @@ a2donai.o: src/a2donai.c src/a2donai.h
 	cc -Wall src/a2donai.c -c
 
 testnai: nai.o test/nai.c
-	cc -Wall nai.o test/nai.c -o $@
+	cc -Wall -g nai.o test/nai.c -o $@
 
-testa2donai: nai.o a2donai.o test/a2donai.c
-	cc -Wall nai.o a2donai.o test/a2donai.c -o $@
+testa2donai: nai.o src/a2donai.c test/a2donai.c
+	cc -Wall -g nai.o src/a2donai.c test/a2donai.c -o $@
 
 test!	testnai testa2donai naiverify
 	./testnai
