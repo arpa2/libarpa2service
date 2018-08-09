@@ -39,5 +39,10 @@ main(void)
 	assert(&username[0] == &input[0]);
 	assert(&realm[0] == &input[9]);
 
+	input = "alice@xn--tmonesimerkki-bfbb.example.net";
+	assert(nai_parsestr(input, &username, &realm) == 0);
+	assert(&username[0] == &input[0]);
+	assert(&realm[0] == &input[6]);
+
 	return 0;
 }
