@@ -7,13 +7,13 @@ nai.o: src/nai.c src/nai.h
 a2donai.o: src/a2donai.c src/a2donai.h
 	cc -Wall src/a2donai.c -c
 
-testnai: nai.o test/nai.c
-	cc -Wall -g nai.o test/nai.c -o $@
+testnai: nai.o test/testnai.c
+	cc -Wall -g nai.o test/testnai.c -o $@
 
-testa2donai: nai.o src/a2donai.c test/a2donai.c
-	cc -Wall -g nai.o src/a2donai.c test/a2donai.c -o $@
+testa2donai: nai.o src/a2donai.c test/testa2donai.c
+	cc -Wall -g nai.o src/a2donai.c test/testa2donai.c -o $@
 
-test!	testnai testa2donai naiverify
+test:	testnai testa2donai naiverify
 	./testnai
 	./testa2donai
 	./test/testnaiverify
