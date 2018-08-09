@@ -73,8 +73,7 @@ err:
 void
 a2donai_free(struct a2donai *donai)
 {
-	if (donai == NULL)
-		abort();
+	assert(donai != NULL);
 
 	if (donai->username) {
 		free(donai->username);
@@ -93,8 +92,7 @@ void
 a2donai_setopts(struct a2donai *donai, enum A2DONAI_TYPE *type,
     enum A2DONAI_SUBTYPE *subtype)
 {
-	if (donai == NULL)
-		abort();
+	assert(donai != NULL);
 
 	if (type != NULL)
 		donai->type = *type;
