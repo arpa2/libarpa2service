@@ -1,10 +1,15 @@
 #!/bin/sh
 
 ######
-# Test the naiverify binary
+# Test the naiverify binary; the optional $1 is the executable naiverify
 ###
 
-naiverify="$(dirname $0)/../naiverify"
+if [ "$#" -ge 1 ]
+then
+	naiverify="$1"
+else
+	naiverify="$(dirname $0)/../naiverify"
+fi
 
 _haserr=0
 
