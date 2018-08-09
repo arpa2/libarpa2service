@@ -168,7 +168,7 @@ int
 nai_parsestr(const char *input, const char **username, const char **realm)
 {
 	enum states { S, USERNAME, USERESC, USERDOT, REALMHOST, LABEL1,
-	    REALMDOM, LABEL2 } state;
+	    LABELDASH1, REALMDOM, LABEL2, LABELDASH2 } state;
 	const char *cp;
 
 	*username = NULL;
@@ -241,9 +241,25 @@ nai_parsestr(const char *input, const char **username, const char **realm)
 				goto done;
 
 			if (*cp == '-') {
-				state = REALMHOST;
+				state = LABELDASH1;
 			} else if (*cp == '.') {
 				state = REALMDOM;
+			} else
+				goto done;
+			break;
+		case LABELDASH1:
+			/* fast-forward LABELDASH1 characters */
+			while (*cp == '-')
+				cp++;
+			/*
+			 * After while: prevent dangerous subsequent cp++ in
+			 * for-loop, never let cp point beyond the input.
+			 */
+			if (*cp == '\0')
+				goto done;
+
+			if (alphadig[(int)*cp]) {
+				state = LABEL1;
 			} else
 				goto done;
 			break;
@@ -265,9 +281,25 @@ nai_parsestr(const char *input, const char **username, const char **realm)
 				goto done;
 
 			if (*cp == '-') {
-				state = REALMDOM;
+				state = LABELDASH2;
 			} else if (*cp == '.') {
 				state = REALMDOM;
+			} else
+				goto done;
+			break;
+		case LABELDASH2:
+			/* fast-forward LABELDASH2 characters */
+			while (*cp == '-')
+				cp++;
+			/*
+			 * After while: prevent dangerous subsequent cp++ in
+			 * for-loop, never let cp point beyond the input.
+			 */
+			if (*cp == '\0')
+				goto done;
+
+			if (alphadig[(int)*cp]) {
+				state = LABEL2;
 			} else
 				goto done;
 			break;
@@ -308,6 +340,10 @@ done:
 		case LABEL1:
 			 /* FALLTHROUGH */
 		case LABEL2:
+			 /* FALLTHROUGH */
+		case LABELDASH1:
+			 /* FALLTHROUGH */
+		case LABELDASH2:
 			 /* FALLTHROUGH */
 		case REALMDOM:
 			*realm = cp;
