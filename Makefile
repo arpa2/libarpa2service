@@ -9,7 +9,7 @@ testnai: nai.o test/nai.c
 
 test:	testnai naiverify
 	./testnai
-	./test/naiverify
+	./test/testnaiverify
 
 naifsm:
 	dot -Tpng doc/design/naifsm.gv -o doc/design/naifsm.png

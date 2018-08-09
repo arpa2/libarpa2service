@@ -12,6 +12,6 @@ add_executable (naiverify.test
 
 add_test (testnai
 	testnai.test)
-add_test (naiverify
-	${CMAKE_CURRENT_SOURCE_DIR}/naiverify ${CMAKE_CURRENT_BINARY_DIR}/naiverify.test)
+add_test (testnaiverify
+	${CMAKE_CURRENT_SOURCE_DIR}/testnaiverify ${CMAKE_CURRENT_BINARY_DIR}/naiverify.test)
 
