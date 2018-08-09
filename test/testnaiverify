@@ -77,6 +77,32 @@ t="@e."
 t="@ex."
 "$naiverify" -q "$t" && perr_accept "$t"
 
+# tests from RFC 4282
+
+t="fred@example"
+"$naiverify" -q "$t" && perr_accept "$t"
+
+t="fred@example_9.com"
+"$naiverify" -q "$t" && perr_accept "$t"
+
+t="fred@example.net@example.net"
+"$naiverify" -q "$t" && perr_accept "$t"
+
+t="fred.@example.net"
+"$naiverify" -q "$t" && perr_accept "$t"
+
+t="eng:nancy@example.net"
+"$naiverify" -q "$t" && perr_accept "$t"
+
+t="eng;nancy@example.net"
+"$naiverify" -q "$t" && perr_accept "$t"
+
+t="(user)@example.net"
+"$naiverify" -q "$t" && perr_accept "$t"
+
+t="<nancy>@example.net"
+"$naiverify" -q "$t" && perr_accept "$t"
+
 
 ######
 # Now test some valid NAIs
@@ -110,6 +136,50 @@ t="@e.x"
 "$naiverify" -q "$t" || perr_notaccept "$t"
 
 t="fo@ex.co"
+"$naiverify" -q "$t" || perr_notaccept "$t"
+
+# tests from RFC 4282
+
+t="bob"
+"$naiverify" -q "$t" || perr_notaccept "$t"
+
+t="joe@example.com"
+"$naiverify" -q "$t" || perr_notaccept "$t"
+
+t="fred@foo-9.example.com"
+"$naiverify" -q "$t" || perr_notaccept "$t"
+
+t="jack@3rd.depts.example.com"
+"$naiverify" -q "$t" || perr_notaccept "$t"
+
+t="fred.smith@example.com"
+"$naiverify" -q "$t" || perr_notaccept "$t"
+
+t="fred_smith@example.com"
+"$naiverify" -q "$t" || perr_notaccept "$t"
+
+t="fred\$@example.com"
+"$naiverify" -q "$t" || perr_notaccept "$t"
+
+t="fred=?#\$&*+-/^smith@example.com"
+"$naiverify" -q "$t" || perr_notaccept "$t"
+
+t="nancy@eng.example.net"
+"$naiverify" -q "$t" || perr_notaccept "$t"
+
+t="eng.example.net!nancy@example.net"
+"$naiverify" -q "$t" || perr_notaccept "$t"
+
+t="eng%nancy@example.net"
+"$naiverify" -q "$t" || perr_notaccept "$t"
+
+t="@privatecorp.example.net"
+"$naiverify" -q "$t" || perr_notaccept "$t"
+
+t="\(user\)@example.net"
+"$naiverify" -q "$t" || perr_notaccept "$t"
+
+t="alice@xn--tmonesimerkki-bfbb.example.net"
 "$naiverify" -q "$t" || perr_notaccept "$t"
 
 
