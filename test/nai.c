@@ -34,5 +34,10 @@ main(void)
 	assert(&username[0] == &input[0]);
 	assert(&realm[0] == &input[4]);
 
+	input = "\\(user\\)@example.net";
+	assert(nai_parsestr(input, &username, &realm) == 0);
+	assert(&username[0] == &input[0]);
+	assert(&realm[0] == &input[9]);
+
 	return 0;
 }

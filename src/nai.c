@@ -184,6 +184,7 @@ nai_parsestr(const char *input, const char **username, const char **realm)
 				*username = cp;
 				state = USERNAME;
 			} else if (*cp == '\\') {
+				*username = cp;
 				state = USERESC;
 			} else if (*cp == '@') {
 				*realm = cp + 1;
