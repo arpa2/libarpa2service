@@ -15,14 +15,14 @@ _haserr=0
 
 # Print error for an erroneously accepted string.
 # $1 - the tested string
-function perr_accept {
+perr_accept() {
 	_haserr=1
 	echo ERROR \""$1"\" accepted
 }
 
 # Print error for an erroneously unaccepted string.
 # $1 - the tested string
-function perr_notaccept {
+perr_notaccept() {
 	_haserr=1
 	echo ERROR \""$1"\" not accepted
 }
