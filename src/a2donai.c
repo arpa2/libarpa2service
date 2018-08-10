@@ -193,32 +193,3 @@ err:
 
 	return NULL;
 }
-
-/*
- * Determine the type of "donai".
- *
- * Return 0 on success or -1 on failure with errno set. "type" is updated to
- * reflect the type of "donai". If "donai" is an invalid DoNAI, type is set to
- * DT_INVALID and 0 is returned.
- */
-int
-a2donai_dettype(const struct a2donai *donai, enum A2DONAI_TYPE *type)
-{
-	if (donai == NULL || type == NULL) {
-		errno = EINVAL;
-		return -1;
-	}
-
-	if (donai->realm == NULL) {
-		*type = DT_INVALID;
-		return 0;
-	}
-
-	if (donai->username != NULL) {
-		*type = DT_NAI;
-		return 0;
-	} else {
-		*type = DT_DOMAIN;
-		return 0;
-	}
-}

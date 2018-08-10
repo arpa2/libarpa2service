@@ -27,11 +27,10 @@ struct a2donai {
 	enum A2DONAI_SUBTYPE subtype;
 };
 
-struct a2donai * a2donai_alloc(const char *, const char *);
+struct a2donai *a2donai_alloc(const char *, const char *);
 void a2donai_free(struct a2donai *);
 void a2donai_setopts(struct a2donai *, enum A2DONAI_TYPE *,
     enum A2DONAI_SUBTYPE *);
 struct a2donai *a2donai_fromstr(const char *);
-int a2donai_dettype(const struct a2donai *, enum A2DONAI_TYPE *);
 
 #endif /* A2DONAI_H */

@@ -166,34 +166,10 @@ test_a2donai_fromstr(void)
 	assert(a2donai_fromstr("<nancy>@example.net") == NULL);
 }
 
-/* Test if type is set correctly. */
-void
-test_a2donai_dettype(void)
-{
-	struct a2donai donai;
-	enum A2DONAI_TYPE dt;
-
-	donai.username = "joe";
-	donai.realm = "example.com";
-	assert(a2donai_dettype(&donai, &dt) == 0);
-	assert(dt == DT_NAI);
-
-	donai.username = NULL;
-	donai.realm = "example.com";
-	assert(a2donai_dettype(&donai, &dt) == 0);
-	assert(dt == DT_DOMAIN);
-
-	donai.username = NULL;
-	donai.realm = NULL;
-	assert(a2donai_dettype(&donai, &dt) == 0);
-	assert(dt == DT_INVALID);
-}
-
 int
 main(void)
 {
 	test_a2donai_fromstr();
-	test_a2donai_dettype();
 
 	return 0;
 }
