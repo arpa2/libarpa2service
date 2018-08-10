@@ -136,6 +136,7 @@ test_a2donai_fromstr(void)
 
 	/* test invalid DoNAIs */
 	assert(a2donai_fromstr("") == NULL);
+	assert(a2donai_fromstr("joe") == NULL);
 	assert(a2donai_fromstr("fred@example_9.com") == NULL);
 	assert(a2donai_fromstr("fred@example.net@example.net") == NULL);
 	assert(a2donai_fromstr("fred.@example.net") == NULL);

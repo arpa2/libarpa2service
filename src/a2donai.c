@@ -137,14 +137,11 @@ a2donai_fromstr(const char *donaistr)
 	 * mutable copy of the input.
 	 *
 	 * If the string contains an '@', treat it as a NAI, if it does not
-	 * contain an '@', treat it as a realm-only part of a NAI.
+	 * contain an '@', treat it as a realm-only part of a NAI and prepend an
+	 * '@' temporarily ourselves so that we can still use the NAI parser.
 	 */
 
 	if (strchr(donaistr, '@') == NULL) {
-		/*
-		 * Temp prepend an '@' so that we can still use the NAI parser.
-		 */
-
 		assert(INT_MAX - 2 > len);
 		if ((donaistrcpy = malloc(len + 2)) == NULL)
 			return NULL; /* errno set by malloc */
@@ -165,12 +162,13 @@ a2donai_fromstr(const char *donaistr)
 	}
 
 	/*
-	 * Strip realm from the the username if both exist. up and rp point into
-	 * donaistrcpy when set.
+	 * Separate the username from the realm by replacing the '@' with a
+	 * '\0'. up and rp both point into donaistrcpy when set.
 	 */
-	if (up && rp) {
-		assert(rp > up);
-		donaistrcpy[rp - up - 1] = '\0';
+	if (rp) {
+		assert(*rp == '@');
+		donaistrcpy[rp - donaistrcpy] = '\0';
+		rp++;
 	}
 
 	if ((donai = a2donai_alloc(up, rp)) == NULL)
