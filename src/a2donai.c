@@ -45,7 +45,10 @@ a2donai_alloc(const char *username, const char *realm)
 	if (username) {
 		if ((donai->username = strdup(username)) == NULL)
 			goto err; /* errno is set by strdup */
-	}
+		donai->type = DT_NAI;
+	} else
+		donai->type = DT_DOMAIN;
+
 
 	if ((donai->realm = strdup(realm)) == NULL)
 		goto err; /* errno is set by strdup */
