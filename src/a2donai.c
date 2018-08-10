@@ -113,7 +113,7 @@ struct a2donai *
 a2donai_fromstr(const char *donaistr)
 {
 	struct a2donai *donai;
-	const char *up, *rp;
+	const char *up, *rp, *fmt;
 	char *donaistrcpy;
 	size_t len;
 
@@ -142,18 +142,20 @@ a2donai_fromstr(const char *donaistr)
 	 */
 
 	if (strchr(donaistr, '@') == NULL) {
-		assert(INT_MAX - 2 > len);
-		if ((donaistrcpy = malloc(len + 2)) == NULL)
-			return NULL; /* errno set by malloc */
-
-		if (snprintf(donaistrcpy, len + 2, "@%s", donaistr) >=
-		    len + 2) {
-			errno = EINVAL;
-			goto err;
-		}
+		fmt = "@%s";
+		assert(INT_MAX - 1 > len);
+		len++;
 	} else {
-		if ((donaistrcpy = strdup(donaistr)) == NULL)
-			return NULL; /* errno set by strdup */
+		fmt = "%s";
+	}
+
+	assert(INT_MAX - 1 > len);
+	if ((donaistrcpy = malloc(len + 1)) == NULL)
+		return NULL; /* errno set by malloc */
+
+	if (snprintf(donaistrcpy, len + 1, fmt, donaistr) >= len + 1) {
+		errno = EINVAL;
+		goto err;
 	}
 
 	if (nai_parsestr(donaistrcpy, &up, &rp) == -1) {
