@@ -32,17 +32,17 @@ main(void)
 	input = "foo@example.com";
 	assert(nai_parsestr(input, &username, &realm) == 0);
 	assert(&username[0] == &input[0]);
-	assert(&realm[0] == &input[4]);
+	assert(&realm[0] == &input[3]);
 
 	input = "\\(user\\)@example.net";
 	assert(nai_parsestr(input, &username, &realm) == 0);
 	assert(&username[0] == &input[0]);
-	assert(&realm[0] == &input[9]);
+	assert(&realm[0] == &input[8]);
 
 	input = "alice@xn--tmonesimerkki-bfbb.example.net";
 	assert(nai_parsestr(input, &username, &realm) == 0);
 	assert(&username[0] == &input[0]);
-	assert(&realm[0] == &input[6]);
+	assert(&realm[0] == &input[5]);
 
 	return 0;
 }

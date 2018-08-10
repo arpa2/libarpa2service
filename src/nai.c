@@ -187,7 +187,7 @@ nai_parsestr(const char *input, const char **username, const char **realm)
 				*username = cp;
 				state = USERESC;
 			} else if (*cp == '@') {
-				*realm = cp + 1;
+				*realm = cp;
 				state = REALMHOST;
 			} else
 				goto done;
@@ -208,7 +208,7 @@ nai_parsestr(const char *input, const char **username, const char **realm)
 			} else if (*cp == '.') {
 				state = USERDOT;
 			} else if (*cp == '@') {
-				*realm = cp + 1;
+				*realm = cp;
 				state = REALMHOST;
 			} else
 				goto done;
