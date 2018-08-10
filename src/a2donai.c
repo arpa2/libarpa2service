@@ -83,19 +83,6 @@ a2donai_free(struct a2donai *donai)
 	free(donai);
 }
 
-void
-a2donai_setopts(struct a2donai *donai, enum A2DONAI_TYPE *type,
-    enum A2DONAI_SUBTYPE *subtype)
-{
-	assert(donai != NULL);
-
-	if (type != NULL)
-		donai->type = *type;
-
-	if (subtype != NULL)
-		donai->subtype = *subtype;
-}
-
 /*
  * Parse a DoNAI. If the input contains an '@' character, treat it as a RFC 4282
  * compliant NAI, else treat the input as a hostname, compliant with the realm
