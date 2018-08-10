@@ -17,9 +17,9 @@
 #include "nai.h"
 
 /*
- * A RFC 4282 NAI compliant parser.
+ * A static RFC 4282 NAI parser implemented in C89.
  *
- * FSM: doc/design/naifsm.*
+ * Finite-state machine: doc/design/naifsm.*
  */
 
 /*
@@ -153,16 +153,16 @@ static const char userchar[256] = {
 /*
  * Static NAI parser.
  *
- * Return 0 on success or -1 on failure.
+ * Returns 0 is if the input is a valid NAI or -1 otherwise.
  *
- * On success "username" and/or "realm" point to the corresponding start in
- * "input".
+ * If "input" is a valid NAI then "username" points to the first character of
+ * "intput" or NULL if there is no username. "realm" points to the first (and
+ * only) '@' in "input" or NULL if there is no realm. Both are optional but at
+ * least one of them is required by the standard.
  *
- * Note that either "username" or "realm" may point to NULL in case one of them
- * is not present in "input" (which is allowed by the standard).
- *
- * On error "username" and/or "realm" point to NULL or to the first erroneous
- * character in the input, depending on where the error occurred.
+ * On error "username" and/or "realm" are updated to point to the first
+ * erroneous character encountered in "input" depending on where the error
+ * occurred.
  */
 int
 nai_parsestr(const char *input, const char **username, const char **realm)
