@@ -20,7 +20,6 @@
  */
 
 #include "a2donai.h"
-#include "nai.h"
 
 /*
  * Allocate a new a2donai structure. Username may be NULL, realm must not be
@@ -56,15 +55,8 @@ a2donai_alloc(const char *username, const char *realm)
 	return donai;
 
 err:
-	if (donai) {
-		if (donai->username)
-			free(donai->username);
-
-		if (donai->realm)
-			free(donai->realm);
-
-		free(donai);
-	}
+	if (donai)
+		a2donai_free(donai);
 
 	/* assume errno is set */
 	return NULL;
