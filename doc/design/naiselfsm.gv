@@ -1,0 +1,37 @@
+digraph finite_state_machine {
+	rankdir=LR
+	node [shape = doublecircle];
+		USERNAME;
+		LABEL;
+		REALMDOT;
+
+	node [shape = point ];
+		qi
+
+	node [shape = circle];
+		qi	-> S;
+
+		/* First do realm. */
+		S	-> REALMHOST [ label = "@" ];
+		REALMHOST	-> LABEL [ label = "0-9A-Za-z" ];
+		REALMHOST	-> REALMDOT [ label = "." ];
+		REALMDOT	-> LABEL [ label = "0-9A-Za-z" ];
+		LABEL	-> LABEL [ label = "0-9A-Za-z" ];
+		LABEL	-> LABELDASH [ label = "-" ];
+		LABELDASH	-> LABELDASH [ label = "-" ];
+		LABELDASH	-> LABEL [ label = "0-9A-Za-z" ];
+		LABEL	-> REALMDOT [ label = "." ];
+
+		/* Then username. */
+		S	-> USERNAME [ label = "userchar" ];
+		S	-> USERESC [ label = "\\" ];
+		USERNAME	-> USERNAME [ label = "userchar" ];
+		USERNAME	-> USERESC [ label = "\\" ];
+		USERESC	-> USERNAME [ label = "%x00-FF" ];
+		USERNAME	-> USERDOT [ label = "." ];
+		USERDOT	-> USERNAME [ label = "userchar" ];
+		USERNAME	-> REALMHOST [ label = "@" ];
+
+	node[ shape=box, margin="0.2,0.2" ];
+		userchar[ label = "userchar \n\n!#$%&'*+-/=?^_`{}|~\n%x80-FF\n0-9A-Za-z" ];
+}

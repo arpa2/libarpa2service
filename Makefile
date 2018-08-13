@@ -21,6 +21,8 @@ test:	testnai testa2donai naiverify
 naifsm:
 	dot -Tpng doc/design/naifsm.gv -o doc/design/naifsm.png
 	dot -Tsvg doc/design/naifsm.gv -o doc/design/naifsm.svg
+	dot -Tpng doc/design/naiselfsm.gv -o doc/design/naiselfsm.png
+	dot -Tsvg doc/design/naiselfsm.gv -o doc/design/naiselfsm.svg
 
 # create instrumented binary for use by afl-fuzz
 naiverifyafl: src/nai.c src/naivstdin.c
