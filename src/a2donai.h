@@ -24,7 +24,7 @@ enum A2DONAI_SUBTYPE { DST_INVALID, DST_HOSTNAME, DST_FQDN, DST_USERNAME,
 
 struct a2donai {
 	char *username;
-	char *realm;
+	char *domain;
 	enum A2DONAI_TYPE type;
 	enum A2DONAI_SUBTYPE subtype;
 };

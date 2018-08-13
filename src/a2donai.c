@@ -22,18 +22,18 @@
 #include "a2donai.h"
 
 /*
- * Allocate a new a2donai structure. Username may be NULL, realm must not be
- * NULL.
+ * Allocate a new a2donai structure. "username" may be NULL, "domain" must not
+ * be NULL.
  *
  * Return a newly allocated a2donai structure on success that should be freed by
  * a2donai_free when done. Return NULL on error with errno set.
  */
 struct a2donai *
-a2donai_alloc(const char *username, const char *realm)
+a2donai_alloc(const char *username, const char *domain)
 {
 	struct a2donai *donai;
 
-	if (realm == NULL) {
+	if (domain == NULL) {
 		errno = EINVAL;
 		return NULL;
 	}
@@ -49,7 +49,7 @@ a2donai_alloc(const char *username, const char *realm)
 		donai->type = DT_DOMAIN;
 
 
-	if ((donai->realm = strdup(realm)) == NULL)
+	if ((donai->domain = strdup(domain)) == NULL)
 		goto err; /* errno is set by strdup */
 
 	return donai;
@@ -75,9 +75,9 @@ a2donai_free(struct a2donai *donai)
 		donai->username = NULL;
 	}
 
-	if (donai->realm) {
-		free(donai->realm);
-		donai->realm = NULL;
+	if (donai->domain) {
+		free(donai->domain);
+		donai->domain = NULL;
 	}
 
 	free(donai);
@@ -85,7 +85,7 @@ a2donai_free(struct a2donai *donai)
 
 /*
  * Parse a DoNAI. If the input contains an '@' character, treat it as a RFC 4282
- * compliant NAI, else treat the input as a hostname, compliant with the realm
+ * compliant NAI, else treat the input as a domain, compliant with the realm
  * part of RFC 4282.
  *
  * Return a newly allocated a2donai structure on success that should be freed by
@@ -146,8 +146,8 @@ a2donai_fromstr(const char *donaistr)
 	}
 
 	/*
-	 * Separate the username from the realm by replacing the '@' with a
-	 * '\0'. up and rp both point into donaistrcpy when set.
+	 * Separate the username from the domain by replacing the '@' with a
+	 * '\0'. "rp" points into donaistrcpy if set.
 	 */
 	if (rp) {
 		assert(*rp == '@');
