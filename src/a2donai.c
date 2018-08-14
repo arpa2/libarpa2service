@@ -174,6 +174,96 @@ err:
 }
 
 /*
+ * Parse a DoNAI selector. If the input contains an '@' character, treat it as a
+ * username selector, else treat the input as a domain selector.
+ *
+ * Return a newly allocated a2donai structure on success that should be freed by
+ * a2donai_free when done. Return NULL on error with errno set.
+ */
+struct a2donai *
+a2donai_fromselstr(const char *donaiselstr)
+{
+	struct a2donai *donai;
+	const char *up, *rp, *fmt;
+	char *donaiselstrcpy;
+	size_t len;
+
+	donai = NULL;
+	up = rp = NULL;
+	donaiselstrcpy = NULL;
+	len = 0;
+
+	if (donaiselstr == NULL) {
+		errno = EINVAL;
+		return NULL;
+	}
+
+	if ((len = strlen(donaiselstr)) > A2DONAI_MAXLEN) {
+		errno = EINVAL;
+		return NULL;
+	}
+
+	/*
+	 * Determine if this is a Domain or NAI and parse accordingly. Create a
+	 * mutable copy of the input.
+	 *
+	 * If the string contains an '@', treat it as a username selector, if it
+	 * does not contain an '@', treat it as a domain-only selector and
+	 * prepend an '@' temporarily ourselves so that we can still use the
+	 * NAI selector parser.
+	 */
+
+	if (strchr(donaiselstr, '@') == NULL) {
+		fmt = "@%s";
+		assert(INT_MAX - 1 > len);
+		len++;
+	} else {
+		fmt = "%s";
+	}
+
+	assert(INT_MAX - 1 > len);
+	if ((donaiselstrcpy = malloc(len + 1)) == NULL)
+		return NULL; /* errno set by malloc */
+
+	if (snprintf(donaiselstrcpy, len + 1, fmt, donaiselstr) >= len + 1) {
+		errno = EINVAL;
+		goto err;
+	}
+
+	if (nai_parseselstr(donaiselstrcpy, &up, &rp) == -1) {
+		errno = EINVAL;
+		goto err;
+	}
+
+	/*
+	 * Separate the username from the domain by replacing the '@' with a
+	 * '\0'. "rp" points into donaiselstrcpy if set.
+	 */
+	if (rp) {
+		assert(*rp == '@');
+		donaiselstrcpy[rp - donaiselstrcpy] = '\0';
+		rp++;
+	}
+
+	if ((donai = a2donai_alloc(up, rp)) == NULL)
+		goto err;
+
+	/* SUCCESS */
+
+	free(donaiselstrcpy);
+	donaiselstrcpy = NULL;
+
+	return donai;
+
+err:
+	if (donaiselstrcpy)
+		free(donaiselstrcpy);
+	donaiselstrcpy = NULL;
+
+	return NULL;
+}
+
+/*
  * Check if "subject" ends with "suffix", ignoring case.
  *
  * Return 1 if "subject" ends with "suffix", 0 otherwise.

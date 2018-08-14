@@ -51,7 +51,7 @@ main(int argc, char *argv[])
 		exit(1);
 	}
 
-	if ((selector = a2donai_fromstr(argv[0])) == NULL) {
+	if ((selector = a2donai_fromselstr(argv[0])) == NULL) {
 		fprintf(stderr, "illegal selector: %s\n", argv[0]);
 		exit(1);
 	}
