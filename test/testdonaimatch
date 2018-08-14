@@ -14,17 +14,19 @@ fi
 _haserr=0
 
 # Print error for an erroneously accepted string.
-# $1 - the tested string
+# $1 - the tested selector
+# $2 - the tested donai
 perr_accept() {
 	_haserr=1
-	echo ERROR \""$1"\" accepted
+	echo ERROR \""$1"\" accepts \""$2"\"
 }
 
 # Print error for an erroneously unaccepted string.
-# $1 - the tested string
+# $1 - the tested selector
+# $2 - the tested donai
 perr_notaccept() {
 	_haserr=1
-	echo ERROR \""$1"\" not accepted
+	echo ERROR \""$1"\" does not accept \""$2"\"
 }
 
 
@@ -32,53 +34,118 @@ perr_notaccept() {
 # First test a bunch of mismatches
 ###
 
+# DoNAI subject
 s="\(user\)@example.net"
 
 t="e.net"
-"$donaimatch" -q "$t" "$s" && perr_accept "$t"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
 
 t=".com"
-"$donaimatch" -q "$t" "$s" && perr_accept "$t"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
 
 t="@.com"
-"$donaimatch" -q "$t" "$s" && perr_accept "$t"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
 
 t=".f"
-"$donaimatch" -q "$t" "$s" && perr_accept "$t"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
 
 t=".fo"
-"$donaimatch" -q "$t" "$s" && perr_accept "$t"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
 
 t="@n"
-"$donaimatch" -q "$t" "$s" && perr_accept "$t"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
 
 t="@ne"
-"$donaimatch" -q "$t" "$s" && perr_accept "$t"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
 
 
 ######
 # Now test some matches
 ###
 
+# DoNAI subject
 s="\(user\)@example.net"
 
 t="."
-"$donaimatch" -q "$t" "$s" || perr_notaccept "$t"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
 
 t="net"
-"$donaimatch" -q "$t" "$s" || perr_notaccept "$t"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
 
 t=".net"
-"$donaimatch" -q "$t" "$s" || perr_notaccept "$t"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
 
 t="@."
-"$donaimatch" -q "$t" "$s" || perr_notaccept "$t"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
 
 t="@.net"
-"$donaimatch" -q "$t" "$s" || perr_notaccept "$t"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
 
 t="\(user\)@."
-"$donaimatch" -q "$t" "$s" || perr_notaccept "$t"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+
+######
+# Tests from http://donai.arpa2.net/selector.html
+###
+
+# DoNAI subject
+s="example.org"
+
+t="."
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t=".org"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t="example.org"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+# DoNAI subject
+s="example.org"
+t=".org"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+# DoNAI subject
+s="example.org"
+t=".example.org"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+t="example.org"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+# DoNAI subject
+s="@example.org"
+
+t="@example.org"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t="@.org"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t="@."
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+# DoNAI subject
+s="john@example.org"
+
+t="john@example.org"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t="@example.org"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t="john@.org"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t="@.org"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t="john@."
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t="@."
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
 
 
 ###
