@@ -242,6 +242,33 @@ t="john+@."
 t="@."
 "$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
 
+# DoNAI subject
+s="+smtp@mx1.example.org"
+
+t="+smtp@mx1.example.org"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t="+@mx1.example.org"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t="+smtp@.example.org"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t="+@.example.org"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t="+smtp@.org"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t="+@.org"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t="+smtp@."
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t="+@."
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
 
 ###
 # Finish up
