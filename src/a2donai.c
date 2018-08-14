@@ -283,19 +283,21 @@ endswithsuffix(const char *subject, size_t subjectlen, const char *suffix,
 }
 
 /*
- * Return 1 if the subject matches the selector, 0 otherwise.
+ * Return 1 if the subject matches the selector, 0 otherwise. If the selector
+ * username and/or domain are an empty string it is considered to be a match to
+ * the respective part in the subject.
  */
 int
 a2donai_match(const struct a2donai *selector, const struct a2donai *subject)
 {
+	char seldom[A2DONAI_MAXLEN + 1];
 	size_t selectorlen, subjectlen;
 
 	if (selector->username == NULL && selector->domain == NULL)
 		return 0;
 
-	if (selector->username) {
-		if ((selectorlen = strlen(selector->username)) == 0)
-			return 0;
+	if (selector->username && *selector->username != '\0') {
+		selectorlen = strlen(selector->username);
 
 		if (subject->username == NULL)
 			return 0;
@@ -312,9 +314,20 @@ a2donai_match(const struct a2donai *selector, const struct a2donai *subject)
 		/* Username MATCH. */
 	}
 
-	if (selector->domain) {
-		if ((selectorlen = strlen(selector->domain)) == 0)
+	if (selector->domain && *selector->domain != '\0') {
+		selectorlen = snprintf(seldom, sizeof(seldom), "%s",
+		    selector->domain);
+		if (selectorlen <= 0 || selectorlen >= sizeof(seldom))
 			return 0;
+
+		/* Ensure there is no trailing dot in the selector. */
+		if (seldom[selectorlen - 1] == '.') {
+			seldom[selectorlen - 1] = '\0';
+			selectorlen--;
+		}
+
+		if (selectorlen == 0)
+			return 1; /* MATCH */
 
 		if (subject->domain == NULL)
 			return 0;
@@ -324,15 +337,15 @@ a2donai_match(const struct a2donai *selector, const struct a2donai *subject)
 		if (subjectlen < selectorlen)
 			return 0;
 
-		if (!endswithsuffix(subject->domain, subjectlen,
-		    selector->domain, selectorlen))
+		if (!endswithsuffix(subject->domain, subjectlen, seldom,
+		    selectorlen))
 			return 0;
 
 		/*
 		 * Make sure there is a separator before the matched part if it
 		 * was not already in the selector itself.
 		 */
-		if (selector->domain[0] != '.' && subjectlen > selectorlen)
+		if (seldom[0] != '.' && subjectlen > selectorlen)
 			if (subject->domain[subjectlen - selectorlen - 1]
 			    != '.')
 				return 0;

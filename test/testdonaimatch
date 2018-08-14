@@ -1,0 +1,90 @@
+#!/bin/sh
+
+######
+# Test the donaimatch binary; the optional $1 is the executable donaimatch
+###
+
+if [ "$#" -ge 1 ]
+then
+	donaimatch="$1"
+else
+	donaimatch="$(dirname $0)/../donaimatch"
+fi
+
+_haserr=0
+
+# Print error for an erroneously accepted string.
+# $1 - the tested string
+perr_accept() {
+	_haserr=1
+	echo ERROR \""$1"\" accepted
+}
+
+# Print error for an erroneously unaccepted string.
+# $1 - the tested string
+perr_notaccept() {
+	_haserr=1
+	echo ERROR \""$1"\" not accepted
+}
+
+
+######
+# First test a bunch of mismatches
+###
+
+s="\(user\)@example.net"
+
+t="e.net"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t"
+
+t=".com"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t"
+
+t="@.com"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t"
+
+t=".f"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t"
+
+t=".fo"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t"
+
+t="@n"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t"
+
+t="@ne"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t"
+
+
+######
+# Now test some matches
+###
+
+s="\(user\)@example.net"
+
+t="."
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t"
+
+t="net"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t"
+
+t=".net"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t"
+
+t="@."
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t"
+
+t="@.net"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t"
+
+t="\(user\)@."
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t"
+
+
+###
+# Finish up
+
+if [ "$_haserr" -ne 0 ]; then
+	# assume errors are already printed
+	exit 1
+fi
