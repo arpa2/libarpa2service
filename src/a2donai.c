@@ -306,8 +306,12 @@ a2donai_match(const struct a2donai *selector, const struct a2donai *subject)
 		    != 0)
 			return 0;
 
-		/* Make sure there is a separator after the matched part. */
-		if (subject->username[selectorlen] != '\0' &&
+		/*
+		 * Make sure there is a separator after the matched part if it
+		 * was not already in the selector itself.
+		 */
+		if (selector->username[selectorlen - 1] != '+' &&
+		    subject->username[selectorlen] != '\0' &&
 		    subject->username[selectorlen] != '+')
 			return 0;
 

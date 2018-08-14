@@ -148,6 +148,50 @@ t="@."
 "$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
 
 
+######
+# Tests from http://donai.arpa2.net/selector.html considering sub-names.
+###
+
+# DoNAI subject
+s="sales+john@example.org"
+
+t="sales+john@example.org"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t="sales+@example.org"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t="sales@example.org"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t="@example.org"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t="sales+john@.org"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t="sales+@.org"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t="sales@.org"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t="@.org"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t="sales+john@."
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t="sales+@."
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t="sales@."
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t="@."
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+
 ###
 # Finish up
 
