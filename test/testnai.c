@@ -2,8 +2,8 @@
 
 #include "../src/nai.h"
 
-int
-main(void)
+void
+test_nai_parsestr(void)
 {
 	const char *input, *username, *realm;
 
@@ -43,6 +43,12 @@ main(void)
 	assert(nai_parsestr(input, &username, &realm) == 0);
 	assert(&username[0] == &input[0]);
 	assert(&realm[0] == &input[5]);
+}
+
+int
+main(void)
+{
+	test_nai_parsestr();
 
 	return 0;
 }
