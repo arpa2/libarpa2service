@@ -436,7 +436,7 @@ done:
  * Returns 0 is if the input is a valid NAI selector or -1 otherwise.
  *
  * If "input" is a valid NAI selector then "username" points to the first character of
- * "intput" or NULL if there is no username. "domain" points to the first (and
+ * "intput" or NULL if there is no username. "realm" points to the first (and
  * only) '@' in "input" or NULL if there is no realm. Both are optional but at
  * least one of them is required.
  *
