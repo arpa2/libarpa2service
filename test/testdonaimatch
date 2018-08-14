@@ -75,6 +75,12 @@ t="net"
 t=".net"
 "$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
 
+t="net."
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t=".net."
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
 t="@."
 "$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
 
@@ -86,7 +92,7 @@ t="\(user\)@."
 
 
 ######
-# Tests from http://donai.arpa2.net/selector.html
+# Match tests from http://donai.arpa2.net/selector.html
 ###
 
 # DoNAI subject
@@ -268,6 +274,97 @@ t="+smtp@."
 
 t="+@."
 "$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+
+######
+# Same but mismatch tests
+###
+
+# DoNAI subject
+s="example.org"
+
+t=".example.org."
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+# DoNAI subject
+s="@example.org"
+
+t=".example.org"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+t="@.example.org"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+# DoNAI subject
+s="john@example.org"
+
+t="john@.example.org"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+t="@.example.org"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+t="john@nexample.org"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+t="john@example."
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+t="john@.example"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+t="john@.example."
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+t="@.."
+"$donaimatch" -q "$t" "$s" 2>/dev/null && perr_accept "$t" "$s"
+
+
+######
+# Mismatch sub-name tests from http://donai.arpa2.net/selector.html considering.
+###
+
+# DoNAI subject
+s="sales+john@example.org"
+
+t="sales+john@.example.org"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+t="sales+@.example.org"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+t="sales-@example.org"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+t="+@example.org"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+t="sales+john+@.org"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+t="sales+@.org.sales"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+t="sales@.org.org"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+t="@.org.org"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+t="sales+john@.example.org"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+t="sales+mary@."
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+t="john+@example.org"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+t="@.example.org"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+t="john@.org.org."
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
 
 
 ###
