@@ -14,8 +14,8 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef RFC4282_H
-#define RFC4282_H
+#ifndef NAI_H
+#define NAI_H
 
 #include <errno.h>
 #include <stddef.h>
@@ -24,4 +24,4 @@
 
 int nai_parsestr(const char *, const char **, const char **);
 
-#endif /* RFC4282_H */
+#endif /* NAI_H */
