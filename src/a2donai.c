@@ -328,8 +328,11 @@ a2donai_match(const struct a2donai *selector, const struct a2donai *subject)
 		    selector->domain, selectorlen))
 			return 0;
 
-		/* Make sure there is a separator before the matched part. */
-		if (subjectlen > selectorlen)
+		/*
+		 * Make sure there is a separator before the matched part if it
+		 * was not already in the selector itself.
+		 */
+		if (selector->domain[0] != '.' && subjectlen > selectorlen)
 			if (subject->domain[subjectlen - selectorlen - 1]
 			    != '.')
 				return 0;
