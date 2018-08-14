@@ -1,8 +1,8 @@
 naiverify: nai.o src/naiverify.c
 	cc -Wall nai.o src/naiverify.c -o $@
 
-donaiverify: nai.o a2donai.o src/donaiverify.c
-	cc -Wall nai.o a2donai.o src/donaiverify.c -o $@
+donaimatch: nai.o a2donai.o src/donaimatch.c
+	cc -Wall nai.o a2donai.o src/donaimatch.c -o $@
 
 nai.o: src/nai.c src/nai.h
 	cc -Wall src/nai.c -c
