@@ -32,5 +32,6 @@ struct a2donai {
 struct a2donai *a2donai_alloc(const char *, const char *);
 void a2donai_free(struct a2donai *);
 struct a2donai *a2donai_fromstr(const char *);
+int a2donai_match(const struct a2donai *, const struct a2donai *);
 
 #endif /* A2DONAI_H */
