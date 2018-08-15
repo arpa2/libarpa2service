@@ -16,7 +16,7 @@
 
 /*
  * A library with DoNAI utilities. A DoNAI consists of either a Domain-or-NAI.
- * A NAI is a Network Access Identifier as specified by RFC 4282.
+ * An NAI is a Network Access Identifier as specified by RFC 4282.
  */
 
 #include "a2donai.h"
@@ -118,9 +118,9 @@ a2donai_fromstr(const char *donaistr)
 	 * Determine if this is a Domain or NAI and parse accordingly. Create a
 	 * mutable copy of the input.
 	 *
-	 * If the string contains an '@', treat it as a NAI, if it does not
-	 * contain an '@', treat it as a realm-only part of a NAI and prepend an
-	 * '@' temporarily ourselves so that we can still use the NAI parser.
+	 * If the string contains an '@', treat it as an NAI, if it does not
+	 * contain an '@', treat it as a realm-only part of an NAI and prepend
+	 * an '@' temporarily ourselves so that we can still use the NAI parser.
 	 */
 
 	if (strchr(donaistr, '@') == NULL) {
