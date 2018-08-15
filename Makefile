@@ -16,10 +16,11 @@ testnai: nai.o test/testnai.c
 testa2donai: nai.o src/a2donai.c test/testa2donai.c
 	cc -Wall -g nai.o src/a2donai.c test/testa2donai.c -o $@
 
-test:	testnai testa2donai naiverify
+test:	testnai testa2donai naiverify donaimatch
 	./testnai
 	./testa2donai
 	./test/testnaiverify
+	./test/testdonaimatch
 
 naifsm:
 	dot -Tpng doc/design/naifsm.gv -o doc/design/naifsm.png
