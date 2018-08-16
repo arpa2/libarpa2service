@@ -27,6 +27,8 @@ naifsm:
 	dot -Tsvg doc/design/naifsm.gv -o doc/design/naifsm.svg
 	dot -Tpng doc/design/naiselfsm.gv -o doc/design/naiselfsm.png
 	dot -Tsvg doc/design/naiselfsm.gv -o doc/design/naiselfsm.svg
+	dot -Tpng doc/design/donaiuserfsm.gv -o doc/design/donaiuserfsm.png
+	dot -Tsvg doc/design/donaiuserfsm.gv -o doc/design/donaiuserfsm.svg
 
 # create instrumented binary for use by afl-fuzz
 naiverifyafl: src/nai.c src/naivstdin.c
