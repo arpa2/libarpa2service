@@ -180,7 +180,7 @@ nai_parsestr(const char *input, const char **username, const char **realm)
 	for (state = S, cp = input; *cp != '\0'; cp++) {
 		switch (state) {
 		case S:
-			if (userchar[(int)*cp]) {
+			if (userchar[(unsigned char)*cp]) {
 				*username = cp;
 				state = USERNAME;
 			} else if (*cp == '\\') {
@@ -194,7 +194,7 @@ nai_parsestr(const char *input, const char **username, const char **realm)
 			break;
 		case USERNAME:
 			/* fast-forward USERNAME characters */
-			while (userchar[(int)*cp])
+			while (userchar[(unsigned char)*cp])
 				cp++;
 			/*
 			 * After while: prevent dangerous subsequent cp++ in
@@ -218,20 +218,20 @@ nai_parsestr(const char *input, const char **username, const char **realm)
 			state = USERNAME;
 			break;
 		case USERDOT:
-			if (userchar[(int)*cp]) {
+			if (userchar[(unsigned char)*cp]) {
 				state = USERNAME;
 			} else
 				goto done;
 			break;
 		case REALMHOST:
-			if (alphadig[(int)*cp]) {
+			if (alphadig[(unsigned char)*cp]) {
 				state = LABEL1;
 			} else
 				goto done;
 			break;
 		case LABEL1:
 			/* fast-forward LABEL1 characters */
-			while (alphadig[(int)*cp])
+			while (alphadig[(unsigned char)*cp])
 				cp++;
 			/*
 			 * After while: prevent dangerous subsequent cp++ in
@@ -258,20 +258,20 @@ nai_parsestr(const char *input, const char **username, const char **realm)
 			if (*cp == '\0')
 				goto done;
 
-			if (alphadig[(int)*cp]) {
+			if (alphadig[(unsigned char)*cp]) {
 				state = LABEL1;
 			} else
 				goto done;
 			break;
 		case REALMDOM:
-			if (alphadig[(int)*cp]) {
+			if (alphadig[(unsigned char)*cp]) {
 				state = LABEL2;
 			} else
 				goto done;
 			break;
 		case LABEL2:
 			/* fast-forward LABEL2 characters */
-			while (alphadig[(int)*cp])
+			while (alphadig[(unsigned char)*cp])
 				cp++;
 			/*
 			 * After while: prevent dangerous subsequent cp++ in
@@ -298,7 +298,7 @@ nai_parsestr(const char *input, const char **username, const char **realm)
 			if (*cp == '\0')
 				goto done;
 
-			if (alphadig[(int)*cp]) {
+			if (alphadig[(unsigned char)*cp]) {
 				state = LABEL2;
 			} else
 				goto done;
@@ -461,7 +461,7 @@ nai_parseselstr(const char *input, const char **username,
 	for (state = S, cp = input; *cp != '\0'; cp++) {
 		switch (state) {
 		case S:
-			if (userchar[(int)*cp]) {
+			if (userchar[(unsigned char)*cp]) {
 				*username = cp;
 				state = USERNAME;
 			} else if (*cp == '\\') {
@@ -475,7 +475,7 @@ nai_parseselstr(const char *input, const char **username,
 			break;
 		case USERNAME:
 			/* fast-forward USERNAME characters */
-			while (userchar[(int)*cp])
+			while (userchar[(unsigned char)*cp])
 				cp++;
 			/*
 			 * After while: prevent dangerous subsequent cp++ in
@@ -499,13 +499,13 @@ nai_parseselstr(const char *input, const char **username,
 			state = USERNAME;
 			break;
 		case USERDOT:
-			if (userchar[(int)*cp]) {
+			if (userchar[(unsigned char)*cp]) {
 				state = USERNAME;
 			} else
 				goto done;
 			break;
 		case REALMHOST:
-			if (alphadig[(int)*cp]) {
+			if (alphadig[(unsigned char)*cp]) {
 				state = LABEL;
 			} else if (*cp == '.') {
 				state = REALMDOT;
@@ -514,7 +514,7 @@ nai_parseselstr(const char *input, const char **username,
 			break;
 		case LABEL:
 			/* fast-forward LABEL characters */
-			while (alphadig[(int)*cp])
+			while (alphadig[(unsigned char)*cp])
 				cp++;
 			/*
 			 * After while: prevent dangerous subsequent cp++ in
@@ -541,13 +541,13 @@ nai_parseselstr(const char *input, const char **username,
 			if (*cp == '\0')
 				goto done;
 
-			if (alphadig[(int)*cp]) {
+			if (alphadig[(unsigned char)*cp]) {
 				state = LABEL;
 			} else
 				goto done;
 			break;
 		case REALMDOT:
-			if (alphadig[(int)*cp]) {
+			if (alphadig[(unsigned char)*cp]) {
 				state = LABEL;
 			} else
 				goto done;

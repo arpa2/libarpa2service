@@ -29,10 +29,17 @@ test_nai_parsestr(void)
 	assert(&username[0] == NULL);
 	assert(&realm[0] == &input[11]);
 
+	/* try a two-byte utf8 character in the realm */
 	input = "a@כ.com";
 	assert(nai_parsestr(input, &username, &realm) == -1);
 	assert(&username[0] == NULL);
-	assert(&realm[0] == &input[3]);
+	assert(&realm[0] == &input[2]);
+
+	/* try a two-byte utf8 character in the username */
+	input = "כ@example.com";
+	assert(nai_parsestr(input, &username, &realm) == 0);
+	assert(&username[0] == &input[0]);
+	assert(&realm[0] == &input[2]);
 
 	input = "foo@example.com";
 	assert(nai_parsestr(input, &username, &realm) == 0);
