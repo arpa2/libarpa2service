@@ -36,5 +36,9 @@ digraph finite_state_machine {
 		USERNAME	-> REALMHOST [ label = "@" ];
 
 	node[ shape=box, margin="0.2,0.2" ];
-		userchar[ label = "userchar \n\n!#$%&'*+-/=?^_`{}|~\n%x80-FF\n0-9A-Za-z" ];
+		userchar[ label = "userchar \n\n0-9A-Za-z\n!#$%&'*+-/=?^_`{}|~\n%x80-FF" ];
+
+        // title
+	labelloc="t";
+	label="RFC 4282 NAI FSM";
 }
