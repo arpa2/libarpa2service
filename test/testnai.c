@@ -29,6 +29,11 @@ test_nai_parsestr(void)
 	assert(&username[0] == NULL);
 	assert(&realm[0] == &input[11]);
 
+	input = "a@כ.com";
+	assert(nai_parsestr(input, &username, &realm) == -1);
+	assert(&username[0] == NULL);
+	assert(&realm[0] == &input[3]);
+
 	input = "foo@example.com";
 	assert(nai_parsestr(input, &username, &realm) == 0);
 	assert(&username[0] == &input[0]);
