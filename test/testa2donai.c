@@ -5,6 +5,98 @@
 
 #include "../src/a2donai.h"
 
+void
+test_a2donai_parseuserstr(void)
+{
+	const char *input, *service, *user, *useralias, *userflags, *usersig;
+
+	/* Run some tests. */
+
+	input = "foo! bar~\177";
+	assert(a2donai_parseuserstr(input, &service, &user, &useralias,
+	    &userflags, &usersig) == -1);
+
+	input = "fo++bar";
+	assert(a2donai_parseuserstr(input, &service, &user, &useralias,
+	    &userflags, &usersig) == -1);
+
+	input = "fo..bar";
+	assert(a2donai_parseuserstr(input, &service, &user, &useralias,
+	    &userflags, &usersig) == -1);
+
+	input = "fo.+bar";
+	assert(a2donai_parseuserstr(input, &service, &user, &useralias,
+	    &userflags, &usersig) == -1);
+
+	input = "foo+";
+	assert(a2donai_parseuserstr(input, &service, &user, &useralias,
+	    &userflags, &usersig) == -1);
+
+	input = "foo+bar+baz+";
+	assert(a2donai_parseuserstr(input, &service, &user, &useralias,
+	    &userflags, &usersig) == -1);
+
+	/* RFC 7542 doesn't allow escaping like RFC 4282. */
+	input = "\\(user\\)";
+	assert(a2donai_parseuserstr(input, &service, &user, &useralias,
+	    &userflags, &usersig) == -1);
+
+	input = "foo";
+	assert(a2donai_parseuserstr(input, &service, &user, &useralias,
+	    &userflags, &usersig) == 0);
+	assert(service == NULL);
+	assert(user == &input[0]);
+	assert(useralias == NULL);
+	assert(userflags == NULL);
+	assert(usersig == NULL);
+
+	input = "foo+alias";
+	assert(a2donai_parseuserstr(input, &service, &user, &useralias,
+	    &userflags, &usersig) == 0);
+	assert(service == NULL);
+	assert(user == &input[0]);
+	assert(useralias == &input[3]);
+	assert(userflags == NULL);
+	assert(usersig == NULL);
+
+	input = "foo+rwx+";
+	assert(a2donai_parseuserstr(input, &service, &user, &useralias,
+	    &userflags, &usersig) == 0);
+	assert(service == NULL);
+	assert(user == &input[0]);
+	assert(useralias == NULL);
+	assert(userflags == &input[3]);
+	assert(usersig == NULL);
+
+	input = "foo+rwx+sig";
+	assert(a2donai_parseuserstr(input, &service, &user, &useralias,
+	    &userflags, &usersig) == 0);
+	assert(service == NULL);
+	assert(user == &input[0]);
+	assert(useralias == NULL);
+	assert(userflags == &input[3]);
+	assert(usersig == &input[7]);
+
+	input = "fo.o+rw.x+si.g";
+	assert(a2donai_parseuserstr(input, &service, &user, &useralias,
+	    &userflags, &usersig) == 0);
+	assert(service == NULL);
+	assert(user == &input[0]);
+	assert(useralias == NULL);
+	assert(userflags == &input[4]);
+	assert(usersig == &input[9]);
+
+	/* try a single two-byte utf8 character */
+	input = "כ";
+	assert(a2donai_parseuserstr(input, &service, &user, &useralias,
+	    &userflags, &usersig) == 0);
+	assert(service == NULL);
+	assert(&user[0] == &input[0]);
+	assert(useralias == NULL);
+	assert(userflags == NULL);
+	assert(usersig == NULL);
+}
+
 /* Test if a string can be converted to a DoNAI structure. */
 void
 test_a2donai_fromstr(void)
@@ -139,6 +231,8 @@ test_a2donai_fromstr(void)
 	assert(donai->type == DT_DOMAIN);
 	a2donai_free(donai);
 
+	/* XXX mailed author about contradicting words in RFC 7542 according
+	 * escaping with "\".
 	donai = a2donai_fromstr("\\(user\\)@example.net");
 	assert(donai != NULL);
 	assert(donai->username != NULL);
@@ -146,6 +240,7 @@ test_a2donai_fromstr(void)
 	assert(strcmp(donai->domain, "example.net") == 0);
 	assert(donai->type == DT_NAI);
 	a2donai_free(donai);
+	 */
 
 	donai = a2donai_fromstr("alice@xn--tmonesimerkki-bfbb.example.net");
 	assert(donai != NULL);
@@ -170,6 +265,7 @@ test_a2donai_fromstr(void)
 int
 main(void)
 {
+	test_a2donai_parseuserstr();
 	test_a2donai_fromstr();
 
 	return 0;
