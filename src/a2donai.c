@@ -274,18 +274,19 @@ err:
  *                  userflags /
  *                  usersig /
  *                  service
- * user           = string
- * useralias      = string "+" string
- * userflags      = string "+" string "+"
- * usersig        = string "+" string "+" string
+ * user           = dot-string
+ * useralias      = dot-string "+" dot-string
+ * userflags      = dot-string "+" dot-string "+"
+ * usersig        = dot-string "+" dot-string "+" dot-string
  * service        = "+" plus-string
- * plus-string    = string *("+" string)
+ * plus-string    = dot-string *("+" dot-string)
+ * dot-string     = string *("." string)
  * string         = 1*atext
  * atext          = ALPHA / DIGIT /
  *                  "!" / "#" /
  *                  "$" / "%" /
  *                  "&" / "'" /
- *                  "*" / "." /
+ *                  "*" /
  *                  "-" / "/" /
  *                  "=" / "?" /
  *                  "^" / "_" /
@@ -322,10 +323,10 @@ static const char userchar[256] = {
 	1, /* ' */
 	0, 0,
 	1, /* * */
-	1, /* + */
+	0, /* "+" PLUS is special */
 	0,
 	1, /* - */
-	0,
+	0, /* "." DOT is special */
 	1, /* / */
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, /* 0-9 */
 	0, 0, 0,
@@ -376,8 +377,9 @@ int
 a2donai_parseuserstr(const char *input, const char **service, const char **user,
     const char **useralias, const char **userflags, const char **usersig)
 {
-	enum states { S, USER, USERALIAS, USERALIAS_E, USERFLAGS, USERFLAGS_E,
-	    USERSIG, USERSIG_E, SERVICE, SERVICE_E, SERVICEPLUS } state;
+	enum states { S, SERVICE, SERVICE_E, SERVICEDOT, SERVICEPLUS, USER,
+	    USERDOT, USERALIAS, USERALIAS_E, USERALIASDOT, USERFLAGS,
+	    USERFLAGS_E, USERFLAGSDOT, USERSIG, USERSIG_E, USERSIGDOT } state;
 	const char *cp;
 
 	*service = *user = *useralias = *userflags = *usersig = NULL;
@@ -416,6 +418,14 @@ a2donai_parseuserstr(const char *input, const char **service, const char **user,
 
 			if (*cp == '+') {
 				state = SERVICEPLUS;
+			} else if (*cp == '.') {
+				state = SERVICEDOT;
+			} else
+				goto done;
+			break;
+		case SERVICEDOT:
+			if (userchar[(unsigned char)*cp]) {
+				state = SERVICE_E;
 			} else
 				goto done;
 			break;
@@ -439,6 +449,14 @@ a2donai_parseuserstr(const char *input, const char **service, const char **user,
 			if (*cp == '+') {
 				*useralias = cp;
 				state = USERALIAS;
+			} else if (*cp == '.') {
+				state = USERDOT;
+			} else
+				goto done;
+			break;
+		case USERDOT:
+			if (userchar[(unsigned char)*cp]) {
+				state = USER;
 			} else
 				goto done;
 			break;
@@ -462,6 +480,14 @@ a2donai_parseuserstr(const char *input, const char **service, const char **user,
 			if (*cp == '+') {
 				*userflags = cp;
 				state = USERFLAGS;
+			} else if (*cp == '.') {
+				state = USERALIASDOT;
+			} else
+				goto done;
+			break;
+		case USERALIASDOT:
+			if (userchar[(unsigned char)*cp]) {
+				state = USERALIAS_E;
 			} else
 				goto done;
 			break;
@@ -485,6 +511,14 @@ a2donai_parseuserstr(const char *input, const char **service, const char **user,
 			if (*cp == '+') {
 				*usersig = cp;
 				state = USERSIG;
+			} else if (*cp == '.') {
+				state = USERFLAGSDOT;
+			} else
+				goto done;
+			break;
+		case USERFLAGSDOT:
+			if (userchar[(unsigned char)*cp]) {
+				state = USERFLAGS_E;
 			} else
 				goto done;
 			break;
@@ -505,8 +539,17 @@ a2donai_parseuserstr(const char *input, const char **service, const char **user,
 			if (*cp == '\0')
 				goto done;
 
-			/* Nothing else allowed, this is the end. */
-			goto done;
+			if (*cp == '.') {
+				state = USERSIGDOT;
+			} else
+				goto done;
+			break;
+		case USERSIGDOT:
+			if (userchar[(unsigned char)*cp]) {
+				state = USERSIG_E;
+			} else
+				goto done;
+			break;
 		default:
 			abort();
 		}
