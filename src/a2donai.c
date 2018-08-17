@@ -264,6 +264,272 @@ err:
 }
 
 /*
+ * DoNAI user formal syntax.
+ *
+ * The grammar for the user is given below, described in Augmented
+ * Backus-Naur Form (ABNF) as documented in [RFC5234].
+ *
+ * donai-user     = user /
+ *                  useralias /
+ *                  userflags /
+ *                  usersig /
+ *                  service
+ * user           = string
+ * useralias      = string "+" string
+ * userflags      = string "+" string "+"
+ * usersig        = string "+" string "+" string
+ * service        = "+" plus-string
+ * plus-string    = string *("+" string)
+ * string         = 1*atext
+ * atext          = ALPHA / DIGIT /
+ *                  "!" / "#" /
+ *                  "$" / "%" /
+ *                  "&" / "'" /
+ *                  "*" / "." /
+ *                  "-" / "/" /
+ *                  "=" / "?" /
+ *                  "^" / "_" /
+ *                  "`" / "{" /
+ *                  "|" / "}" /
+ *                  "~" /
+ *                  UTF8-xtra-char
+ *
+ * UTF8-xtra-char = UTF8-2 / UTF8-3 / UTF8-4
+ *
+ * UTF8-2         = %xC2-DF UTF8-tail
+ *
+ * UTF8-3         = %xE0 %xA0-BF UTF8-tail /
+ *                  %xE1-EC 2( UTF8-tail ) /
+ *                  %xED %x80-9F UTF8-tail /
+ *                  %xEE-EF 2( UTF8-tail )
+ *
+ * UTF8-4         = %xF0 %x90-BF 2( UTF8-tail ) /
+ *                  %xF1-F3 3( UTF8-tail ) /
+ *                  %xF4 %x80-8F 2( UTF8-tail )
+ *
+ * UTF8-tail      = %x80-BF
+ */
+
+static const char userchar[256] = {
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	    0, 0, 0, 0, 0, 0, 0, 0, 0,
+	1, /* ! */
+	0,
+	1, /* # */
+	1, /* $ */
+	1, /* % */
+	1, /* & */
+	1, /* ' */
+	0, 0,
+	1, /* * */
+	1, /* + */
+	0,
+	1, /* - */
+	0,
+	1, /* / */
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, /* 0-9 */
+	0, 0, 0,
+	1, /* = */
+	0,
+	1, /* ? */
+	0,
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	    1, 1, /* A-Z */
+	0, 0, 0,
+	1, /* ^ */
+	1, /* _ */
+	1, /* ` */
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	    1, 1, /* a-z */
+	1, /* { */
+	1, /* | */
+	1, /* } */
+	1, /* ~ */
+	0,
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 /* %x80-FF */
+};
+
+/*
+ * Static DoNAI user parser.
+ *
+ * Returns 0 is if the input is a valid DoNAI user or -1 otherwise.
+ *
+ * If "input" is a service, then "service" points to the first character in
+ * "input" (which is a '+') and all other parameters are set to NULL. If "input"
+ * is not a service but a user then "user" points to the first character of
+ * "intput". Furthermore, "useralias" points to the first '+' in "input" or NULL
+ * if there is no useralias. "userflags" points to the second '+' in "input" or
+ * NULL if there are no userflags. "usersig" points to the third '+' in "input"
+ * or NULL if there is no usersig.
+ *
+ * Note that valid input is either a user or a service but not both.
+ *
+ * On error the values of "service", "user", "useralias", "userflags" and
+ * "usersig" are undefined.
+ */
+int
+a2donai_parseuserstr(const char *input, const char **service, const char **user,
+    const char **useralias, const char **userflags, const char **usersig)
+{
+	enum states { S, USER, USERALIAS, USERALIAS_E, USERFLAGS, USERFLAGS_E,
+	    USERSIG, USERSIG_E, SERVICE, SERVICE_E, SERVICEPLUS } state;
+	const char *cp;
+
+	*service = *user = *useralias = *userflags = *usersig = NULL;
+
+	if (input == NULL)
+		return -1;
+
+	for (state = S, cp = input; *cp != '\0'; cp++) {
+		switch (state) {
+		case S:
+			if (userchar[(unsigned char)*cp]) {
+				*user = cp;
+				state = USER;
+			} else if (*cp == '+') {
+				*service = cp;
+				state = SERVICE;
+			} else
+				goto done;
+			break;
+		case SERVICE:
+			if (userchar[(unsigned char)*cp]) {
+				state = SERVICE_E;
+			} else
+				goto done;
+			break;
+		case SERVICE_E:
+			/* fast-forward SERVICE_E characters */
+			while (userchar[(unsigned char)*cp])
+				cp++;
+			/*
+			 * After while: prevent dangerous subsequent cp++ in
+			 * for-loop, never let cp point beyond the input.
+			 */
+			if (*cp == '\0')
+				goto done;
+
+			if (*cp == '+') {
+				state = SERVICEPLUS;
+			} else
+				goto done;
+			break;
+		case SERVICEPLUS:
+			if (userchar[(unsigned char)*cp]) {
+				state = SERVICE_E;
+			} else
+				goto done;
+			break;
+		case USER:
+			/* fast-forward USER characters */
+			while (userchar[(unsigned char)*cp])
+				cp++;
+			/*
+			 * After while: prevent dangerous subsequent cp++ in
+			 * for-loop, never let cp point beyond the input.
+			 */
+			if (*cp == '\0')
+				goto done;
+
+			if (*cp == '+') {
+				*useralias = cp;
+				state = USERALIAS;
+			} else
+				goto done;
+			break;
+		case USERALIAS:
+			if (userchar[(unsigned char)*cp]) {
+				state = USERALIAS_E;
+			} else
+				goto done;
+			break;
+		case USERALIAS_E:
+			/* fast-forward USERALIAS_E characters */
+			while (userchar[(unsigned char)*cp])
+				cp++;
+			/*
+			 * After while: prevent dangerous subsequent cp++ in
+			 * for-loop, never let cp point beyond the input.
+			 */
+			if (*cp == '\0')
+				goto done;
+
+			if (*cp == '+') {
+				*userflags = cp;
+				state = USERFLAGS;
+			} else
+				goto done;
+			break;
+		case USERFLAGS:
+			if (userchar[(unsigned char)*cp]) {
+				state = USERFLAGS_E;
+			} else
+				goto done;
+			break;
+		case USERFLAGS_E:
+			/* fast-forward USERFLAGS_E characters */
+			while (userchar[(unsigned char)*cp])
+				cp++;
+			/*
+			 * After while: prevent dangerous subsequent cp++ in
+			 * for-loop, never let cp point beyond the input.
+			 */
+			if (*cp == '\0')
+				goto done;
+
+			if (*cp == '+') {
+				*usersig = cp;
+				state = USERSIG;
+			} else
+				goto done;
+			break;
+		case USERSIG:
+			if (userchar[(unsigned char)*cp]) {
+				state = USERSIG_E;
+			} else
+				goto done;
+			break;
+		case USERSIG_E:
+			/* fast-forward USERSIG_E characters */
+			while (userchar[(unsigned char)*cp])
+				cp++;
+			/*
+			 * After while: prevent dangerous subsequent cp++ in
+			 * for-loop, never let cp point beyond the input.
+			 */
+			if (*cp == '\0')
+				goto done;
+
+			/* Nothing else allowed, this is the end. */
+			goto done;
+		default:
+			abort();
+		}
+	}
+
+done:
+	/*
+	 * Make sure the end of the input is reached and the state is one of the
+	 * final states.
+	 */
+	if (*cp != '\0' || (
+	    state != SERVICE_E &&
+	    state != USER &&
+	    state != USERALIAS_E &&
+	    state != USERFLAGS_E &&
+	    state != USERSIG_E)) {
+		return -1;
+	}
+
+	return 0;
+}
+
+/*
  * Check if "subject" ends with "suffix", ignoring case.
  *
  * Return 1 if "subject" ends with "suffix", 0 otherwise.
