@@ -41,13 +41,9 @@ a2donai_alloc(const char *username, const char *domain)
 	if ((donai = calloc(1, sizeof(*donai))) == NULL)
 		goto err; /* errno is set by calloc */
 
-	if (username) {
+	if (username)
 		if ((donai->username = strdup(username)) == NULL)
 			goto err; /* errno is set by strdup */
-		donai->type = DT_NAI;
-	} else
-		donai->type = DT_DOMAIN;
-
 
 	if ((donai->domain = strdup(domain)) == NULL)
 		goto err; /* errno is set by strdup */
@@ -95,12 +91,13 @@ struct a2donai *
 a2donai_fromstr(const char *donaistr)
 {
 	struct a2donai *donai;
-	const char *up, *rp, *fmt;
+	const char *up, *rp, *fmt, *service, *user, *useralias, *userflags,
+	    *usersig;
 	char *donaistrcpy;
 	size_t len;
 
 	donai = NULL;
-	up = rp = NULL;
+	up = rp = fmt = service = user = useralias = userflags = usersig = NULL;
 	donaistrcpy = NULL;
 	len = 0;
 
@@ -146,7 +143,7 @@ a2donai_fromstr(const char *donaistr)
 	}
 
 	/*
-	 * Separate the username from the domain by replacing the '@' with a
+	 * Separate (any) username from the domain by replacing the '@' with a
 	 * '\0'. "rp" points into donaistrcpy if set.
 	 */
 	if (rp) {
@@ -155,8 +152,39 @@ a2donai_fromstr(const char *donaistr)
 		rp++;
 	}
 
+	/*
+	 * Now try to parse the username itself (so that later we can determine
+	 * it's subtype).
+	 */
+	if (up) {
+		if (a2donai_parseuserstr(up, &service, &user, &useralias,
+		    &userflags, &usersig) == -1)
+			goto err;
+	}
+
 	if ((donai = a2donai_alloc(up, rp)) == NULL)
 		goto err;
+
+	/* set type and subtype */
+	if (up) {
+		donai->type = DT_NAI;
+
+		if (service) {
+			donai->subtype = DST_SERVICE;
+		} else if (usersig) {
+			donai->subtype = DST_USERSIG;
+		} else if (userflags) {
+			donai->subtype = DST_USERFLAGS;
+		} else if (useralias) {
+			donai->subtype = DST_USERALIAS;
+		} else if (user) {
+			donai->subtype = DST_USER;
+		} else
+			abort();
+	} else {
+		donai->type = DT_DOMAIN;
+		donai->subtype = DST_FQDN;
+	}
 
 	/* SUCCESS */
 
