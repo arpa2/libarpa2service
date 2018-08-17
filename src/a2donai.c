@@ -406,8 +406,8 @@ a2donai_parseuserstr(const char *input, const char **service, const char **user,
     const char **useralias, const char **userflags, const char **usersig)
 {
 	enum states { S, SERVICE, SERVICE_E, SERVICEDOT, SERVICEPLUS, USER,
-	    USERDOT, USERALIAS, USERALIAS_E, USERALIASDOT, USERFLAGS,
-	    USERFLAGS_E, USERFLAGSDOT, USERSIG, USERSIG_E, USERSIGDOT } state;
+	    USERDOT, USERALIAS, USERALIAS_E, USERALIASDOT, USERFLAGS, USERSIG,
+	    USERSIGDOT } state;
 	const char *cp;
 
 	*service = *user = *useralias = *userflags = *usersig = NULL;
@@ -506,7 +506,9 @@ a2donai_parseuserstr(const char *input, const char **service, const char **user,
 				goto done;
 
 			if (*cp == '+') {
-				*userflags = cp;
+				/* It was not an alias but it were flags. */
+				*userflags = *useralias;
+				*useralias = NULL;
 				state = USERFLAGS;
 			} else if (*cp == '.') {
 				state = USERALIASDOT;
@@ -521,43 +523,16 @@ a2donai_parseuserstr(const char *input, const char **service, const char **user,
 			break;
 		case USERFLAGS:
 			if (userchar[(unsigned char)*cp]) {
-				state = USERFLAGS_E;
-			} else
-				goto done;
-			break;
-		case USERFLAGS_E:
-			/* fast-forward USERFLAGS_E characters */
-			while (userchar[(unsigned char)*cp])
-				cp++;
-			/*
-			 * After while: prevent dangerous subsequent cp++ in
-			 * for-loop, never let cp point beyond the input.
-			 */
-			if (*cp == '\0')
-				goto done;
-
-			if (*cp == '+') {
-				*usersig = cp;
+				/* signature follows, point to preceeding "+" */
+				assert(cp > input);
+				*usersig = cp - 1;
+				*useralias = NULL;
 				state = USERSIG;
-			} else if (*cp == '.') {
-				state = USERFLAGSDOT;
-			} else
-				goto done;
-			break;
-		case USERFLAGSDOT:
-			if (userchar[(unsigned char)*cp]) {
-				state = USERFLAGS_E;
 			} else
 				goto done;
 			break;
 		case USERSIG:
-			if (userchar[(unsigned char)*cp]) {
-				state = USERSIG_E;
-			} else
-				goto done;
-			break;
-		case USERSIG_E:
-			/* fast-forward USERSIG_E characters */
+			/* fast-forward USERSIG characters */
 			while (userchar[(unsigned char)*cp])
 				cp++;
 			/*
@@ -574,7 +549,7 @@ a2donai_parseuserstr(const char *input, const char **service, const char **user,
 			break;
 		case USERSIGDOT:
 			if (userchar[(unsigned char)*cp]) {
-				state = USERSIG_E;
+				state = USERSIG;
 			} else
 				goto done;
 			break;
@@ -592,8 +567,8 @@ done:
 	    state != SERVICE_E &&
 	    state != USER &&
 	    state != USERALIAS_E &&
-	    state != USERFLAGS_E &&
-	    state != USERSIG_E)) {
+	    state != USERFLAGS &&
+	    state != USERSIG)) {
 		return -1;
 	}
 
