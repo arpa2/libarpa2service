@@ -11,18 +11,19 @@ donai-user     = user /
                  userflags /
                  usersig /
                  service
-user           = string
-useralias      = string "+" string
-userflags      = string "+" string "+"
-usersig        = string "+" string "+" string
+user           = dot-string
+useralias      = dot-string "+" dot-string
+userflags      = dot-string "+" dot-string "+"
+usersig        = dot-string "+" dot-string "+" dot-string
 service        = "+" plus-string
-plus-string    = string *("+" string)
+plus-string    = dot-string *("+" dot-string)
+dot-string     = string *("." string)
 string         = 1*atext
 atext          = ALPHA / DIGIT /
                  "!" / "#" /
                  "$" / "%" /
                  "&" / "'" /
-                 "*" / "." /
+                 "*" /
                  "-" / "/" /
                  "=" / "?" /
                  "^" / "_" /
