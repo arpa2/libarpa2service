@@ -3,8 +3,8 @@ digraph finite_state_machine {
 	node [shape = doublecircle];
 		USER;
 		USERALIAS_E;
-		USERFLAGS_E;
-		USERSIG_E;
+		USERFLAGS;
+		USERSIG;
 		SERVICE_E;
 
 	node [shape = point ];
@@ -23,15 +23,10 @@ digraph finite_state_machine {
 		USERALIAS_E	-> USERALIASDOT [ label = "." ];
 		USERALIASDOT	-> USERALIAS_E [ label = "userchar" ];
 		USERALIAS_E	-> USERFLAGS [ label = "+" ];
-		USERFLAGS	-> USERFLAGS_E [ label = "userchar" ];
-		USERFLAGS_E	-> USERFLAGS_E [ label = "userchar" ];
-		USERFLAGS_E	-> USERFLAGSDOT [ label = "." ];
-		USERFLAGSDOT	-> USERFLAGS_E [ label = "userchar" ];
-		USERFLAGS_E	-> USERSIG [ label = "+" ];
-		USERSIG	-> USERSIG_E [ label = "userchar" ];
-		USERSIG_E	-> USERSIG_E [ label = "userchar" ];
-		USERSIG_E	-> USERSIGDOT [ label = "." ];
-		USERSIGDOT	-> USERSIG_E [ label = "userchar" ];
+		USERFLAGS	-> USERSIG[ label = "userchar" ];
+		USERSIG-> USERSIG[ label = "userchar" ];
+		USERSIG-> USERSIGDOT [ label = "." ];
+		USERSIGDOT	-> USERSIG[ label = "userchar" ];
 		S	-> SERVICE [ label = "+" ];
 		SERVICE	-> SERVICE_E [ label = "userchar" ];
 		SERVICE_E	-> SERVICE_E [ label = "userchar" ];
