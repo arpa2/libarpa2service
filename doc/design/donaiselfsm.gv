@@ -1,0 +1,48 @@
+digraph finite_state_machine {
+	rankdir=LR
+	node [shape = doublecircle];
+		USERDOM;
+		REALMDOT;
+		LABEL;
+
+	node [shape = point ];
+		qi
+
+	node [shape = circle];
+		qi	-> S;
+
+		/* First do realm. */
+		S	-> USERDOM [ label = "0-9A-Za-z" ];
+		S	-> REALMHOST [ label = "@" ];
+		S	-> REALMDOT [ label = "." ];
+		USERDOM	-> REALMHOST [ label = "@" ];
+		USERDOM	-> USERDOM [ label = "0-9A-Za-z" ];
+		USERDOM	-> USERNAME [ label = "userchar" ];
+		USERDOM	-> USERDOMDOT [ label = "." ];
+		USERDOMDOT	-> USERDOM [ label = "0-9A-Za-z" ];
+		USERDOM	-> USERDOMDASH [ label = "-" ];
+		USERDOMDASH	-> USERDOMDASH [ label = "-" ];
+		USERDOMDASH	-> USERDOM [ label = "0-9A-Za-z" ];
+		REALMHOST	-> LABEL [ label = "0-9A-Za-z" ];
+		REALMHOST	-> REALMDOT [ label = "." ];
+		REALMDOT	-> LABEL [ label = "0-9A-Za-z" ];
+		LABEL	-> LABEL [ label = "0-9A-Za-z" ];
+		LABEL	-> LABELDASH [ label = "-" ];
+		LABELDASH	-> LABELDASH [ label = "-" ];
+		LABELDASH	-> LABEL [ label = "0-9A-Za-z" ];
+		LABEL	-> REALMDOT [ label = "." ];
+
+		/* Then username. */
+		S	-> USERNAME [ label = "- userchar" ];
+		USERNAME	-> USERNAME [ label = "- userchar 0-9A-Za-z" ];
+		USERNAME	-> USERDOT [ label = "." ];
+		USERDOT	-> USERNAME [ label = "- userchar 0-9A-Za-z" ];
+		USERNAME	-> REALMHOST [ label = "@" ];
+
+	node[ shape=box, margin="0.2,0.2" ];
+		userchar[ label = "userchar \n\n!#$%&'*+/=?^_`{}|~\n%x80-FF\n" ];
+
+	// title
+	labelloc="t";
+	label="DoNAI selector FSM";
+}
