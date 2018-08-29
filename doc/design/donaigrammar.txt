@@ -1,16 +1,25 @@
 Domain-or-Network-Access-Identifier Grammar
 ===========================================
 
-DoNAI user formal syntax.
+DoNAI formal syntax.
 
-The grammar for the user is given below, described in Augmented
-Backus-Naur Form (ABNF) as documented in [RFC5234].
+The grammar for a DoNAI is given below, described in Augmented Backus-Naur Form
+(ABNF) as documented in [RFC5234].
 
-donai-user     = subject *( param )
-subject        = string
-param          = "+" string
-string         = 1*char
-char           = %x21-2A /
-                 %x2C-3F /
-                 %x41-7E ; visible (printing) characters
-                         ; except space " ", plus "+" and at "@"
+
+donai          = [ localpart "@" ] domain
+
+localpart      = subject *( param )
+subject        = localstring
+param          = "+" localstring
+localstring    = 1*( localchar )
+
+domain         = label *( "." label )
+label          = 1*( basechar )
+
+localchar      = basechar / "."      ; excluding "@" and "+"
+
+basechar       = %x21-2A /           ; all visible (printing) characters, except
+                 %x2C-2D /           ; SPACE " ", DOT ".", AT "@", PLUS "+"
+                 %x2F-3F /
+                 %x41-7E
