@@ -6,6 +6,78 @@
 #include "../src/a2donai.h"
 
 void
+test_a2donai_parseuserstr2(void)
+{
+	const char *input, *subject, *firstparam;
+	int r, nrparams;
+
+	/* Run some tests. */
+
+	input = "foo";
+	r = a2donai_parseuserstr2(input, &subject, &firstparam, &nrparams);
+	assert(r == 0);
+	assert(subject == &input[0]);
+	assert(firstparam == NULL);
+	assert(nrparams == 0);
+
+	input = "!";
+	r = a2donai_parseuserstr2(input, &subject, &firstparam, &nrparams);
+	assert(r == 0);
+	assert(subject == &input[0]);
+	assert(firstparam == NULL);
+	assert(nrparams == 0);
+
+	input = "a+b";
+	r = a2donai_parseuserstr2(input, &subject, &firstparam, &nrparams);
+	assert(r == 0);
+	assert(subject == &input[0]);
+	assert(firstparam == &input[1]);
+	assert(nrparams == 1);
+
+	input = "a+b+";
+	r = a2donai_parseuserstr2(input, &subject, &firstparam, &nrparams);
+	assert(r == -1);
+
+	input = "a+b+c";
+	r = a2donai_parseuserstr2(input, &subject, &firstparam, &nrparams);
+	assert(r == 0);
+	assert(subject == &input[0]);
+	assert(firstparam == &input[1]);
+	assert(nrparams == 2);
+
+	input = "~";
+	r = a2donai_parseuserstr2(input, &subject, &firstparam, &nrparams);
+	assert(r == 0);
+	assert(subject == &input[0]);
+	assert(firstparam == NULL);
+	assert(nrparams == 0);
+
+	input = " ";
+	r = a2donai_parseuserstr2(input, &subject, &firstparam, &nrparams);
+	assert(r == -1);
+
+	input = "@";
+	r = a2donai_parseuserstr2(input, &subject, &firstparam, &nrparams);
+	assert(r == -1);
+
+	input = "\x7f";
+	r = a2donai_parseuserstr2(input, &subject, &firstparam, &nrparams);
+	assert(r == -1);
+
+	input = "+a";
+	r = a2donai_parseuserstr2(input, &subject, &firstparam, &nrparams);
+	assert(r == -1);
+
+	input = "+";
+	r = a2donai_parseuserstr2(input, &subject, &firstparam, &nrparams);
+	assert(r == -1);
+
+	input = "a+";
+	r = a2donai_parseuserstr2(input, &subject, &firstparam, &nrparams);
+	assert(r == -1);
+}
+
+void
 test_a2donai_parseuserstr(void)
 {
 	const char *input, *service, *user, *useralias, *userflags, *usersig;
@@ -265,6 +337,7 @@ test_a2donai_fromstr(void)
 int
 main(void)
 {
+	test_a2donai_parseuserstr2();
 	test_a2donai_parseuserstr();
 	test_a2donai_fromstr();
 
