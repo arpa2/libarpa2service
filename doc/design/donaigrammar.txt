@@ -7,14 +7,13 @@ The grammar for the user is given below, described in Augmented
 Backus-Naur Form (ABNF) as documented in [RFC5234].
 
 donai-user     = user /
-                 useralias /
-                 userflags /
-                 usersig /
                  service
-user           = dot-string
-useralias      = dot-string "+" dot-string
-userflags      = dot-string "+" dot-string "+"
-usersig        = dot-string "+" dot-string "+" dot-string
+user           = dot-string /
+                 dot-string alias /
+                 dot-string signature
+alias          = "+" dot-string
+signature      = "+" sigtmpl "+" [dot-string] "+"
+sigtmpl        = dot-string
 service        = "+" plus-string
 plus-string    = dot-string *("+" dot-string)
 dot-string     = string *("." string)
