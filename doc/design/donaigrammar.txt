@@ -10,5 +10,7 @@ donai-user     = subject *( param )
 subject        = string
 param          = "+" string
 string         = 1*char
-char           = %x21-2A / %x2C-7E ; visible (printing) characters
-                                   ; except space and plus
+char           = %x21-2A /
+                 %x2C-3F /
+                 %x41-7E ; visible (printing) characters
+                         ; except space " ", plus "+" and at "@"

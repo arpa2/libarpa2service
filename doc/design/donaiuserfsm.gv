@@ -12,11 +12,12 @@ digraph finite_state_machine {
 		S	-> USER [ label = "userchar" ];
 		USER	-> USER [ label = "userchar" ];
 		USER	-> PARAM [ label = "+" ];
-		PARAM	-> PARAM [ label = "userchar" ];
 		PARAM	-> USER [ label = "userchar" ];
 
 	node[ shape=box, margin="0.2,0.2" ];
-		userchar[ label = "userchar\nvisible (printing) characters\nexcept space and plus\n\n%x21-2A / %x2C-7E" ];
+		userchar[ label = "userchar\nvisible (printing) characters
+				except ' ', '+' and '@'
+				\n%x21-2A / %x2C-3F / %x41-7E" ];
 
 	// title
 	labelloc="t";
