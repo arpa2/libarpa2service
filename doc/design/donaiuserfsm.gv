@@ -16,7 +16,7 @@ digraph finite_state_machine {
 		PARAM	-> USER [ label = "userchar" ];
 
 	node[ shape=box, margin="0.2,0.2" ];
-		userchar[ label = "userchar \n\n0-9A-Za-z\n!#$%&'*-./=?^_`{|}~\nUTF8-char" ];
+		userchar[ label = "userchar\nvisible (printing) characters\nexcept space and plus\n\n%x21-2A / %x2C-7E" ];
 
 	// title
 	labelloc="t";
