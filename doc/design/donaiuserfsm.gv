@@ -2,10 +2,6 @@ digraph finite_state_machine {
 	rankdir=LR
 	node [shape = doublecircle];
 		USER;
-		USERALIAS_E;
-		USERFLAGS;
-		USERSIG;
-		SERVICE_E;
 
 	node [shape = point ];
 		qi
@@ -15,28 +11,12 @@ digraph finite_state_machine {
 
 		S	-> USER [ label = "userchar" ];
 		USER	-> USER [ label = "userchar" ];
-		USER	-> USERDOT [ label = "." ];
-		USERDOT	-> USER [ label = "userchar" ];
-		USER	-> USERALIAS [ label = "+" ];
-		USERALIAS	-> USERALIAS_E [ label = "userchar" ];
-		USERALIAS_E	-> USERALIAS_E [ label = "userchar" ];
-		USERALIAS_E	-> USERALIASDOT [ label = "." ];
-		USERALIASDOT	-> USERALIAS_E [ label = "userchar" ];
-		USERALIAS_E	-> USERFLAGS [ label = "+" ];
-		USERFLAGS	-> USERSIG[ label = "userchar" ];
-		USERSIG-> USERSIG[ label = "userchar" ];
-		USERSIG-> USERSIGDOT [ label = "." ];
-		USERSIGDOT	-> USERSIG[ label = "userchar" ];
-		S	-> SERVICE [ label = "+" ];
-		SERVICE	-> SERVICE_E [ label = "userchar" ];
-		SERVICE_E	-> SERVICE_E [ label = "userchar" ];
-		SERVICE_E	-> SERVICEDOT [ label = "." ];
-		SERVICEDOT	-> SERVICE_E [ label = "userchar" ];
-		SERVICE_E	-> SERVICEPLUS [ label = "+" ];
-		SERVICEPLUS	-> SERVICE_E [ label = "userchar" ];
+		USER	-> PARAM [ label = "+" ];
+		PARAM	-> PARAM [ label = "userchar" ];
+		PARAM	-> USER [ label = "userchar" ];
 
 	node[ shape=box, margin="0.2,0.2" ];
-		userchar[ label = "userchar \n\n0-9A-Za-z\n!#$%&'*-/=?^_`{|}~\nUTF8-char" ];
+		userchar[ label = "userchar \n\n0-9A-Za-z\n!#$%&'*-./=?^_`{|}~\nUTF8-char" ];
 
 	// title
 	labelloc="t";

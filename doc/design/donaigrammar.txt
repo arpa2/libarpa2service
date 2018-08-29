@@ -6,24 +6,16 @@ DoNAI user formal syntax.
 The grammar for the user is given below, described in Augmented
 Backus-Naur Form (ABNF) as documented in [RFC5234].
 
-donai-user     = user /
-                 service
-user           = dot-string /
-                 dot-string alias /
-                 dot-string signature
-alias          = "+" dot-string
-signature      = "+" sigtmpl "+" [dot-string] "+"
-sigtmpl        = dot-string
-service        = "+" plus-string
-plus-string    = dot-string *("+" dot-string)
-dot-string     = string *("." string)
+donai-user     = subject *( param )
+subject        = string
+param          = "+" string
 string         = 1*atext
 atext          = ALPHA / DIGIT /
                  "!" / "#" /
                  "$" / "%" /
                  "&" / "'" /
-                 "*" /
-                 "-" / "/" /
+                 "*" / "-" /
+                 "." / "/" /
                  "=" / "?" /
                  "^" / "_" /
                  "`" / "{" /
