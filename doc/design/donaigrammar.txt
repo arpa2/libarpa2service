@@ -7,7 +7,7 @@ The grammar for a DoNAI is given below, described in Augmented Backus-Naur Form
 (ABNF) as documented in [RFC5234].
 
 
-donai          = [ localpart "@" ] domain
+donai          = [ localpart ] "@" domain
 
 localpart      = subject *( param )
 subject        = localstring

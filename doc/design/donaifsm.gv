@@ -1,0 +1,33 @@
+digraph finite_state_machine {
+	rankdir=LR
+	node [shape = doublecircle];
+		DOMAIN;
+
+	node [shape = point ];
+		qi
+
+	node [shape = circle];
+		qi	-> S;
+
+		/* local or domain part */
+		S	-> LOCAL [ label = "basechar ." ];
+		S	-> NEWLABEL [ label = "@" ];
+
+		/* local */
+		LOCAL	-> LOCAL [ label = "basechar ." ];
+		LOCAL	-> PARAM [ label = "+" ];
+		PARAM	-> LOCAL [ label = "basechar ." ];
+		LOCAL	-> NEWLABEL [ label = "@" ];
+
+		/* domain */
+		DOMAIN	-> NEWLABEL [ label = "." ];
+		NEWLABEL	-> DOMAIN [ label = "basechar" ];
+		DOMAIN	-> DOMAIN [ label = "basechar" ];
+
+	node[ shape=box, margin="0.2,0.2" ];
+		basechar[ label = "basechar - visible characters\nexcept SPACE, DOT, PLUS, AT \n%x21-2A / %x2C-2D / %x2F-3F / %x41-7E" ];
+
+	// title
+	labelloc="t";
+	label="DoNAI FSM\n\n";
+}

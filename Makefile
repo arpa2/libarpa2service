@@ -23,6 +23,8 @@ test:	testnai testa2donai naiverify donaimatch
 	./test/testdonaimatch
 
 naifsm:
+	dot -Tpng doc/design/donaifsm.gv -o doc/design/donaifsm.png
+	dot -Tsvg doc/design/donaifsm.gv -o doc/design/donaifsm.svg
 	dot -Tpng doc/design/naifsm.gv -o doc/design/naifsm.png
 	dot -Tsvg doc/design/naifsm.gv -o doc/design/naifsm.svg
 	dot -Tpng doc/design/naiselfsm.gv -o doc/design/naiselfsm.png
