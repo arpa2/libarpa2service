@@ -1,0 +1,21 @@
+Domain-or-Network-Access-Identifier Selector Grammar
+====================================================
+
+DoNAI Selector formal syntax.
+
+The grammar for a DoNAI Selector is given below, described in Augmented Backus-
+Naur Form (ABNF) as documented in [RFC5234].
+
+
+donaisel       = [ localstring ] "@" domsel
+
+localstring    = 1*( localchar / "+" )
+
+domsel         = 1*( localchar )
+
+localchar      = basechar / "."      ; excluding "@" and "+"
+
+basechar       = %x21-2A /           ; all visible (printing) characters, except
+                 %x2C-2D /           ; SPACE " ", DOT ".", AT "@", PLUS "+"
+                 %x2F-3F /
+                 %x41-7E
