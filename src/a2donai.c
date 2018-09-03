@@ -80,9 +80,8 @@ a2donai_free(struct a2donai *donai)
 }
 
 /*
- * Parse a DoNAI. If the input contains an '@' character, treat it as a RFC 4282
- * compliant NAI, else treat the input as a domain, compliant with the realm
- * part of RFC 4282.
+ * Parse a DoNAI. The input may contain a username and must contain an '@'
+ * character followed by a domain,
  *
  * Return a newly allocated a2donai structure on success that should be freed by
  * a2donai_free when done. Return NULL on error with errno set.
@@ -91,13 +90,13 @@ struct a2donai *
 a2donai_fromstr(const char *donaistr)
 {
 	struct a2donai *donai;
-	const char *up, *rp, *fmt, *service, *user, *useralias, *userflags,
-	    *usersig;
+	const char *lp, *dp, *fp;
 	char *donaistrcpy;
 	size_t len;
+	int nrparams;
 
 	donai = NULL;
-	up = rp = fmt = service = user = useralias = userflags = usersig = NULL;
+	lp = dp = fp = NULL;
 	donaistrcpy = NULL;
 	len = 0;
 
@@ -111,92 +110,35 @@ a2donai_fromstr(const char *donaistr)
 		return NULL;
 	}
 
-	/*
-	 * Determine if this is a Domain or NAI and parse accordingly. Create a
-	 * mutable copy of the input.
-	 *
-	 * If the string contains an '@', treat it as an NAI, if it does not
-	 * contain an '@', treat it as a realm-only part of an NAI and prepend
-	 * an '@' temporarily ourselves so that we can still use the NAI parser.
-	 */
-
-	if (strchr(donaistr, '@') == NULL) {
-		fmt = "@%s";
-		assert(INT_MAX - 1 > len);
-		len++;
-	} else {
-		fmt = "%s";
-	}
-
-	assert(INT_MAX - 1 > len);
-	if ((donaistrcpy = malloc(len + 1)) == NULL)
-		return NULL; /* errno set by malloc */
-
-	if (snprintf(donaistrcpy, len + 1, fmt, donaistr) >= len + 1) {
-		errno = EINVAL;
+	/* Create a mutable copy of the input.  */
+	if ((donaistrcpy = strdup(donaistr)) == NULL)
 		goto err;
-	}
 
-	if (nai_parsestr(donaistrcpy, &up, &rp) == -1) {
+	if (a2donai_parsestr(donaistrcpy, &lp, &dp, &fp, &nrparams) == -1) {
 		errno = EINVAL;
 		goto err;
 	}
 
 	/*
-	 * Separate (any) username from the domain by replacing the '@' with a
-	 * '\0'. "rp" points into donaistrcpy if set.
+	 * Separate (any) localpart from the domain by replacing the '@' with a
+	 * '\0'. "dp" points into donaistrcpy if set.
 	 */
-	if (rp) {
-		assert(*rp == '@');
-		donaistrcpy[rp - donaistrcpy] = '\0';
-		rp++;
-	}
+	assert(*dp == '@');
+	donaistrcpy[dp - donaistrcpy] = '\0';
+	dp++;
 
-	/*
-	 * Now try to parse the username itself (so that later we can determine
-	 * it's subtype).
-	 */
-	if (up) {
-		if (a2donai_parseuserstr(up, &service, &user, &useralias,
-		    &userflags, &usersig) == -1)
-			goto err;
-	}
-
-	if ((donai = a2donai_alloc(up, rp)) == NULL)
+	if ((donai = a2donai_alloc(lp, dp)) == NULL)
 		goto err;
-
-	/* set type and subtype */
-	if (up) {
-		donai->type = DT_NAI;
-
-		if (service) {
-			donai->subtype = DST_SERVICE;
-		} else if (usersig) {
-			donai->subtype = DST_USERSIG;
-		} else if (userflags) {
-			donai->subtype = DST_USERFLAGS;
-		} else if (useralias) {
-			donai->subtype = DST_USERALIAS;
-		} else if (user) {
-			donai->subtype = DST_USER;
-		} else
-			abort();
-	} else {
-		donai->type = DT_DOMAIN;
-		donai->subtype = DST_FQDN;
-	}
 
 	/* SUCCESS */
 
 	free(donaistrcpy);
-	donaistrcpy = NULL;
 
 	return donai;
 
 err:
 	if (donaistrcpy)
 		free(donaistrcpy);
-	donaistrcpy = NULL;
 
 	return NULL;
 }
