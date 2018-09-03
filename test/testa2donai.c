@@ -6,74 +6,79 @@
 #include "../src/a2donai.h"
 
 void
-test_a2donai_parseuserstr2(void)
+test_a2donai_parsestr(void)
 {
-	const char *input, *subject, *firstparam;
+	const char *input, *localpart, *domain, *firstparam;
 	int r, nrparams;
 
 	/* Run some tests. */
 
-	input = "foo";
-	r = a2donai_parseuserstr2(input, &subject, &firstparam, &nrparams);
+	input = "foo@example.org";
+	r = a2donai_parsestr(input, &localpart, &domain, &firstparam, &nrparams);
 	assert(r == 0);
-	assert(subject == &input[0]);
+	assert(localpart == &input[0]);
+	assert(domain == &input[3]);
 	assert(firstparam == NULL);
 	assert(nrparams == 0);
 
-	input = "!";
-	r = a2donai_parseuserstr2(input, &subject, &firstparam, &nrparams);
+	input = "!foo@example.com";
+	r = a2donai_parsestr(input, &localpart, &domain, &firstparam, &nrparams);
 	assert(r == 0);
-	assert(subject == &input[0]);
+	assert(localpart == &input[0]);
+	assert(domain == &input[4]);
 	assert(firstparam == NULL);
 	assert(nrparams == 0);
 
-	input = "a+b";
-	r = a2donai_parseuserstr2(input, &subject, &firstparam, &nrparams);
+	input = "a+b@example.com";
+	r = a2donai_parsestr(input, &localpart, &domain, &firstparam, &nrparams);
 	assert(r == 0);
-	assert(subject == &input[0]);
+	assert(localpart == &input[0]);
+	assert(domain == &input[3]);
 	assert(firstparam == &input[1]);
 	assert(nrparams == 1);
 
-	input = "a+b+";
-	r = a2donai_parseuserstr2(input, &subject, &firstparam, &nrparams);
+	input = "a+b+@example.com";
+	r = a2donai_parsestr(input, &localpart, &domain, &firstparam, &nrparams);
 	assert(r == -1);
 
-	input = "a+b+c";
-	r = a2donai_parseuserstr2(input, &subject, &firstparam, &nrparams);
+	input = "a+b+c@example.com";
+	r = a2donai_parsestr(input, &localpart, &domain, &firstparam, &nrparams);
 	assert(r == 0);
-	assert(subject == &input[0]);
+	assert(localpart == &input[0]);
+	assert(domain == &input[5]);
 	assert(firstparam == &input[1]);
 	assert(nrparams == 2);
 
-	input = "~";
-	r = a2donai_parseuserstr2(input, &subject, &firstparam, &nrparams);
+	input = "~@example.com";
+	r = a2donai_parsestr(input, &localpart, &domain, &firstparam, &nrparams);
 	assert(r == 0);
-	assert(subject == &input[0]);
+	assert(localpart == &input[0]);
+	assert(domain == &input[1]);
 	assert(firstparam == NULL);
 	assert(nrparams == 0);
 
-	input = " ";
-	r = a2donai_parseuserstr2(input, &subject, &firstparam, &nrparams);
+	input = " @example.com";
+	r = a2donai_parsestr(input, &localpart, &domain, &firstparam, &nrparams);
 	assert(r == -1);
 
 	input = "@";
-	r = a2donai_parseuserstr2(input, &subject, &firstparam, &nrparams);
+	r = a2donai_parsestr(input, &localpart, &domain, &firstparam, &nrparams);
 	assert(r == -1);
 
-	input = "\x7f";
-	r = a2donai_parseuserstr2(input, &subject, &firstparam, &nrparams);
+	input = "\x7f@example.com";
+	r = a2donai_parsestr(input, &localpart, &domain, &firstparam, &nrparams);
 	assert(r == -1);
 
-	input = "+a";
-	r = a2donai_parseuserstr2(input, &subject, &firstparam, &nrparams);
+	input = "+a@example.com";
+	r = a2donai_parsestr(input, &localpart, &domain, &firstparam, &nrparams);
 	assert(r == -1);
 
-	input = "+";
-	r = a2donai_parseuserstr2(input, &subject, &firstparam, &nrparams);
+	input = "+@example.com";
+	r = a2donai_parsestr(input, &localpart, &domain, &firstparam, &nrparams);
 	assert(r == -1);
 
-	input = "a+";
-	r = a2donai_parseuserstr2(input, &subject, &firstparam, &nrparams);
+	input = "a+@example.com";
+	r = a2donai_parsestr(input, &localpart, &domain, &firstparam, &nrparams);
 	assert(r == -1);
 }
 
@@ -337,7 +342,7 @@ test_a2donai_fromstr(void)
 int
 main(void)
 {
-	test_a2donai_parseuserstr2();
+	test_a2donai_parsestr();
 	test_a2donai_parseuserstr();
 	test_a2donai_fromstr();
 

@@ -383,7 +383,7 @@ static const char userchar[256] = {
 	    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 /* %x80-FF */
 };
 
-static const char userchar2[256] = {
+static const char basechar[256] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	    0, 0, 0, 0, 0, 0, 0, 0, 0,
 	1, /* ! */
@@ -399,7 +399,7 @@ static const char userchar2[256] = {
 	0, /* "+" PLUS is special */
 	1, /* , */
 	1, /* - */
-	1, /* . */
+	0, /* "." DOT is special */
 	1, /* / */
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, /* 0-9 */
 	1, /* : */
@@ -427,25 +427,27 @@ static const char userchar2[256] = {
 };
 
 /*
- * Static DoNAI user parser.
+ * Static DoNAI parser.
  *
- * Returns 0 is if the input is a valid DoNAI user or -1 otherwise.
+ * Returns 0 is if the input is a valid DoNAI or -1 otherwise.
  *
- * If "input" is valid then "subject" points to the first character of "input".
+ * If "input" is valid then "localpart" points to the first character of "input".
  * "firstparam" points to the first '+' in "input" or NULL if there are no
  * parameters. "nrparams" is set to contain the number of parameters that follow
- * the subject of the user.
+ * the subject of the localpart and domain is set to point to the "@" symbol.
  *
- * On error the values of "subject", "firstparam" and "nrparams" are undefined.
+ * On error "localpart" or "domain" are updated to point to the first
+ * erroneous character encountered in "input" depending on where the error
+ * occurred, "firstparam" and "nrparams" are undefined.
  */
 int
-a2donai_parseuserstr2(const char *input, const char **subject,
+a2donai_parsestr(const char *input, const char **localpart, const char **domain,
     const char **firstparam, int *nrparams)
 {
-	enum states { S, USER, PARAM } state;
+	enum states { S, LOCALPART, PARAM, NEWLABEL, DOMAIN } state;
 	const unsigned char *cp;
 
-	*subject = *firstparam = NULL;
+	*localpart = *firstparam = *domain = NULL;
 	*nrparams = 0;
 
 	if (input == NULL)
@@ -454,15 +456,18 @@ a2donai_parseuserstr2(const char *input, const char **subject,
 	for (state = S, cp = (const unsigned char *)input; *cp != '\0'; cp++) {
 		switch (state) {
 		case S:
-			if (userchar2[*cp]) {
-				*subject = (const char *)cp;
-				state = USER;
+			if (basechar[*cp] || *cp == '.') {
+				*localpart = (const char *)cp;
+				state = LOCALPART;
+			} else if (*cp == '@') {
+				*domain = (const char *)cp;
+				state = NEWLABEL;
 			} else
 				goto done;
 			break;
-		case USER:
-			/* fast-forward USER characters */
-			while (userchar2[*cp])
+		case LOCALPART:
+			/* fast-forward LOCALPART characters */
+			while (basechar[*cp] || *cp == '.')
 				cp++;
 			/*
 			 * After while: prevent out-of-bounds cp++ in for-loop.
@@ -476,12 +481,36 @@ a2donai_parseuserstr2(const char *input, const char **subject,
 
 				(*nrparams)++;
 				state = PARAM;
+			} else if (*cp == '@') {
+				*domain = (const char *)cp;
+				state = NEWLABEL;
 			} else
 				goto done;
 			break;
 		case PARAM:
-			if (userchar2[*cp]) {
-				state = USER;
+			if (basechar[*cp] || *cp == '.') {
+				state = LOCALPART;
+			} else
+				goto done;
+			break;
+		case DOMAIN:
+			/* fast-forward DOMAIN characters */
+			while (basechar[*cp])
+				cp++;
+			/*
+			 * After while: prevent out-of-bounds cp++ in for-loop.
+			 */
+			if (*cp == '\0')
+				goto done;
+
+			if (*cp == '.') {
+				state = NEWLABEL;
+			} else
+				goto done;
+			break;
+		case NEWLABEL:
+			if (basechar[*cp]) {
+				state = DOMAIN;
 			} else
 				goto done;
 			break;
@@ -495,8 +524,35 @@ done:
 	 * Make sure the end of the input is reached and the state is one of the
 	 * final states.
 	 */
-	if (*cp != '\0' || state != USER)
+	if (*cp != '\0' || state != DOMAIN) {
+
+		/*
+		 * Let "localpart" or "domain" point to first erroneous character in
+		 * "input".
+		 */
+
+		*localpart = NULL;
+		*domain = NULL;
+
+		switch (state) {
+		case S:
+			 /* FALLTHROUGH */
+		case LOCALPART:
+			 /* FALLTHROUGH */
+		case PARAM:
+			*localpart = (const char *)cp;
+			break;
+		case NEWLABEL:
+			 /* FALLTHROUGH */
+		case DOMAIN:
+			*domain = (const char *)cp;
+			break;
+		default:
+			abort();
+		}
+
 		return -1;
+	}
 
 	return 0;
 }
@@ -509,7 +565,7 @@ done:
  * If "input" is a service, then "service" points to the first character in
  * "input" (which is a '+') and all other parameters are set to NULL. If "input"
  * is not a service but a user then "user" points to the first character of
- * "intput". Furthermore, "useralias" points to the first '+' in "input" or NULL
+ * "input". Furthermore, "useralias" points to the first '+' in "input" or NULL
  * if there is no useralias. "userflags" points to the second '+' in "input" or
  * NULL if there are no userflags. "usersig" points to the third '+' in "input"
  * or NULL if there is no usersig.
