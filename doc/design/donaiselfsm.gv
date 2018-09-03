@@ -1,9 +1,7 @@
 digraph finite_state_machine {
 	rankdir=LR
 	node [shape = doublecircle];
-		USERDOM;
-		REALMDOT;
-		LABEL;
+		DOMAIN;
 
 	node [shape = point ];
 		qi
@@ -11,38 +9,22 @@ digraph finite_state_machine {
 	node [shape = circle];
 		qi	-> S;
 
-		/* First do realm. */
-		S	-> USERDOM [ label = "0-9A-Za-z" ];
-		S	-> REALMHOST [ label = "@" ];
-		S	-> REALMDOT [ label = "." ];
-		USERDOM	-> REALMHOST [ label = "@" ];
-		USERDOM	-> USERDOM [ label = "0-9A-Za-z" ];
-		USERDOM	-> USERNAME [ label = "userchar" ];
-		USERDOM	-> USERDOMDOT [ label = "." ];
-		USERDOMDOT	-> USERDOM [ label = "0-9A-Za-z" ];
-		USERDOM	-> USERDOMDASH [ label = "-" ];
-		USERDOMDASH	-> USERDOMDASH [ label = "-" ];
-		USERDOMDASH	-> USERDOM [ label = "0-9A-Za-z" ];
-		REALMHOST	-> LABEL [ label = "0-9A-Za-z" ];
-		REALMHOST	-> REALMDOT [ label = "." ];
-		REALMDOT	-> LABEL [ label = "0-9A-Za-z" ];
-		LABEL	-> LABEL [ label = "0-9A-Za-z" ];
-		LABEL	-> LABELDASH [ label = "-" ];
-		LABELDASH	-> LABELDASH [ label = "-" ];
-		LABELDASH	-> LABEL [ label = "0-9A-Za-z" ];
-		LABEL	-> REALMDOT [ label = "." ];
+		/* local or domain part */
+		S	-> LOCAL [ label = "basechar . +" ];
+		S	-> NEWLABEL [ label = "@" ];
 
-		/* Then username. */
-		S	-> USERNAME [ label = "- userchar" ];
-		USERNAME	-> USERNAME [ label = "- userchar 0-9A-Za-z" ];
-		USERNAME	-> USERDOT [ label = "." ];
-		USERDOT	-> USERNAME [ label = "- userchar 0-9A-Za-z" ];
-		USERNAME	-> REALMHOST [ label = "@" ];
+		/* local */
+		LOCAL	-> LOCAL [ label = "basechar . +" ];
+		LOCAL	-> NEWLABEL [ label = "@" ];
+
+		/* domain */
+		NEWLABEL	-> DOMAIN [ label = "basechar ." ];
+		DOMAIN	-> DOMAIN [ label = "basechar ." ];
 
 	node[ shape=box, margin="0.2,0.2" ];
-		userchar[ label = "userchar \n\n!#$%&'*+/=?^_`{}|~\n%x80-FF\n" ];
+		basechar[ label = "basechar - visible characters\nexcept SPACE, DOT, PLUS, AT \n%x21-2A / %x2C-2D / %x2F-3F / %x41-7E" ];
 
 	// title
 	labelloc="t";
-	label="DoNAI selector FSM";
+	label="DoNAI Selector FSM\n\n";
 }
