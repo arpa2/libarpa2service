@@ -270,7 +270,7 @@ int
 a2donai_parsestr(const char *input, const char **localpart, const char **domain,
     const char **firstparam, int *nrparams)
 {
-	enum states { S, LOCALPART, PARAM, NEWLABEL, DOMAIN } state;
+	enum states { S, SERVICE, LOCALPART, PARAM, NEWLABEL, DOMAIN } state;
 	const unsigned char *cp;
 
 	*localpart = *firstparam = *domain = NULL;
@@ -285,9 +285,18 @@ a2donai_parsestr(const char *input, const char **localpart, const char **domain,
 			if (basechar[*cp] || *cp == '.') {
 				*localpart = (const char *)cp;
 				state = LOCALPART;
+			} else if (*cp == '+') {
+				*localpart = (const char *)cp;
+				state = SERVICE;
 			} else if (*cp == '@') {
 				*domain = (const char *)cp;
 				state = NEWLABEL;
+			} else
+				goto done;
+			break;
+		case SERVICE:
+			if (basechar[*cp] || *cp == '.') {
+				state = LOCALPART;
 			} else
 				goto done;
 			break;
@@ -362,6 +371,8 @@ done:
 
 		switch (state) {
 		case S:
+			 /* FALLTHROUGH */
+		case SERVICE:
 			 /* FALLTHROUGH */
 		case LOCALPART:
 			 /* FALLTHROUGH */
