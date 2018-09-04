@@ -15,20 +15,19 @@
  */
 #define A2DONAI_MAXLEN 512
 
-enum A2DONAI_TYPE { DT_INVALID, DT_DOMAIN, DT_NAI };
+enum A2DONAI_TYPE { DT_INVALID, DT_DOMAINONLY, DT_GENERIC, DT_SERVICE };
 
-enum A2DONAI_SUBTYPE { DST_INVALID, DST_FQDN, DST_SERVICE, DST_USER,
-    DST_USERALIAS, DST_USERFLAGS, DST_USERSIG };
+enum A2DONAI_SUBTYPE { DST_INVALID, DST_FQDN, DST_USER, DST_USERALIAS,
+    DST_USERFLAGS, DST_USERSIG };
 
 struct a2donai {
 	char *localpart;
 	char *domain;
-	int nrparams;
 	enum A2DONAI_TYPE type;
 	enum A2DONAI_SUBTYPE subtype;
 };
 
-struct a2donai *a2donai_alloc(const char *, const char *, int);
+struct a2donai *a2donai_alloc(const char *, const char *);
 void a2donai_free(struct a2donai *);
 struct a2donai *a2donai_fromstr(const char *);
 struct a2donai *a2donai_fromselstr(const char *);

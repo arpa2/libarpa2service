@@ -29,7 +29,7 @@
  * a2donai_free when done. Return NULL on error with errno set.
  */
 struct a2donai *
-a2donai_alloc(const char *localpart, const char *domain, int nrparams)
+a2donai_alloc(const char *localpart, const char *domain)
 {
 	struct a2donai *donai;
 
@@ -41,10 +41,17 @@ a2donai_alloc(const char *localpart, const char *domain, int nrparams)
 	if ((donai = calloc(1, sizeof(*donai))) == NULL)
 		goto err; /* errno is set by calloc */
 
+	/* Default to domain-only type. */
+	donai->type = DT_DOMAINONLY;
+
 	if (localpart) {
 		if ((donai->localpart = strdup(localpart)) == NULL)
 			goto err; /* errno is set by strdup */
-		donai->nrparams = nrparams;
+
+		if (*localpart == '+')
+			donai->type = DT_SERVICE;
+		else
+			donai->type = DT_GENERIC;
 	}
 
 	if ((donai->domain = strdup(domain)) == NULL)
@@ -129,7 +136,7 @@ a2donai_fromstr(const char *donaistr)
 	donaistrcpy[dp - donaistrcpy] = '\0';
 	dp++;
 
-	if ((donai = a2donai_alloc(lp, dp, nrparams)) == NULL)
+	if ((donai = a2donai_alloc(lp, dp)) == NULL)
 		goto err;
 
 	/* SUCCESS */
@@ -193,7 +200,7 @@ a2donai_fromselstr(const char *donaistr)
 	donaistrcpy[dp - donaistrcpy] = '\0';
 	dp++;
 
-	if ((donai = a2donai_alloc(lp, dp, nrparams)) == NULL)
+	if ((donai = a2donai_alloc(lp, dp)) == NULL)
 		goto err;
 
 	/* SUCCESS */
