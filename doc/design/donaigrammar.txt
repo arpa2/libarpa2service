@@ -13,7 +13,7 @@ localpart      = subject *( option ) /
                  service *( option )
 subject        = localstring
 service        = "+" localstring
-option         = "+" [localstring]
+option         = "+" [ localstring ]
 localstring    = 1*( localchar )
 
 domain         = label *( "." label )
