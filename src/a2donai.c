@@ -550,29 +550,46 @@ int
 a2donai_match(const struct a2donai *selector, const struct a2donai *subject)
 {
 	char seldom[A2DONAI_MAXLEN + 1];
+	char *selp, *subp, *nextselp, *nextsubp;
 	size_t selectorlen, subjectlen;
 
 	if (selector->localpart == NULL && selector->domain == NULL)
 		return 0;
 
 	if (selector->localpart && *selector->localpart != '\0') {
-		selectorlen = strlen(selector->localpart);
-
 		if (subject->localpart == NULL)
 			return 0;
 
-		if (strncmp(selector->localpart, subject->localpart, selectorlen)
-		    != 0)
+		/* Compare any "+" separated sections. */
+		subp = nextsubp = subject->localpart;
+		selp = nextselp = selector->localpart;
+
+		/* First character must match. */
+		if (*subp != *selp)
 			return 0;
 
-		/*
-		 * Make sure there is a separator after the matched part if it
-		 * was not already in the selector itself.
-		 */
-		if (selector->localpart[selectorlen - 1] != '+' &&
-		    subject->localpart[selectorlen] != '\0' &&
-		    subject->localpart[selectorlen] != '+')
-			return 0;
+		for (; *selp != '\0'; subp = nextsubp, selp = nextselp) {
+			selectorlen = strcspn(selp, "+");
+			nextselp += selectorlen;
+			nextsubp += strcspn(subp, "+");
+
+			if (*nextselp == '+' && *nextsubp != '+')
+				return 0;
+
+			if (selectorlen > 0) {
+				if (selectorlen != nextsubp - subp)
+					return 0;
+
+				if (strncmp(selp, subp, selectorlen) != 0)
+					return 0;
+			}
+
+			if (*nextsubp == '+')
+				nextsubp++;
+
+			if (*nextselp == '+')
+				nextselp++;
+		}
 
 		/* localpart MATCH. */
 	}

@@ -197,9 +197,6 @@ t="john+@example.org"
 t="john++@example.org"
 "$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
 
-t="john+++@example.org"
-"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
-
 t="john+sigtmpl@example.org"
 "$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
 
@@ -403,6 +400,30 @@ t="+++@example.org"
 "$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
 
 t="++++@example.org"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+t="john+sig@example.org"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+t="john+sig+@example.org"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+t="john+sigtmpl+si@example.org"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+t="john+sigtmpl+si+@example.org"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+t="john+sigtmpl+sig++@example.org"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+t="joh+@example.org"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+t="johnn+@example.org"
+"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
+
+t="+john+sigtmpl+sig+@example.org"
 "$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
 
 ###
