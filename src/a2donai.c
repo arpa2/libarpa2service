@@ -152,8 +152,8 @@ err:
 }
 
 /*
- * Parse a DoNAI selector. If the input contains an '@' character, treat it as a
- * localpart selector, else treat the input as a domain selector.
+ * Parse a DoNAI Selector. The input may contain a localpart and must contain an '@'
+ * character followed by a domain,
  *
  * Return a newly allocated a2donai structure on success that should be freed by
  * a2donai_free when done. Return NULL on error with errno set.
@@ -264,16 +264,16 @@ static const char basechar[256] = {
  *
  * If "input" is valid and has a localpart then "localpart" points to the first
  * character of "input" or NULL if there is no localpart. "domain" points to the
- * "@" or otherwise the input is invalid.
- * If "firstopt" is not NULL and the localpart has one or more options then
- * "firstopt" points to the '+' of the first option in "input" or NULL if there are no
- * options. "nropts" is set to contain the number of options that follow
- * the subject or service name of the localpart.
+ * one and only "@" or otherwise the input is invalid. If "firstopt" is not NULL
+ * and the localpart has one or more options then "firstopt" points to the '+'
+ * of the first option in "input" or NULL if there are no options. If "nropts"
+ * is passed it is set to contain the number of options in the localpart.
  *
- * On error "localpart" or "domain" are updated to point to the first
- * erroneous character encountered in "input" depending on where the error
- * occurred, "firstopt" and "nropts" are undefined.
+ * On error "localpart" or "domain" are updated to point to the first erroneous
+ * character encountered in "input" depending on where the error occurred,
+ * "firstopt" and "nropts" are undefined.
  */
+
 int
 a2donai_parsestr(const char *input, const char **localpart, const char **domain,
     const char **firstopt, int *nropts)
@@ -421,14 +421,16 @@ done:
  *
  * Returns 0 is if the input is a valid DoNAI Selector or -1 otherwise.
  *
- * If "input" is valid then "localpart" points to the first character of "input".
- * "firstopt" points to the first '+' in "input" or NULL if there are no
- * parameters. "nropts" is set to contain the number of parameters that follow
- * the subject of the localpart and domain is set to point to the "@" symbol.
+ * If "input" is valid and has a localpart then "localpart" points to the first
+ * character of "input" or NULL if there is no localpart. "domain" points to the
+ * one and only "@" or otherwise the input is invalid. If "firstopt" is not NULL
+ * and the localpart has one or more options then "firstopt" points to the '+'
+ * of the first option in "input" or NULL if there are no options. If "nropts"
+ * is passed it is set to contain the number of options in the localpart.
  *
- * On error "localpart" or "domain" are updated to point to the first
- * erroneous character encountered in "input" depending on where the error
- * occurred, "firstopt" and "nropts" are undefined.
+ * On error "localpart" or "domain" are updated to point to the first erroneous
+ * character encountered in "input" depending on where the error occurred,
+ * "firstopt" and "nropts" are undefined.
  */
 int
 a2donai_parseselstr(const char *input, const char **localpart,
