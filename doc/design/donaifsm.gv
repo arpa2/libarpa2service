@@ -12,12 +12,18 @@ digraph finite_state_machine {
 		/* local or domain part */
 		S	-> LOCAL [ label = "basechar ." ];
 		S	-> NEWLABEL [ label = "@" ];
+		S	-> SERVICE [ label = "+" ];
 
 		/* local */
 		LOCAL	-> LOCAL [ label = "basechar ." ];
-		LOCAL	-> PARAM [ label = "+" ];
-		PARAM	-> LOCAL [ label = "basechar ." ];
+		LOCAL	-> OPTION [ label = "+" ];
+		OPTION	-> OPTION [ label = "+" ];
+		OPTION	-> NEWLABEL [ label = "@" ];
+		OPTION	-> LOCAL [ label = "basechar ." ];
 		LOCAL	-> NEWLABEL [ label = "@" ];
+
+		/* service */
+		SERVICE	-> LOCAL [ label = "basechar ." ];
 
 		/* domain */
 		DOMAIN	-> NEWLABEL [ label = "." ];

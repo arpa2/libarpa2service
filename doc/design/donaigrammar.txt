@@ -9,9 +9,11 @@ The grammar for a DoNAI is given below, described in Augmented Backus-Naur Form
 
 donai          = [ localpart ] "@" domain
 
-localpart      = subject *( param )
+localpart      = subject *( option ) /
+                 service *( option )
 subject        = localstring
-param          = "+" localstring
+service        = "+" localstring
+option         = "+" [localstring]
 localstring    = 1*( localchar )
 
 domain         = label *( "." label )
