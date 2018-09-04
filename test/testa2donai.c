@@ -117,30 +117,35 @@ test_a2donai_fromstr(void)
 	assert(donai != NULL);
 	assert(donai->localpart == NULL);
 	assert(strcmp(donai->domain, "example.com") == 0);
+	assert(donai->nrparams == 0);
 	a2donai_free(donai);
 
 	donai = a2donai_fromstr("user@example.com");
 	assert(donai != NULL);
 	assert(strcmp(donai->localpart, "user") == 0);
 	assert(strcmp(donai->domain, "example.com") == 0);
+	assert(donai->nrparams == 0);
 	a2donai_free(donai);
 
 	donai = a2donai_fromstr("user+subid@example.com");
 	assert(donai != NULL);
 	assert(strcmp(donai->localpart, "user+subid") == 0);
 	assert(strcmp(donai->domain, "example.com") == 0);
+	assert(donai->nrparams == 1);
 	a2donai_free(donai);
 
 	donai = a2donai_fromstr("user+flags+signature@example.com");
 	assert(donai != NULL);
 	assert(strcmp(donai->localpart, "user+flags+signature") == 0);
 	assert(strcmp(donai->domain, "example.com") == 0);
+	assert(donai->nrparams == 2);
 	a2donai_free(donai);
 
 	donai = a2donai_fromstr("service+arg1+arg2@example.com");
 	assert(donai != NULL);
 	assert(strcmp(donai->localpart, "service+arg1+arg2") == 0);
 	assert(strcmp(donai->domain, "example.com") == 0);
+	assert(donai->nrparams == 2);
 	a2donai_free(donai);
 
 	/* Adapted list from RFC 4282 */
@@ -148,66 +153,77 @@ test_a2donai_fromstr(void)
 	assert(donai != NULL);
 	assert(strcmp(donai->localpart, "joe") == 0);
 	assert(strcmp(donai->domain, "example.com") == 0);
+	assert(donai->nrparams == 0);
 	a2donai_free(donai);
 
 	donai = a2donai_fromstr("fred@foo-9.example.com");
 	assert(donai != NULL);
 	assert(strcmp(donai->localpart, "fred") == 0);
 	assert(strcmp(donai->domain, "foo-9.example.com") == 0);
+	assert(donai->nrparams == 0);
 	a2donai_free(donai);
 
 	donai = a2donai_fromstr("jack@3rd.depts.example.com");
 	assert(donai != NULL);
 	assert(strcmp(donai->localpart, "jack") == 0);
 	assert(strcmp(donai->domain, "3rd.depts.example.com") == 0);
+	assert(donai->nrparams == 0);
 	a2donai_free(donai);
 
 	donai = a2donai_fromstr("fred.smith@example.com");
 	assert(donai != NULL);
 	assert(strcmp(donai->localpart, "fred.smith") == 0);
 	assert(strcmp(donai->domain, "example.com") == 0);
+	assert(donai->nrparams == 0);
 	a2donai_free(donai);
 
 	donai = a2donai_fromstr("fred_smith@example.com");
 	assert(donai != NULL);
 	assert(strcmp(donai->localpart, "fred_smith") == 0);
 	assert(strcmp(donai->domain, "example.com") == 0);
+	assert(donai->nrparams == 0);
 	a2donai_free(donai);
 
 	donai = a2donai_fromstr("fred$@example.com");
 	assert(donai != NULL);
 	assert(strcmp(donai->localpart, "fred$") == 0);
 	assert(strcmp(donai->domain, "example.com") == 0);
+	assert(donai->nrparams == 0);
 	a2donai_free(donai);
 
 	donai = a2donai_fromstr("fred=?#$&*+-/^smith@example.com");
 	assert(donai != NULL);
 	assert(strcmp(donai->localpart, "fred=?#$&*+-/^smith") == 0);
 	assert(strcmp(donai->domain, "example.com") == 0);
+	assert(donai->nrparams == 1);
 	a2donai_free(donai);
 
 	donai = a2donai_fromstr("nancy@eng.example.net");
 	assert(donai != NULL);
 	assert(strcmp(donai->localpart, "nancy") == 0);
 	assert(strcmp(donai->domain, "eng.example.net") == 0);
+	assert(donai->nrparams == 0);
 	a2donai_free(donai);
 
 	donai = a2donai_fromstr("eng.example.net!nancy@example.net");
 	assert(donai != NULL);
 	assert(strcmp(donai->localpart, "eng.example.net!nancy") == 0);
 	assert(strcmp(donai->domain, "example.net") == 0);
+	assert(donai->nrparams == 0);
 	a2donai_free(donai);
 
 	donai = a2donai_fromstr("eng%nancy@example.net");
 	assert(donai != NULL);
 	assert(strcmp(donai->localpart, "eng%nancy") == 0);
 	assert(strcmp(donai->domain, "example.net") == 0);
+	assert(donai->nrparams == 0);
 	a2donai_free(donai);
 
 	donai = a2donai_fromstr("@privatecorp.example.net");
 	assert(donai != NULL);
 	assert(donai->localpart == NULL);
 	assert(strcmp(donai->domain, "privatecorp.example.net") == 0);
+	assert(donai->nrparams == 0);
 	a2donai_free(donai);
 
 	donai = a2donai_fromstr("\\(user\\)@example.net");
@@ -215,6 +231,7 @@ test_a2donai_fromstr(void)
 	assert(donai->localpart != NULL);
 	assert(strcmp(donai->localpart, "\\(user\\)") == 0);
 	assert(strcmp(donai->domain, "example.net") == 0);
+	assert(donai->nrparams == 0);
 	a2donai_free(donai);
 
 	donai = a2donai_fromstr("<user>@example.net");
@@ -222,6 +239,7 @@ test_a2donai_fromstr(void)
 	assert(donai->localpart != NULL);
 	assert(strcmp(donai->localpart, "<user>") == 0);
 	assert(strcmp(donai->domain, "example.net") == 0);
+	assert(donai->nrparams == 0);
 	a2donai_free(donai);
 
 	donai = a2donai_fromstr("alice@xn--tmonesimerkki-bfbb.example.net");
@@ -229,6 +247,7 @@ test_a2donai_fromstr(void)
 	assert(strcmp(donai->localpart, "alice") == 0);
 	assert(strcmp(donai->domain, "xn--tmonesimerkki-bfbb.example.net") ==
 	    0);
+	assert(donai->nrparams == 0);
 	a2donai_free(donai);
 
 	/* test invalid DoNAIs */

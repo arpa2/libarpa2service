@@ -29,7 +29,7 @@
  * a2donai_free when done. Return NULL on error with errno set.
  */
 struct a2donai *
-a2donai_alloc(const char *localpart, const char *domain)
+a2donai_alloc(const char *localpart, const char *domain, int nrparams)
 {
 	struct a2donai *donai;
 
@@ -41,9 +41,11 @@ a2donai_alloc(const char *localpart, const char *domain)
 	if ((donai = calloc(1, sizeof(*donai))) == NULL)
 		goto err; /* errno is set by calloc */
 
-	if (localpart)
+	if (localpart) {
 		if ((donai->localpart = strdup(localpart)) == NULL)
 			goto err; /* errno is set by strdup */
+		donai->nrparams = nrparams;
+	}
 
 	if ((donai->domain = strdup(domain)) == NULL)
 		goto err; /* errno is set by strdup */
@@ -127,7 +129,7 @@ a2donai_fromstr(const char *donaistr)
 	donaistrcpy[dp - donaistrcpy] = '\0';
 	dp++;
 
-	if ((donai = a2donai_alloc(lp, dp)) == NULL)
+	if ((donai = a2donai_alloc(lp, dp, nrparams)) == NULL)
 		goto err;
 
 	/* SUCCESS */

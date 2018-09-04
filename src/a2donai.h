@@ -25,11 +25,12 @@ enum A2DONAI_SUBTYPE { DST_INVALID, DST_FQDN, DST_SERVICE, DST_USER,
 struct a2donai {
 	char *localpart;
 	char *domain;
+	int nrparams;
 	enum A2DONAI_TYPE type;
 	enum A2DONAI_SUBTYPE subtype;
 };
 
-struct a2donai *a2donai_alloc(const char *, const char *);
+struct a2donai *a2donai_alloc(const char *, const char *, int);
 void a2donai_free(struct a2donai *);
 struct a2donai *a2donai_fromstr(const char *);
 struct a2donai *a2donai_fromselstr(const char *);
