@@ -408,6 +408,129 @@ done:
 }
 
 /*
+ * Static DoNAI Selector parser.
+ *
+ * Returns 0 is if the input is a valid DoNAI Selector or -1 otherwise.
+ *
+ * If "input" is valid then "localpart" points to the first character of "input".
+ * "firstparam" points to the first '+' in "input" or NULL if there are no
+ * parameters. "nrparams" is set to contain the number of parameters that follow
+ * the subject of the localpart and domain is set to point to the "@" symbol.
+ *
+ * On error "localpart" or "domain" are updated to point to the first
+ * erroneous character encountered in "input" depending on where the error
+ * occurred, "firstparam" and "nrparams" are undefined.
+ */
+int
+a2donai_parseselstr(const char *input, const char **localpart,
+    const char **domain, const char **firstparam, int *nrparams)
+{
+	enum states { S, LOCALPART, NEWLABEL, DOMAIN } state;
+	const unsigned char *cp;
+
+	*localpart = *firstparam = *domain = NULL;
+	*nrparams = 0;
+
+	if (input == NULL)
+		return -1;
+
+	for (state = S, cp = (const unsigned char *)input; *cp != '\0'; cp++) {
+		switch (state) {
+		case S:
+			if (basechar[*cp] || *cp == '.') {
+				*localpart = (const char *)cp;
+				state = LOCALPART;
+			} else if (*cp == '+') {
+				*localpart = (const char *)cp;
+				*firstparam = (const char *)cp;
+				(*nrparams)++;
+				state = LOCALPART;
+			} else if (*cp == '@') {
+				*domain = (const char *)cp;
+				state = NEWLABEL;
+			} else
+				goto done;
+			break;
+		case LOCALPART:
+			/* fast-forward LOCALPART characters */
+			while (basechar[*cp] || *cp == '.' || *cp == '+') {
+				if (*cp == '+') {
+					if (*firstparam == NULL)
+						*firstparam = (const char *)cp;
+
+					(*nrparams)++;
+				}
+				cp++;
+			}
+
+			/*
+			 * After while: prevent out-of-bounds cp++ in for-loop.
+			 */
+			if (*cp == '\0')
+				goto done;
+
+			if (*cp == '@') {
+				*domain = (const char *)cp;
+				state = NEWLABEL;
+			} else
+				goto done;
+			break;
+		case NEWLABEL:
+			if (basechar[*cp] || *cp == '.') {
+				state = DOMAIN;
+			} else
+				goto done;
+			break;
+		case DOMAIN:
+			/* fast-forward DOMAIN characters */
+			while (basechar[*cp] || *cp == '.')
+				cp++;
+			/*
+			 * After while: prevent out-of-bounds cp++ in for-loop.
+			 */
+			goto done;
+		default:
+			abort();
+		}
+	}
+
+done:
+	/*
+	 * Make sure the end of the input is reached and the state is one of the
+	 * final states.
+	 */
+	if (*cp != '\0' || state != DOMAIN) {
+
+		/*
+		 * Let "localpart" or "domain" point to first erroneous character in
+		 * "input".
+		 */
+
+		*localpart = NULL;
+		*domain = NULL;
+
+		switch (state) {
+		case S:
+			 /* FALLTHROUGH */
+		case LOCALPART:
+			*localpart = (const char *)cp;
+			break;
+		case NEWLABEL:
+			 /* FALLTHROUGH */
+		case DOMAIN:
+			*domain = (const char *)cp;
+			break;
+		default:
+			abort();
+		}
+
+		return -1;
+	}
+
+	return 0;
+}
+
+/*
  * Check if "subject" ends with "suffix", ignoring case.
  *
  * Return 1 if "subject" ends with "suffix", 0 otherwise.
