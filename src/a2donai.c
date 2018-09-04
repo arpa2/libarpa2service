@@ -325,6 +325,11 @@ a2donai_parsestr(const char *input, const char **localpart, const char **domain,
 		case OPTION:
 			if (basechar[*cp] || *cp == '.') {
 				state = LOCALPART;
+			} else if (*cp == '+') {
+				(*nrparams)++;
+			} else if (*cp == '@') {
+				*domain = (const char *)cp;
+				state = NEWLABEL;
 			} else
 				goto done;
 			break;
