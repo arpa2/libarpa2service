@@ -37,19 +37,16 @@ perr_notaccept() {
 # DoNAI subject
 s="\(user\)@example.net"
 
-t="e.net"
-"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
-
-t=".com"
+t="@e.net"
 "$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
 
 t="@.com"
 "$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
 
-t=".f"
+t="@.f"
 "$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
 
-t=".fo"
+t="@.fo"
 "$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
 
 t="@n"
@@ -66,25 +63,19 @@ t="@ne"
 # DoNAI subject
 s="\(user\)@example.net"
 
-t="."
-"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
-
-t="net"
-"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
-
-t=".net"
-"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
-
-t="net."
-"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
-
-t=".net."
-"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
-
 t="@."
 "$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
 
+t="@net"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
 t="@.net"
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t="@net."
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t="@.net."
 "$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
 
 t="\(user\)@."
@@ -96,40 +87,15 @@ t="\(user\)@."
 ###
 
 # DoNAI subject
-s="example.org"
-
-t="."
-"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
-
-t=".org"
-"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
-
-t="example.org"
-"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
-
-# DoNAI subject
-s="example.org"
-t=".org"
-"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
-
-# DoNAI subject
-s="example.org"
-t=".example.org"
-"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
-
-t="example.org"
-"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
-
-# DoNAI subject
 s="@example.org"
 
-t="@example.org"
+t="@."
 "$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
 
 t="@.org"
 "$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
 
-t="@."
+t="@example.org"
 "$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
 
 # DoNAI subject
@@ -272,16 +238,7 @@ t="+@."
 ###
 
 # DoNAI subject
-s="example.org"
-
-t=".example.org."
-"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
-
-# DoNAI subject
 s="@example.org"
-
-t=".example.org"
-"$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
 
 t="@.example.org"
 "$donaimatch" -q "$t" "$s" && perr_accept "$t" "$s"
