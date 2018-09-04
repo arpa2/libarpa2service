@@ -99,13 +99,12 @@ struct a2donai *
 a2donai_fromstr(const char *donaistr)
 {
 	struct a2donai *donai;
-	const char *lp, *dp, *fp;
+	const char *lp, *dp;
 	char *donaistrcpy;
 	size_t len;
-	int nrparams;
 
 	donai = NULL;
-	lp = dp = fp = NULL;
+	lp = dp = NULL;
 	donaistrcpy = NULL;
 	len = 0;
 
@@ -123,7 +122,7 @@ a2donai_fromstr(const char *donaistr)
 	if ((donaistrcpy = strdup(donaistr)) == NULL)
 		goto err;
 
-	if (a2donai_parsestr(donaistrcpy, &lp, &dp, &fp, &nrparams) == -1) {
+	if (a2donai_parsestr(donaistrcpy, &lp, &dp, NULL, NULL) == -1) {
 		errno = EINVAL;
 		goto err;
 	}
@@ -163,13 +162,12 @@ struct a2donai *
 a2donai_fromselstr(const char *donaistr)
 {
 	struct a2donai *donai;
-	const char *lp, *dp, *fp;
+	const char *lp, *dp;
 	char *donaistrcpy;
 	size_t len;
-	int nrparams;
 
 	donai = NULL;
-	lp = dp = fp = NULL;
+	lp = dp = NULL;
 	donaistrcpy = NULL;
 	len = 0;
 
@@ -187,7 +185,7 @@ a2donai_fromselstr(const char *donaistr)
 	if ((donaistrcpy = strdup(donaistr)) == NULL)
 		goto err;
 
-	if (a2donai_parseselstr(donaistrcpy, &lp, &dp, &fp, &nrparams) == -1) {
+	if (a2donai_parseselstr(donaistrcpy, &lp, &dp, NULL, NULL) == -1) {
 		errno = EINVAL;
 		goto err;
 	}
@@ -264,24 +262,30 @@ static const char basechar[256] = {
  *
  * Returns 0 is if the input is a valid DoNAI or -1 otherwise.
  *
- * If "input" is valid then "localpart" points to the first character of "input".
- * "firstparam" points to the first '+' in "input" or NULL if there are no
- * parameters. "nrparams" is set to contain the number of parameters that follow
- * the subject of the localpart and domain is set to point to the "@" symbol.
+ * If "input" is valid and has a localpart then "localpart" points to the first
+ * character of "input" or NULL if there is no localpart. "domain" points to the
+ * "@" or otherwise the input is invalid.
+ * If "firstopt" is not NULL and the localpart has one or more options then
+ * "firstopt" points to the '+' of the first option in "input" or NULL if there are no
+ * options. "nropts" is set to contain the number of options that follow
+ * the subject or service name of the localpart.
  *
  * On error "localpart" or "domain" are updated to point to the first
  * erroneous character encountered in "input" depending on where the error
- * occurred, "firstparam" and "nrparams" are undefined.
+ * occurred, "firstopt" and "nropts" are undefined.
  */
 int
 a2donai_parsestr(const char *input, const char **localpart, const char **domain,
-    const char **firstparam, int *nrparams)
+    const char **firstopt, int *nropts)
 {
 	enum states { S, SERVICE, LOCALPART, OPTION, NEWLABEL, DOMAIN } state;
 	const unsigned char *cp;
+	const char *fo;
+	int no;
 
-	*localpart = *firstparam = *domain = NULL;
-	*nrparams = 0;
+	*localpart = *domain= NULL;
+	fo = NULL;
+	no = 0;
 
 	if (input == NULL)
 		return -1;
@@ -318,10 +322,10 @@ a2donai_parsestr(const char *input, const char **localpart, const char **domain,
 				goto done;
 
 			if (*cp == '+') {
-				if (*firstparam == NULL)
-					*firstparam = (const char *)cp;
+				if (fo == NULL)
+					fo = (const char *)cp;
 
-				(*nrparams)++;
+				no++;
 				state = OPTION;
 			} else if (*cp == '@') {
 				*domain = (const char *)cp;
@@ -333,7 +337,7 @@ a2donai_parsestr(const char *input, const char **localpart, const char **domain,
 			if (basechar[*cp] || *cp == '.') {
 				state = LOCALPART;
 			} else if (*cp == '+') {
-				(*nrparams)++;
+				no++;
 			} else if (*cp == '@') {
 				*domain = (const char *)cp;
 				state = NEWLABEL;
@@ -403,6 +407,12 @@ done:
 		return -1;
 	}
 
+	if (firstopt)
+		*firstopt = fo;
+
+	if (nropts)
+		*nropts = no;
+
 	return 0;
 }
 
@@ -412,23 +422,26 @@ done:
  * Returns 0 is if the input is a valid DoNAI Selector or -1 otherwise.
  *
  * If "input" is valid then "localpart" points to the first character of "input".
- * "firstparam" points to the first '+' in "input" or NULL if there are no
- * parameters. "nrparams" is set to contain the number of parameters that follow
+ * "firstopt" points to the first '+' in "input" or NULL if there are no
+ * parameters. "nropts" is set to contain the number of parameters that follow
  * the subject of the localpart and domain is set to point to the "@" symbol.
  *
  * On error "localpart" or "domain" are updated to point to the first
  * erroneous character encountered in "input" depending on where the error
- * occurred, "firstparam" and "nrparams" are undefined.
+ * occurred, "firstopt" and "nropts" are undefined.
  */
 int
 a2donai_parseselstr(const char *input, const char **localpart,
-    const char **domain, const char **firstparam, int *nrparams)
+    const char **domain, const char **firstopt, int *nropts)
 {
 	enum states { S, LOCALPART, NEWLABEL, DOMAIN } state;
 	const unsigned char *cp;
+	const char *fo;
+	int no;
 
-	*localpart = *firstparam = *domain = NULL;
-	*nrparams = 0;
+	*localpart = *domain= NULL;
+	fo = NULL;
+	no = 0;
 
 	if (input == NULL)
 		return -1;
@@ -441,8 +454,8 @@ a2donai_parseselstr(const char *input, const char **localpart,
 				state = LOCALPART;
 			} else if (*cp == '+') {
 				*localpart = (const char *)cp;
-				*firstparam = (const char *)cp;
-				(*nrparams)++;
+				fo = (const char *)cp;
+				no++;
 				state = LOCALPART;
 			} else if (*cp == '@') {
 				*domain = (const char *)cp;
@@ -454,10 +467,10 @@ a2donai_parseselstr(const char *input, const char **localpart,
 			/* fast-forward LOCALPART characters */
 			while (basechar[*cp] || *cp == '.' || *cp == '+') {
 				if (*cp == '+') {
-					if (*firstparam == NULL)
-						*firstparam = (const char *)cp;
+					if (fo == NULL)
+						fo = (const char *)cp;
 
-					(*nrparams)++;
+					no++;
 				}
 				cp++;
 			}
@@ -525,6 +538,12 @@ done:
 
 		return -1;
 	}
+
+	if (firstopt)
+		*firstopt = fo;
+
+	if (nropts)
+		*nropts = no;
 
 	return 0;
 }
