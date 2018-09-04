@@ -22,14 +22,14 @@
 #include "a2donai.h"
 
 /*
- * Allocate a new a2donai structure. "username" may be NULL, "domain" must not
+ * Allocate a new a2donai structure. "localpart" may be NULL, "domain" must not
  * be NULL.
  *
  * Return a newly allocated a2donai structure on success that should be freed by
  * a2donai_free when done. Return NULL on error with errno set.
  */
 struct a2donai *
-a2donai_alloc(const char *username, const char *domain)
+a2donai_alloc(const char *localpart, const char *domain)
 {
 	struct a2donai *donai;
 
@@ -41,8 +41,8 @@ a2donai_alloc(const char *username, const char *domain)
 	if ((donai = calloc(1, sizeof(*donai))) == NULL)
 		goto err; /* errno is set by calloc */
 
-	if (username)
-		if ((donai->username = strdup(username)) == NULL)
+	if (localpart)
+		if ((donai->localpart = strdup(localpart)) == NULL)
 			goto err; /* errno is set by strdup */
 
 	if ((donai->domain = strdup(domain)) == NULL)
@@ -66,9 +66,9 @@ a2donai_free(struct a2donai *donai)
 {
 	assert(donai != NULL);
 
-	if (donai->username) {
-		free(donai->username);
-		donai->username = NULL;
+	if (donai->localpart) {
+		free(donai->localpart);
+		donai->localpart = NULL;
 	}
 
 	if (donai->domain) {
@@ -80,7 +80,7 @@ a2donai_free(struct a2donai *donai)
 }
 
 /*
- * Parse a DoNAI. The input may contain a username and must contain an '@'
+ * Parse a DoNAI. The input may contain a localpart and must contain an '@'
  * character followed by a domain,
  *
  * Return a newly allocated a2donai structure on success that should be freed by
@@ -145,7 +145,7 @@ err:
 
 /*
  * Parse a DoNAI selector. If the input contains an '@' character, treat it as a
- * username selector, else treat the input as a domain selector.
+ * localpart selector, else treat the input as a domain selector.
  *
  * Return a newly allocated a2donai structure on success that should be freed by
  * a2donai_free when done. Return NULL on error with errno set.
@@ -177,7 +177,7 @@ a2donai_fromselstr(const char *donaiselstr)
 	 * Determine if this is a Domain or NAI and parse accordingly. Create a
 	 * mutable copy of the input.
 	 *
-	 * If the string contains an '@', treat it as a username selector, if it
+	 * If the string contains an '@', treat it as a localpart selector, if it
 	 * does not contain an '@', treat it as a domain-only selector and
 	 * prepend an '@' temporarily ourselves so that we can still use the
 	 * NAI selector parser.
@@ -206,7 +206,7 @@ a2donai_fromselstr(const char *donaiselstr)
 	}
 
 	/*
-	 * Separate the username from the domain by replacing the '@' with a
+	 * Separate the localpart from the domain by replacing the '@' with a
 	 * '\0'. "rp" points into donaiselstrcpy if set.
 	 */
 	if (rp) {
@@ -551,7 +551,7 @@ endswithsuffix(const char *subject, size_t subjectlen, const char *suffix,
 
 /*
  * Return 1 if the subject matches the selector, 0 otherwise. If the selector
- * username and/or domain are an empty string it is considered to be a match to
+ * localpart and/or domain are an empty string it is considered to be a match to
  * the respective part in the subject.
  */
 int
@@ -560,16 +560,16 @@ a2donai_match(const struct a2donai *selector, const struct a2donai *subject)
 	char seldom[A2DONAI_MAXLEN + 1];
 	size_t selectorlen, subjectlen;
 
-	if (selector->username == NULL && selector->domain == NULL)
+	if (selector->localpart == NULL && selector->domain == NULL)
 		return 0;
 
-	if (selector->username && *selector->username != '\0') {
-		selectorlen = strlen(selector->username);
+	if (selector->localpart && *selector->localpart != '\0') {
+		selectorlen = strlen(selector->localpart);
 
-		if (subject->username == NULL)
+		if (subject->localpart == NULL)
 			return 0;
 
-		if (strncmp(selector->username, subject->username, selectorlen)
+		if (strncmp(selector->localpart, subject->localpart, selectorlen)
 		    != 0)
 			return 0;
 
@@ -577,12 +577,12 @@ a2donai_match(const struct a2donai *selector, const struct a2donai *subject)
 		 * Make sure there is a separator after the matched part if it
 		 * was not already in the selector itself.
 		 */
-		if (selector->username[selectorlen - 1] != '+' &&
-		    subject->username[selectorlen] != '\0' &&
-		    subject->username[selectorlen] != '+')
+		if (selector->localpart[selectorlen - 1] != '+' &&
+		    subject->localpart[selectorlen] != '\0' &&
+		    subject->localpart[selectorlen] != '+')
 			return 0;
 
-		/* Username MATCH. */
+		/* localpart MATCH. */
 	}
 
 	if (selector->domain && *selector->domain != '\0') {

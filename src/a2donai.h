@@ -23,7 +23,7 @@ enum A2DONAI_SUBTYPE { DST_INVALID, DST_FQDN, DST_SERVICE, DST_USER,
     DST_USERALIAS, DST_USERFLAGS, DST_USERSIG };
 
 struct a2donai {
-	char *username;
+	char *localpart;
 	char *domain;
 	enum A2DONAI_TYPE type;
 	enum A2DONAI_SUBTYPE subtype;
