@@ -23,6 +23,5 @@
 #include <stdlib.h>
 
 int nai_parsestr(const char *, const char **, const char **);
-int nai_parseselstr(const char *, const char **, const char **);
 
 #endif /* NAI_H */
