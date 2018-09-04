@@ -8,8 +8,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "nai.h"
-
 /*
  * Impose a practial upper bound to the lenght of a DoNAI, a domain-or-NAI.
  * This is important to avoid overzealous allocations and subsequent buffer
