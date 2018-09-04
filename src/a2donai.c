@@ -153,84 +153,58 @@ err:
  * a2donai_free when done. Return NULL on error with errno set.
  */
 struct a2donai *
-a2donai_fromselstr(const char *donaiselstr)
+a2donai_fromselstr(const char *donaistr)
 {
 	struct a2donai *donai;
-	const char *up, *rp, *fmt;
-	char *donaiselstrcpy;
+	const char *lp, *dp, *fp;
+	char *donaistrcpy;
 	size_t len;
+	int nrparams;
 
 	donai = NULL;
-	up = rp = NULL;
-	donaiselstrcpy = NULL;
+	lp = dp = fp = NULL;
+	donaistrcpy = NULL;
 	len = 0;
 
-	if (donaiselstr == NULL) {
+	if (donaistr == NULL) {
 		errno = EINVAL;
 		return NULL;
 	}
 
-	if ((len = strlen(donaiselstr)) > A2DONAI_MAXLEN) {
+	if ((len = strlen(donaistr)) > A2DONAI_MAXLEN) {
 		errno = EINVAL;
 		return NULL;
 	}
 
-	/*
-	 * Determine if this is a Domain or NAI and parse accordingly. Create a
-	 * mutable copy of the input.
-	 *
-	 * If the string contains an '@', treat it as a localpart selector, if it
-	 * does not contain an '@', treat it as a domain-only selector and
-	 * prepend an '@' temporarily ourselves so that we can still use the
-	 * NAI selector parser.
-	 */
-
-	if (strchr(donaiselstr, '@') == NULL) {
-		fmt = "@%s";
-		assert(INT_MAX - 1 > len);
-		len++;
-	} else {
-		fmt = "%s";
-	}
-
-	assert(INT_MAX - 1 > len);
-	if ((donaiselstrcpy = malloc(len + 1)) == NULL)
-		return NULL; /* errno set by malloc */
-
-	if (snprintf(donaiselstrcpy, len + 1, fmt, donaiselstr) >= len + 1) {
-		errno = EINVAL;
+	/* Create a mutable copy of the input.  */
+	if ((donaistrcpy = strdup(donaistr)) == NULL)
 		goto err;
-	}
 
-	if (nai_parseselstr(donaiselstrcpy, &up, &rp) == -1) {
+	if (a2donai_parseselstr(donaistrcpy, &lp, &dp, &fp, &nrparams) == -1) {
 		errno = EINVAL;
 		goto err;
 	}
 
 	/*
-	 * Separate the localpart from the domain by replacing the '@' with a
-	 * '\0'. "rp" points into donaiselstrcpy if set.
+	 * Separate (any) localpart from the domain by replacing the '@' with a
+	 * '\0'. "dp" points into donaistrcpy if set.
 	 */
-	if (rp) {
-		assert(*rp == '@');
-		donaiselstrcpy[rp - donaiselstrcpy] = '\0';
-		rp++;
-	}
+	assert(*dp == '@');
+	donaistrcpy[dp - donaistrcpy] = '\0';
+	dp++;
 
-	if ((donai = a2donai_alloc(up, rp)) == NULL)
+	if ((donai = a2donai_alloc(lp, dp, nrparams)) == NULL)
 		goto err;
 
 	/* SUCCESS */
 
-	free(donaiselstrcpy);
-	donaiselstrcpy = NULL;
+	free(donaistrcpy);
 
 	return donai;
 
 err:
-	if (donaiselstrcpy)
-		free(donaiselstrcpy);
-	donaiselstrcpy = NULL;
+	if (donaistrcpy)
+		free(donaistrcpy);
 
 	return NULL;
 }
