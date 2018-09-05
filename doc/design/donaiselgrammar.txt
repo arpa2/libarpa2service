@@ -7,11 +7,13 @@ The grammar for a DoNAI Selector is given below, described in Augmented Backus-
 Naur Form (ABNF) as documented in [RFC5234].
 
 
-donaisel       = [ localstring ] "@" domsel
+donaisel       = [ localstring ] "@" domain
 
 localstring    = 1*( localchar / "+" )
 
-domsel         = 1*( localchar )
+domain         = label *( "." label ) [ root ]
+label          = 1*( basechar )
+root           = "."
 
 localchar      = basechar / "."      ; excluding "@" and "+"
 
