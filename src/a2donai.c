@@ -569,18 +569,22 @@ a2donai_match(const struct a2donai *selector, const struct a2donai *subject)
 			return 0;
 
 		/* Compare any "+" separated sections. */
-		subp = nextsubp = subject->localpart;
 		selp = nextselp = selector->localpart;
+		subp = nextsubp = subject->localpart;
 
-		/* First character must match. */
-		if (*subp != *selp)
+		/* Match if first character in selector is "+". */
+		if (*selp == '+' && *subp != '+')
 			return 0;
 
-		for (; *selp != '\0'; subp = nextsubp, selp = nextselp) {
+		for (; *selp != '\0'; selp = nextselp, subp = nextsubp) {
 			selectorlen = strcspn(selp, "+");
 			nextselp += selectorlen;
 			nextsubp += strcspn(subp, "+");
 
+			/*
+			 * If selector has another option, subject must have
+			 * another option.
+			 */
 			if (*nextselp == '+' && *nextsubp != '+')
 				return 0;
 
@@ -588,15 +592,16 @@ a2donai_match(const struct a2donai *selector, const struct a2donai *subject)
 				if (selectorlen != nextsubp - subp)
 					return 0;
 
-				if (strncmp(selp, subp, selectorlen) != 0)
+				if (strncasecmp(selp, subp, selectorlen) != 0)
 					return 0;
 			}
 
-			if (*nextsubp == '+')
-				nextsubp++;
-
+			/* Step over plus (not over '\0') */
 			if (*nextselp == '+')
 				nextselp++;
+
+			if (*nextsubp == '+')
+				nextsubp++;
 		}
 
 		/* localpart MATCH. */
