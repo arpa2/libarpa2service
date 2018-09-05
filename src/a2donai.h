@@ -33,8 +33,7 @@ struct a2donai *a2donai_fromstr(const char *);
 struct a2donai *a2donai_fromselstr(const char *);
 int a2donai_parsestr(const char *, const char **, const char **, const char **,
     int *);
-int a2donai_parseselstr(const char *, const char **, const char **,
-    const char **, int *);
+int a2donai_parseselstr(const char *, const char **, const char **);
 int a2donai_match(const struct a2donai *, const struct a2donai *);
 
 #endif /* A2DONAI_H */

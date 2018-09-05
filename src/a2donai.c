@@ -185,7 +185,7 @@ a2donai_fromselstr(const char *donaistr)
 	if ((donaistrcpy = strdup(donaistr)) == NULL)
 		goto err;
 
-	if (a2donai_parseselstr(donaistrcpy, &lp, &dp, NULL, NULL) == -1) {
+	if (a2donai_parseselstr(donaistrcpy, &lp, &dp) == -1) {
 		errno = EINVAL;
 		goto err;
 	}
@@ -423,27 +423,19 @@ done:
  *
  * If "input" is valid and has a localpart then "localpart" points to the first
  * character of "input" or NULL if there is no localpart. "domain" points to the
- * one and only "@" or otherwise the input is invalid. If "firstopt" is not NULL
- * and the localpart has one or more options then "firstopt" points to the '+'
- * of the first option in "input" or NULL if there are no options. If "nropts"
- * is passed it is set to contain the number of options in the localpart.
+ * one and only "@" or otherwise the input is invalid.
  *
  * On error "localpart" or "domain" are updated to point to the first erroneous
- * character encountered in "input" depending on where the error occurred,
- * "firstopt" and "nropts" are undefined.
+ * character encountered in "input" depending on where the error occurred.
  */
 int
 a2donai_parseselstr(const char *input, const char **localpart,
-    const char **domain, const char **firstopt, int *nropts)
+    const char **domain)
 {
-	enum states { S, LOCALPART, NEWLABEL, DOMAIN } state;
+	enum states { S, LOCALPART, DOMAIN, NEWLABEL } state;
 	const unsigned char *cp;
-	const char *fo;
-	int no;
 
 	*localpart = *domain= NULL;
-	fo = NULL;
-	no = 0;
 
 	if (input == NULL)
 		return -1;
@@ -451,32 +443,19 @@ a2donai_parseselstr(const char *input, const char **localpart,
 	for (state = S, cp = (const unsigned char *)input; *cp != '\0'; cp++) {
 		switch (state) {
 		case S:
-			if (basechar[*cp] || *cp == '.') {
+			if (basechar[*cp] || *cp == '.' || *cp == '+') {
 				*localpart = (const char *)cp;
-				state = LOCALPART;
-			} else if (*cp == '+') {
-				*localpart = (const char *)cp;
-				fo = (const char *)cp;
-				no++;
 				state = LOCALPART;
 			} else if (*cp == '@') {
 				*domain = (const char *)cp;
-				state = NEWLABEL;
+				state = DOMAIN;
 			} else
 				goto done;
 			break;
 		case LOCALPART:
 			/* fast-forward LOCALPART characters */
-			while (basechar[*cp] || *cp == '.' || *cp == '+') {
-				if (*cp == '+') {
-					if (fo == NULL)
-						fo = (const char *)cp;
-
-					no++;
-				}
+			while (basechar[*cp] || *cp == '.' || *cp == '+')
 				cp++;
-			}
-
 			/*
 			 * After while: prevent out-of-bounds cp++ in for-loop.
 			 */
@@ -485,24 +464,31 @@ a2donai_parseselstr(const char *input, const char **localpart,
 
 			if (*cp == '@') {
 				*domain = (const char *)cp;
-				state = NEWLABEL;
-			} else
-				goto done;
-			break;
-		case NEWLABEL:
-			if (basechar[*cp] || *cp == '.') {
 				state = DOMAIN;
 			} else
 				goto done;
 			break;
 		case DOMAIN:
 			/* fast-forward DOMAIN characters */
-			while (basechar[*cp] || *cp == '.')
+			while (basechar[*cp])
 				cp++;
 			/*
 			 * After while: prevent out-of-bounds cp++ in for-loop.
 			 */
-			goto done;
+			if (*cp == '\0')
+				goto done;
+
+			if (*cp == '.') {
+				state = NEWLABEL;
+			} else
+				goto done;
+			break;
+		case NEWLABEL:
+			if (basechar[*cp]) {
+				state = DOMAIN;
+			} else
+				goto done;
+			break;
 		default:
 			abort();
 		}
@@ -513,7 +499,7 @@ done:
 	 * Make sure the end of the input is reached and the state is one of the
 	 * final states.
 	 */
-	if (*cp != '\0' || state != DOMAIN) {
+	if (*cp != '\0' || (state != DOMAIN && state != NEWLABEL)) {
 
 		/*
 		 * Let "localpart" or "domain" point to first erroneous character in
@@ -540,12 +526,6 @@ done:
 
 		return -1;
 	}
-
-	if (firstopt)
-		*firstopt = fo;
-
-	if (nropts)
-		*nropts = no;
 
 	return 0;
 }
