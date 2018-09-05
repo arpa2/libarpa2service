@@ -239,6 +239,14 @@ t="john@."
 t="@."
 "$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
 
+# case-insensitive tests
+t="John@."
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+t="jOhn@."
+"$donaimatch" -q "$t" "$s" || perr_notaccept "$t" "$s"
+
+
 # DoNAI subject
 s="+smtp@mx1.example.org"
 
