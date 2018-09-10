@@ -1,0 +1,106 @@
+.\" Copyright (c) 2018 Tim Kuijsten
+.\"
+.\" Permission to use, copy, modify, and/or distribute this software for any
+.\" purpose with or without fee is hereby granted, provided that the above
+.\" copyright notice and this permission notice appear in all copies.
+.\"
+.\" THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+.\" WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+.\" MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+.\" ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+.\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+.\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+.\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+.\"
+.Dd September 7, 2018
+.Dt A2ID_ALLOC 3
+.Os
+.Sh NAME
+.Nm a2id_alloc ,
+.Nm a2id_free
+.Nd manage structures for A2IDs and A2ID Selectors
+.Sh SYNOPSIS
+.In arpa2/a2id.h
+.Ft "struct a2id *"
+.Fo a2id_alloc
+.Fa "const char *localpart"
+.Fa "const char *domain"
+.Fc
+.Ft void
+.Fn a2id_free "struct a2id *a2id"
+.Sh DESCRIPTION
+.Fn a2id_alloc
+allocates a new a2id structure.
+While
+.Fa localpart
+may be NULL,
+.Fa domain
+is required.
+After allocating a new structure it's type is set to be one of:
+.Bl -tag -width Ds
+.It A2IDT_DOMAINONLY
+If localpart is NULL
+.It A2IDT_GENERIC
+If both
+.Fa localpart
+and
+.Fa domain
+are set
+.It A2IDT_SERVICE
+If both
+.Fa localpart
+and
+.Fa domain
+are set and
+.Fa localpart
+starts with a
+.Sq +
+.El
+.Pp
+Each allocated a2id structure should be freed by the caller with
+.Fn a2id_free .
+.Pp
+.Fn a2id_free
+frees an a2id structure that was allocated by
+.Fn a2id_alloc .
+If
+.Fa a2id
+is NULL
+.Xr abort 3
+is called.
+.Sh RETURN VALUES
+.Fn a2id_alloc
+returns a newly allocated structure on success, or NULL on error with
+.Va errno
+set.
+.Pp
+.Fn a2id_free
+returns nothing but may abort if NULL is passed.
+.Sh ERRORS
+.Fn a2id_alloc
+may set
+.Va errno
+to any of the following values:
+.Bl -tag -width Er
+.It Bq Er EINVAL
+.Fa domain
+was NULL.
+.El
+.Pp
+Or any of the
+.Va errno
+values set by
+.Xr strdup 3
+or
+.Xr calloc 3 .
+.Sh SEE ALSO
+.Xr a2id_fromselstr 3 ,
+.Xr a2id_fromstr 3
+.Pp
+The grammar supported for an A2ID and A2ID Selector can be found in
+a2idgrammar.txt and a2idselgrammar.txt in the doc/design directory of the
+source code
+.Lk https://github.com/arpa2/libarpa2service repository
+.Sh AUTHOR
+.An -nosplit
+.An Tim Kuijsten Aq Mt tim@netsend.nl

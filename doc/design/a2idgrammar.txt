@@ -1,0 +1,27 @@
+ARPA2 ID Grammar
+================
+
+ARPA2 ID formal syntax.
+
+The grammar for an ARPA2 ID is given below, described in Augmented Backus-Naur
+Form (ABNF) as documented in [RFC5234].
+
+
+a2id           = [ localpart ] "@" domain
+
+localpart      = subject *( option ) /
+                 service *( option )
+subject        = localstring
+service        = "+" localstring
+option         = "+" [ localstring ]
+localstring    = 1*( localchar )
+
+domain         = label *( "." label )
+label          = 1*( basechar )
+
+localchar      = basechar / "."      ; excluding "@" and "+"
+
+basechar       = %x21-2A /           ; all visible (printing) characters, except
+                 %x2C-2D /           ; SPACE " ", DOT ".", AT "@", PLUS "+"
+                 %x2F-3F /
+                 %x41-7E

@@ -1,0 +1,135 @@
+.\" Copyright (c) 2018 Tim Kuijsten
+.\"
+.\" Permission to use, copy, modify, and/or distribute this software for any
+.\" purpose with or without fee is hereby granted, provided that the above
+.\" copyright notice and this permission notice appear in all copies.
+.\"
+.\" THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+.\" WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+.\" MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+.\" ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+.\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+.\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+.\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+.\"
+.Dd September 7, 2018
+.Dt A2ID_PARSESTR 3
+.Os
+.Sh NAME
+.Nm a2id_parsestr ,
+.Nm a2id_parseselstr
+.Nd parse an A2ID or A2ID Selector string
+.Sh SYNOPSIS
+.In arpa2/a2id.h
+.Ft int
+.Fo a2id_parsestr
+.Fa "const char *input"
+.Fa "const char **localpart"
+.Fa "const char **domain"
+.Fa "const char **firstopt"
+.Fa "int *nropts"
+.Fc
+.Ft int
+.Fo a2id_parseselstr
+.Fa "const char *input"
+.Fa "const char **localpart"
+.Fa "const char **domain"
+.Fc
+.Sh DESCRIPTION
+.Fn a2id_parsestr
+parses
+.Fa input
+as an A2ID and updates
+.Fa localpart
+to point to the first character of
+.Fa input
+or NULL if there is no localpart.
+.Fa domain
+is set to point to the
+.Sq @
+character.
+Note that each valid A2ID has exactly one
+.Sq @
+character.
+If
+.Fa firstopt
+is not NULL and the localpart has one or more options then
+.Fa firstopt
+is set to point to the
+.Sq +
+of the first option in
+.Fa input
+or NULL if there are no options.
+If
+.Fa nropts
+is passed it is set to contain the number of options in the localpart.
+.Pp
+.Fn a2id_parseselstr
+parses
+.Fa input
+as an A2ID Selector and updates
+.Fa localpart
+to point to the first character of
+.Fa input
+or NULL if there is no localpart.
+.Fa domain
+is set to point to the
+.Sq @
+character.
+Note that each valid A2ID Selector has exactly one
+.Sq @
+character.
+.Sh RETURN VALUES
+Both
+.Fn a2id_parsestr
+and
+.Fn a2id_parseselstr
+return 0 if the
+.Fa input
+is a valid A2ID or A2ID Selector, respectively.
+If
+.Fa input
+is invalid then -1 is returned and
+.Fa localpart
+and
+.Fa domain
+are updated to point to the first erroneous character encountered in
+.Fa input .
+.Pp
+If the error was encountered in the localpart of
+.Fa input
+than
+.Fa localpart
+points to the first erroneous character and
+.Fa domain
+points to NULL.
+If the error was encountered in the domain than
+.Fa domain
+points to the first erroneous character in
+.Fa input
+and
+.Fa localpart
+points to NULL.
+.Sh SEE ALSO
+.Xr a2id_fromselstr 3 ,
+.Xr a2id_fromstr 3 ,
+.Xr isgraph 3
+.Sh STANDARDS
+For the exact grammar supported by these functions see a2idgrammar.txt and
+a2idselgrammar.txt in the doc/design directory of the source code
+.Lk https://github.com/arpa2/libarpa2service repository
+.Pp
+The ARPA2 ID is inspired by the Network Access Identifier as specified in
+RFC 4282.
+.Sh AUTHOR
+.An -nosplit
+.An Tim Kuijsten Aq Mt tim@netsend.nl
+.Sh CAVEATS
+The current grammar of an A2ID only supports a subset of US-ASCII, notably the
+set supported by
+.Xr isgraph 3 .
+In the future UTF-8 should probably be supported, but special care needs to be
+taken for any Unicode characters that have the same visual representation.
+A
+good pointer to start with would be RFC 8265 and 7542 and the notes about
+normalization in these documents.
