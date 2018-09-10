@@ -1,0 +1,457 @@
+#!/bin/sh
+
+# Copyright (c) 2018 Tim Kuijsten
+#
+# Permission to use, copy, modify, and/or distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+# REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+# AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+# INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+# LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+# OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+# PERFORMANCE OF THIS SOFTWARE.
+
+######
+# Test the a2idmatch binary; the optional $1 is the executable a2idmatch
+###
+
+if [ "$#" -ge 1 ]
+then
+	a2idmatch="$1"
+else
+	a2idmatch="$(dirname $0)/../a2idmatch"
+fi
+
+_haserr=0
+
+# Print error for an erroneously accepted string.
+# $1 - the tested selector
+# $2 - the tested id
+perr_accept() {
+	_haserr=1
+	echo ERROR \""$1"\" accepts \""$2"\"
+}
+
+# Print error for an erroneously unaccepted string.
+# $1 - the tested selector
+# $2 - the tested id
+perr_notaccept() {
+	_haserr=1
+	echo ERROR \""$1"\" does not accept \""$2"\"
+}
+
+
+######
+# First test a bunch of mismatches
+###
+
+# ARPA2 ID subject
+s="\(user\)@example.net"
+
+t="@e.net"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="@.com"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="@.f"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="@.fo"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="@n"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="@ne"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+
+######
+# Now test some matches
+###
+
+# ARPA2 ID subject
+s="\(user\)@example.net"
+
+t="@."
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="@net"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="@.net"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="@net."
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="@.net."
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="\(user\)@."
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+
+######
+# Match tests from http://donai.arpa2.net/selector.html
+###
+
+# ARPA2 ID subject
+s="@example.org"
+
+t="@."
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="@.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="@example.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+# ARPA2 ID subject
+s="john@example.org"
+
+t="john@example.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="@example.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="john@.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="@.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="john@."
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="@."
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+
+######
+# Tests from http://donai.arpa2.net/selector.html considering sub-names.
+###
+
+# ARPA2 ID subject
+s="sales+john@example.org"
+
+t="sales+john@example.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="sales+@example.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="sales@example.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="@example.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="sales+john@.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="sales+@.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="sales@.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="@.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="sales+john@."
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="sales+@."
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="sales@."
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="@."
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+# ARPA2 ID subject
+s="john+singer@example.org"
+
+t="john+singer@example.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="@example.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="john+singer@.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="@.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="john+singer@."
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="@."
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+
+# ARPA2 ID subject
+s="john+sigtmpl+sig+@example.org"
+
+t="john++sig+@example.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="john+@example.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="john++@example.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="john+sigtmpl@example.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="john+sigtmpl+@example.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="@example.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="john+sigtmpl@.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="@.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="john+sigtmpl@."
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="@."
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+# ARPA2 ID subject
+s="john@example.org"
+
+t="john@example.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="@example.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="john@.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="@.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="john@."
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="@."
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+# case-insensitive tests
+t="John@."
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="jOhn@."
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+
+# ARPA2 ID subject
+s="+smtp@mx1.example.org"
+
+t="+smtp@mx1.example.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="+@mx1.example.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="+smtp@.example.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="+@.example.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="+smtp@.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="+@.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="+smtp@."
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="+@."
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+
+######
+# Same but mismatch tests
+###
+
+# ARPA2 ID subject
+s="@example.org"
+
+t="@.example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+# ARPA2 ID subject
+s="john@example.org"
+
+t="john@.example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="john+@example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="john+@.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="john+@."
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="@.example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="john@nexample.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="john@example."
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="john@.example"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="john@.example."
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="@.."
+"$a2idmatch" -q "$s" "$t" 2>/dev/null && perr_accept "$s" "$t"
+
+
+######
+# Mismatch sub-name tests from http://donai.arpa2.net/selector.html considering.
+###
+
+# ARPA2 ID subject
+s="sales+john@example.org"
+
+t="sales+john@.example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="sales+@.example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="sales-@example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="+@example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="sales+john+@.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="sales+@.org.sales"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="sales@.org.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="@.org.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="sales+john@.example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="sales+mary@."
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="john+@example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="@.example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="john@.org.org."
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="sales+j@example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="sales+joh@example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="sales+joh+@example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="saless+john@example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="sales+john@eexample.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="sales+johna@example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="sales+john+@example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="sales.john@example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="john+sales@example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="salesjohn@example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+# ARPA2 ID subject
+s="john+sigtmpl+sig+@example.org"
+
+t="+@example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="++@example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="+++@example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="++++@example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="john+sig@example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="john+sig+@example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="john+sigtmpl+si@example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="john+sigtmpl+si+@example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="john+sigtmpl+sig++@example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="joh+@example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="johnn+@example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+t="+john+sigtmpl+sig+@example.org"
+"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
+
+###
+# Finish up
+
+if [ "$_haserr" -ne 0 ]; then
+	# assume errors are already printed
+	exit 1
+fi

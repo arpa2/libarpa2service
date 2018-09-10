@@ -1,0 +1,67 @@
+.\" Copyright (c) 2018 Tim Kuijsten
+.\"
+.\" Permission to use, copy, modify, and/or distribute this software for any
+.\" purpose with or without fee is hereby granted, provided that the above
+.\" copyright notice and this permission notice appear in all copies.
+.\"
+.\" THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+.\" WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+.\" MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+.\" ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+.\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+.\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+.\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+.\"
+.Dd September 8, 2018
+.Dt A2IDMATCH 1
+.Os
+.Sh NAME
+.Nm a2idmatch
+.Nd test whether an ARPA2 identifier matches a selector
+.Sh SYNOPSIS
+.Nm
+.Op Fl hqv
+.Ar a2id
+.Ar selector
+.Sh DESCRIPTION
+The
+.Nm
+utility tests whether a given A2ID matches with an A2ID selector.
+.Pp
+It's arguments are as follows.
+.Bl -tag -width Ds
+.It Fl h
+Print usage.
+.It Fl q
+Be quiet and don't write to stdout. Exit 0 if
+.Ar a2id
+matches with
+.Ar selector ,
+or exit 2 if not.
+.It Fl v
+Be more verbose.
+.It Ar a2id
+The ARPA2 ID to test.
+.It Ar selector
+The ARPA2 ID Selector to use when testing
+.Ar a2id .
+.El
+.Sh EXIT STATUS
+The
+.Nm
+utility exits 0 if
+.Ar a2id
+matches with
+.Ar selector ,
+2 if there is a mismatch, and 1 if an error occured.
+.Sh SEE ALSO
+For the exact grammar supported by A2ID and A2ID Selector see
+a2idgrammar.txt and a2idselgrammar.txt in the doc/design directory of the
+source code
+.Lk https://github.com/arpa2/libarpa2service repository
+.Pp
+The ARPA2 ID is inspired by the Network Access Identifier as specified in
+RFC 4282.
+.Sh AUTHOR
+.An -nosplit
+.An Tim Kuijsten Aq Mt tim@netsend.nl

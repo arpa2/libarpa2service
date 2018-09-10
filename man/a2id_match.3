@@ -1,0 +1,51 @@
+.\" Copyright (c) 2018 Tim Kuijsten
+.\"
+.\" Permission to use, copy, modify, and/or distribute this software for any
+.\" purpose with or without fee is hereby granted, provided that the above
+.\" copyright notice and this permission notice appear in all copies.
+.\"
+.\" THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+.\" WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+.\" MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+.\" ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+.\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+.\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+.\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+.\"
+.Dd September 7, 2018
+.Dt A2ID_MATCH 3
+.Os
+.Sh NAME
+.Nm a2id_match
+.Nd match an A2ID with an A2ID Selector
+.Sh SYNOPSIS
+.In arpa2/a2id.h
+.Ft int
+.Fo a2id_match
+.Fa "const struct a2id *subject"
+.Fa "const struct a2id *selector"
+.Fc
+.Sh DESCRIPTION
+.Fn a2id_match
+tests whether
+.Fa subject
+is matched with
+.Fa selector
+or not.
+.Sh RETURN VALUES
+If
+.Fa subject
+matches
+.Fa selector
+1 is returned, 0 otherwise.
+.Sh SEE ALSO
+.Xr a2id_fromselstr 3 ,
+.Xr a2id_fromstr 3
+.Pp
+The grammar supported for an A2ID and A2ID Selector can be found in
+a2idgrammar.txt and a2idselgrammar.txt in the doc/design directory of the
+source code
+.Lk https://github.com/arpa2/libarpa2service repository
+.Sh AUTHOR
+.An -nosplit
+.An Tim Kuijsten Aq Mt tim@netsend.nl
