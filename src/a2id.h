@@ -36,7 +36,7 @@ struct a2id {
 };
 
 struct a2id *a2id_alloc(const char *, const char *);
-void a2id_free(struct a2id *);
+void a2id_free(struct a2id **);
 struct a2id *a2id_fromstr(const char *);
 struct a2id *a2id_fromselstr(const char *);
 int a2id_parsestr(const char *, const char **, const char **, const char **,

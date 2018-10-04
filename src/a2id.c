@@ -63,7 +63,7 @@ a2id_alloc(const char *localpart, const char *domain)
 
 err:
 	if (a2id)
-		a2id_free(a2id);
+		a2id_free(&a2id);
 
 	/* assume errno is set */
 	return NULL;
@@ -73,21 +73,23 @@ err:
  * Free an a2id structure.
  */
 void
-a2id_free(struct a2id *a2id)
+a2id_free(struct a2id **a2id)
 {
-	assert(a2id != NULL);
+	if (*a2id == NULL)
+		return;
 
-	if (a2id->localpart) {
-		free(a2id->localpart);
-		a2id->localpart = NULL;
+	if ((*a2id)->localpart) {
+		free((*a2id)->localpart);
+		(*a2id)->localpart = NULL;
 	}
 
-	if (a2id->domain) {
-		free(a2id->domain);
-		a2id->domain = NULL;
+	if ((*a2id)->domain) {
+		free((*a2id)->domain);
+		(*a2id)->domain = NULL;
 	}
 
-	free(a2id);
+	free(*a2id);
+	*a2id = NULL;
 }
 
 /*

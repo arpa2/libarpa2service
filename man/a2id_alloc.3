@@ -27,7 +27,7 @@
 .Fa "const char *domain"
 .Fc
 .Ft void
-.Fn a2id_free "struct a2id *a2id"
+.Fn a2id_free "struct a2id **a2id"
 .Sh DESCRIPTION
 .Fn a2id_alloc
 allocates a new a2id structure.
@@ -63,11 +63,9 @@ Each allocated a2id structure should be freed by the caller with
 .Fn a2id_free
 frees an a2id structure that was allocated by
 .Fn a2id_alloc .
-If
 .Fa a2id
-is NULL
-.Xr abort 3
-is called.
+is set to point to
+.Dv NULL .
 .Sh RETURN VALUES
 .Fn a2id_alloc
 returns a newly allocated structure on success, or NULL on error with
