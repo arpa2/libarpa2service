@@ -24,18 +24,26 @@
 #include "a2id.h"
 
 /*
- * Allocate a new a2id structure. "localpart" may be NULL, "domain" must not be
- * NULL.
+ * Allocate a new a2id structure. "domain" is required. "localpart" and
+ * "firstopt" may be NULL. If "localpart" is not null than "firstopt" must not
+ * be null. If "localpart" has no options than "firstopt" must point to it's
+ * terminating '\0' character otherwise to the first '+' in "localpart".
  *
  * Return a newly allocated a2id structure on success that should be freed by
  * a2id_free when done. Return NULL on error with errno set.
  */
 struct a2id *
-a2id_alloc(const char *localpart, const char *domain)
+a2id_alloc(const char *domain, const char *localpart, const char *firstopt)
 {
 	struct a2id *a2id;
 
 	if (domain == NULL) {
+		errno = EINVAL;
+		return NULL;
+	}
+
+	/* Both set or both unset. */
+	if (!localpart != !firstopt) {
 		errno = EINVAL;
 		return NULL;
 	}
@@ -47,8 +55,25 @@ a2id_alloc(const char *localpart, const char *domain)
 	a2id->type = A2IDT_DOMAINONLY;
 
 	if (localpart) {
+		if (localpart > firstopt) {
+			errno = EINVAL;
+			goto err;
+		}
+
+		if (strlen(localpart) < (firstopt - localpart)) {
+			errno = EINVAL;
+			goto err;
+		}
+
+		if (*firstopt != '+' && *firstopt != '\0') {
+			errno = EINVAL;
+			goto err;
+		}
+
 		if ((a2id->localpart = strdup(localpart)) == NULL)
 			goto err; /* errno is set by strdup */
+
+		a2id->firstopt = a2id->localpart + (firstopt - localpart);
 
 		if (*localpart == '+')
 			a2id->type = A2IDT_SERVICE;
@@ -81,6 +106,7 @@ a2id_free(struct a2id **a2id)
 	if ((*a2id)->localpart) {
 		free((*a2id)->localpart);
 		(*a2id)->localpart = NULL;
+		(*a2id)->firstopt = NULL;
 	}
 
 	if ((*a2id)->domain) {

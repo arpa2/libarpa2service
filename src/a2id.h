@@ -33,9 +33,10 @@ struct a2id {
 	char *localpart;
 	char *domain;
 	enum A2ID_TYPE type;
+	char *firstopt;
 };
 
-struct a2id *a2id_alloc(const char *, const char *);
+struct a2id *a2id_alloc(const char *, const char *, const char *);
 void a2id_free(struct a2id **);
 struct a2id *a2id_fromstr(const char *);
 struct a2id *a2id_fromselstr(const char *);
