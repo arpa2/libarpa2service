@@ -33,13 +33,15 @@
 allocates a new a2id structure.
 While
 .Fa localpart
-may be NULL,
+may be
+.Dv NULL ,
 .Fa domain
 is required.
 After allocating a new structure it's type is set to be one of:
 .Bl -tag -width Ds
 .It A2IDT_DOMAINONLY
-If localpart is NULL
+If localpart is
+.Dv NULL
 .It A2IDT_GENERIC
 If both
 .Fa localpart
@@ -68,12 +70,16 @@ is set to point to
 .Dv NULL .
 .Sh RETURN VALUES
 .Fn a2id_alloc
-returns a newly allocated structure on success, or NULL on error with
+returns a newly allocated structure on success, or
+.Dv NULL
+on error with
 .Va errno
 set.
 .Pp
 .Fn a2id_free
-returns nothing but may abort if NULL is passed.
+returns nothing but may abort if
+.Dv NULL
+is passed.
 .Sh ERRORS
 .Fn a2id_alloc
 may set
@@ -82,7 +88,8 @@ to any of the following values:
 .Bl -tag -width Er
 .It Bq Er EINVAL
 .Fa domain
-was NULL.
+was
+.Dv NULL .
 .El
 .Pp
 Or any of the

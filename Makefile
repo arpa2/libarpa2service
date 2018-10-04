@@ -38,15 +38,15 @@ install: liba2id.a a2idmatch
 	cp doc/man/*.1 /usr/local/share/man/man1/
 
 manhtml:
-	mandoc -T html -Ostyle=man.css doc/man/a2idmatch.1 > \
+	mandoc -T html -Ostyle=man.css man/a2idmatch.1 > \
 	build/a2idmatch.1.html
-	mandoc -T html -Ostyle=man.css doc/man/a2id_alloc.3 > \
+	mandoc -T html -Ostyle=man.css man/a2id_alloc.3 > \
 	build/a2id_alloc.3.html
-	mandoc -T html -Ostyle=man.css doc/man/a2id_fromstr.3 > \
+	mandoc -T html -Ostyle=man.css man/a2id_fromstr.3 > \
 	build/a2id_fromstr.3.html
-	mandoc -T html -Ostyle=man.css doc/man/a2id_match.3 > \
+	mandoc -T html -Ostyle=man.css man/a2id_match.3 > \
 	build/a2id_match.3.html
-	mandoc -T html -Ostyle=man.css doc/man/a2id_parsestr.3 > \
+	mandoc -T html -Ostyle=man.css man/a2id_parsestr.3 > \
 	build/a2id_parsestr.3.html
 
 fsmpngsvg:
