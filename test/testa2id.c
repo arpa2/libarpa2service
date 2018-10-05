@@ -51,6 +51,7 @@ test_a2id_parsestr(void)
 	assert(localpart == &input[0]);
 	assert(domain == &input[3]);
 	assert(firstparam == &input[1]);
+	assert(firstparam - localpart == 1);
 	assert(nrparams == 1);
 
 	input = "a+b+@example.com";
@@ -59,6 +60,7 @@ test_a2id_parsestr(void)
 	assert(localpart == &input[0]);
 	assert(domain == &input[4]);
 	assert(firstparam == &input[1]);
+	assert(firstparam - localpart == 1);
 	assert(nrparams == 2);
 
 	input = "a+b+c@example.com";
@@ -67,6 +69,7 @@ test_a2id_parsestr(void)
 	assert(localpart == &input[0]);
 	assert(domain == &input[5]);
 	assert(firstparam == &input[1]);
+	assert(firstparam - localpart == 1);
 	assert(nrparams == 2);
 
 	input = "~@example.com";
@@ -115,6 +118,7 @@ test_a2id_parsestr(void)
 	assert(localpart == &input[0]);
 	assert(domain == &input[2]);
 	assert(firstparam == &input[1]);
+	assert(firstparam - localpart == 1);
 	assert(nrparams == 1);
 
 	input = "a++b@example.com";
@@ -123,6 +127,7 @@ test_a2id_parsestr(void)
 	assert(localpart == &input[0]);
 	assert(domain == &input[4]);
 	assert(firstparam == &input[1]);
+	assert(firstparam - localpart == 1);
 	assert(nrparams == 2);
 
 	input = "+a++b@example.com";
@@ -131,6 +136,7 @@ test_a2id_parsestr(void)
 	assert(localpart == &input[0]);
 	assert(domain == &input[5]);
 	assert(firstparam == &input[2]);
+	assert(firstparam - localpart == 2);
 	assert(nrparams == 2);
 
 	input = "++@example.com";

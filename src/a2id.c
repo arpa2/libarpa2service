@@ -294,10 +294,10 @@ static const char basechar[256] = {
  *
  * If "input" is valid and has a localpart then "localpart" points to the first
  * character of "input" or NULL if there is no localpart. "domain" points to the
- * one and only "@" or otherwise the input is invalid. If "firstopt" is not NULL
- * and the localpart has one or more options then "firstopt" points to the '+'
- * of the first option in "input" or NULL if there are no options. If "nropts"
- * is passed it is set to contain the number of options in the localpart.
+ * one and only "@" or otherwise the input is invalid. If the localpart has one
+ * or more options then "firstopt" points to the '+' of the first option in
+ * "input" or NULL if there are no options. If "nropts" is passed it is set to
+ * contain the number of options in the localpart.
  *
  * On error "localpart" or "domain" are updated to point to the first erroneous
  * character encountered in "input" depending on where the error occurred,
@@ -437,8 +437,7 @@ done:
 		return -1;
 	}
 
-	if (firstopt)
-		*firstopt = fo;
+	*firstopt = fo;
 
 	if (nropts)
 		*nropts = no;
