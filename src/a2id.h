@@ -42,7 +42,8 @@ struct a2id *a2id_fromstr(const char *);
 struct a2id *a2id_fromselstr(const char *);
 int a2id_parsestr(const char *, const char **, const char **, const char **,
     int *);
-int a2id_parseselstr(const char *, const char **, const char **);
+int a2id_parseselstr(const char *, const char **, const char **, const char **,
+    int *);
 int a2id_match(const struct a2id *, const struct a2id *);
 
 #endif /* A2ID_H */

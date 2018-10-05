@@ -34,6 +34,8 @@
 .Fa "const char *input"
 .Fa "const char **localpart"
 .Fa "const char **domain"
+.Fa "const char **firstopt"
+.Fa "int *nropts"
 .Fc
 .Sh DESCRIPTION
 .Fn a2id_parsestr
@@ -83,6 +85,18 @@ character.
 Note that each valid A2ID Selector has exactly one
 .Sq @
 character.
+If the localpart has one or more options then
+.Fa firstopt
+points to the
+.Sq +
+of the first option in
+.Fa input
+or
+.Dv NULL
+if there are no options.
+If
+.Fa nropts
+is passed it is set to contain the number of options in the localpart.
 .Sh RETURN VALUES
 Both
 .Fn a2id_parsestr

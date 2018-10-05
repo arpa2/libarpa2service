@@ -152,6 +152,178 @@ test_a2id_parsestr(void)
 	assert(domain == NULL);
 }
 
+void
+test_a2id_parseselstr(void)
+{
+	const char *input, *localpart, *domain, *firstparam;
+	int r, nrparams;
+
+	/* Run some tests. */
+
+	input = "foo@example.org";
+	r = a2id_parseselstr(input, &localpart, &domain, &firstparam, &nrparams);
+	assert(r == 0);
+	assert(localpart == &input[0]);
+	assert(domain == &input[3]);
+	assert(firstparam == NULL);
+	assert(nrparams == 0);
+
+	input = "!foo@example.com";
+	r = a2id_parseselstr(input, &localpart, &domain, &firstparam, &nrparams);
+	assert(r == 0);
+	assert(localpart == &input[0]);
+	assert(domain == &input[4]);
+	assert(firstparam == NULL);
+	assert(nrparams == 0);
+
+	input = "a+b@example.com";
+	r = a2id_parseselstr(input, &localpart, &domain, &firstparam, &nrparams);
+	assert(r == 0);
+	assert(localpart == &input[0]);
+	assert(domain == &input[3]);
+	assert(firstparam == &input[1]);
+	assert(firstparam - localpart == 1);
+	assert(nrparams == 1);
+
+	input = "a+b+@example.com";
+	r = a2id_parseselstr(input, &localpart, &domain, &firstparam, &nrparams);
+	assert(r == 0);
+	assert(localpart == &input[0]);
+	assert(domain == &input[4]);
+	assert(firstparam == &input[1]);
+	assert(firstparam - localpart == 1);
+	assert(nrparams == 2);
+
+	input = "a+b+c@example.com";
+	r = a2id_parseselstr(input, &localpart, &domain, &firstparam, &nrparams);
+	assert(r == 0);
+	assert(localpart == &input[0]);
+	assert(domain == &input[5]);
+	assert(firstparam == &input[1]);
+	assert(firstparam - localpart == 1);
+	assert(nrparams == 2);
+
+	input = "~@example.com";
+	r = a2id_parseselstr(input, &localpart, &domain, &firstparam, &nrparams);
+	assert(r == 0);
+	assert(localpart == &input[0]);
+	assert(domain == &input[1]);
+	assert(firstparam == NULL);
+	assert(nrparams == 0);
+
+	input = " @example.com";
+	r = a2id_parseselstr(input, &localpart, &domain, &firstparam, &nrparams);
+	assert(r == -1);
+	assert(localpart == &input[0]);
+	assert(domain == NULL);
+
+	input = "@.";
+	r = a2id_parseselstr(input, &localpart, &domain, &firstparam, &nrparams);
+	assert(r == 0);
+	assert(localpart == NULL);
+	assert(domain == &input[0]);
+	assert(firstparam == NULL);
+	assert(nrparams == 0);
+
+	input = "@";
+	r = a2id_parseselstr(input, &localpart, &domain, &firstparam, &nrparams);
+	assert(r == 0);
+	assert(localpart == NULL);
+	assert(domain == &input[0]);
+	assert(firstparam == NULL);
+	assert(nrparams == 0);
+
+	input = "\x7f@example.com";
+	r = a2id_parseselstr(input, &localpart, &domain, &firstparam, &nrparams);
+	assert(r == -1);
+	assert(localpart == &input[0]);
+	assert(domain == NULL);
+
+	input = "+a@example.com";
+	r = a2id_parseselstr(input, &localpart, &domain, &firstparam, &nrparams);
+	assert(r == 0);
+	assert(localpart == &input[0]);
+	assert(domain == &input[2]);
+	assert(firstparam == NULL);
+	assert(nrparams == 0);
+
+	input = "+@example.com";
+	r = a2id_parseselstr(input, &localpart, &domain, &firstparam, &nrparams);
+	assert(r == 0);
+	assert(localpart == &input[0]);
+	assert(domain == &input[1]);
+	assert(firstparam == NULL);
+	assert(nrparams == 0);
+
+	input = "+@.";
+	r = a2id_parseselstr(input, &localpart, &domain, &firstparam, &nrparams);
+	assert(r == 0);
+	assert(localpart == &input[0]);
+	assert(domain == &input[1]);
+	assert(firstparam == NULL);
+	assert(nrparams == 0);
+
+	input = "a+@example.com";
+	r = a2id_parseselstr(input, &localpart, &domain, &firstparam, &nrparams);
+	assert(r == 0);
+	assert(localpart == &input[0]);
+	assert(domain == &input[2]);
+	assert(firstparam == &input[1]);
+	assert(firstparam - localpart == 1);
+	assert(nrparams == 1);
+
+	input = "a++b@example.com";
+	r = a2id_parseselstr(input, &localpart, &domain, &firstparam, &nrparams);
+	assert(r == 0);
+	assert(localpart == &input[0]);
+	assert(domain == &input[4]);
+	assert(firstparam == &input[1]);
+	assert(firstparam - localpart == 1);
+	assert(nrparams == 2);
+
+	input = "+a++b@example.com";
+	r = a2id_parseselstr(input, &localpart, &domain, &firstparam, &nrparams);
+	assert(r == 0);
+	assert(localpart == &input[0]);
+	assert(domain == &input[5]);
+	assert(firstparam == &input[2]);
+	assert(firstparam - localpart == 2);
+	assert(nrparams == 2);
+
+	input = "++@example.com";
+	r = a2id_parseselstr(input, &localpart, &domain, &firstparam, &nrparams);
+	assert(r == 0);
+	assert(localpart == &input[0]);
+	assert(domain == &input[2]);
+	assert(firstparam == &input[1]);
+	assert(firstparam - localpart == 1);
+	assert(nrparams == 1);
+
+	input = "+++++@";
+	r = a2id_parseselstr(input, &localpart, &domain, &firstparam, &nrparams);
+	assert(r == 0);
+	assert(localpart == &input[0]);
+	assert(domain == &input[5]);
+	assert(firstparam == &input[1]);
+	assert(firstparam - localpart == 1);
+	assert(nrparams == 4);
+
+	input = "foo! bar~\177@example.com";
+	r = a2id_parseselstr(input, &localpart, &domain, &firstparam, &nrparams);
+	assert(r == -1);
+	assert(localpart == &input[4]);
+	assert(domain == NULL);
+
+	input = "+abc++++@";
+	r = a2id_parseselstr(input, &localpart, &domain, &firstparam, &nrparams);
+	assert(r == 0);
+	assert(localpart == &input[0]);
+	assert(domain == &input[8]);
+	assert(firstparam == &input[4]);
+	assert(firstparam - localpart == 4);
+	assert(nrparams == 4);
+}
+
 /* Test if a string can be converted to an ARPA2 ID structure. */
 void
 test_a2id_fromstr(void)
@@ -340,6 +512,7 @@ int
 main(void)
 {
 	test_a2id_parsestr();
+	test_a2id_parseselstr();
 	test_a2id_fromstr();
 
 	return 0;

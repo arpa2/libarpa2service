@@ -201,12 +201,12 @@ struct a2id *
 a2id_fromselstr(const char *a2idstr)
 {
 	struct a2id *a2id;
-	const char *lp, *dp;
+	const char *lp, *dp, *fp;
 	char *a2idstrcpy;
 	size_t len;
 
 	a2id = NULL;
-	lp = dp = NULL;
+	dp = lp = fp = NULL;
 	a2idstrcpy = NULL;
 	len = 0;
 
@@ -224,20 +224,29 @@ a2id_fromselstr(const char *a2idstr)
 	if ((a2idstrcpy = strdup(a2idstr)) == NULL)
 		goto err;
 
-	if (a2id_parseselstr(a2idstrcpy, &lp, &dp) == -1) {
+	if (a2id_parseselstr(a2idstrcpy, &lp, &dp, &fp, NULL) == -1) {
 		errno = EINVAL;
 		goto err;
 	}
 
 	/*
+	 * If there is a localpart without options, let fp point to the end of
+	 * the localpart.
+	 * dp points the '@' in a2idstrcpy.
+	 */
+	if (lp && !fp)
+		fp = dp;
+
+	/*
 	 * Separate (any) localpart from the domain by replacing the '@' with a
-	 * '\0'. "dp" points into a2idstrcpy.
+	 * '\0'.
+	 * dp points the '@' in a2idstrcpy.
 	 */
 	assert(*dp == '@');
 	a2idstrcpy[dp - a2idstrcpy] = '\0';
 	dp++;
 
-	if ((a2id = a2id_alloc(lp, dp)) == NULL)
+	if ((a2id = a2id_alloc(dp, lp, fp)) == NULL)
 		goto err;
 
 	/* SUCCESS */
@@ -461,19 +470,27 @@ done:
  *
  * If "input" is valid and has a localpart then "localpart" points to the first
  * character of "input" or NULL if there is no localpart. "domain" points to the
- * one and only "@" or otherwise the input is invalid.
+ * one and only "@" or otherwise the input is invalid. If the localpart has one
+ * or more options then "firstopt" points to the '+' of the first option in
+ * "input" or NULL if there are no options. If "nropts" is passed it is set to
+ * contain the number of options in the localpart.
  *
  * On error "localpart" or "domain" are updated to point to the first erroneous
- * character encountered in "input" depending on where the error occurred.
+ * character encountered in "input" depending on where the error occurred,
+ * "firstopt" and "nropts" are undefined.
  */
 int
-a2id_parseselstr(const char *input, const char **localpart,
-    const char **domain)
+a2id_parseselstr(const char *input, const char **localpart, const char **domain,
+    const char **firstopt, int *nropts)
 {
 	enum states { S, LOCALPART, DOMAIN, NEWLABEL } state;
 	const unsigned char *cp;
+	const char *fo;
+	int no;
 
 	*localpart = *domain= NULL;
+	fo = NULL;
+	no = 0;
 
 	if (input == NULL)
 		return -1;
@@ -492,7 +509,7 @@ a2id_parseselstr(const char *input, const char **localpart,
 			break;
 		case LOCALPART:
 			/* fast-forward LOCALPART characters */
-			while (basechar[*cp] || *cp == '.' || *cp == '+')
+			while (basechar[*cp] || *cp == '.')
 				cp++;
 			/*
 			 * After while: prevent out-of-bounds cp++ in for-loop.
@@ -500,7 +517,12 @@ a2id_parseselstr(const char *input, const char **localpart,
 			if (*cp == '\0')
 				goto done;
 
-			if (*cp == '@') {
+			if (*cp == '+') {
+				if (fo == NULL)
+					fo = (const char *)cp;
+
+				no++;
+			} else if (*cp == '@') {
 				*domain = (const char *)cp;
 				state = DOMAIN;
 			} else
@@ -564,6 +586,11 @@ done:
 
 		return -1;
 	}
+
+	*firstopt = fo;
+
+	if (nropts)
+		*nropts = no;
 
 	return 0;
 }
