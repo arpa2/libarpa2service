@@ -45,14 +45,17 @@ and
 return a newly allocated a2id structure on success that should be freed with
 .Xr a2id_free 3
 when done.
-On error NULL is returned with
+On error
+.Dv NULL
+is returned with
 .Dv errno
 set.
 .Sh ERRORS
 .Bl -tag -width Er
 .It Bq Er EINVAL
 .Fa a2idstrcpy
-contains an invalid string or is NULL.
+contains an invalid string or is
+.Dv NULL .
 .El
 .Sh SEE ALSO
 .Xr a2id_free 3 ,
