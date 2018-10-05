@@ -129,12 +129,12 @@ struct a2id *
 a2id_fromstr(const char *a2idstr)
 {
 	struct a2id *a2id;
-	const char *lp, *dp;
+	const char *lp, *dp, *fp;
 	char *a2idstrcpy;
 	size_t len;
 
 	a2id = NULL;
-	lp = dp = NULL;
+	dp = lp = fp = NULL;
 	a2idstrcpy = NULL;
 	len = 0;
 
@@ -152,20 +152,29 @@ a2id_fromstr(const char *a2idstr)
 	if ((a2idstrcpy = strdup(a2idstr)) == NULL)
 		goto err;
 
-	if (a2id_parsestr(a2idstrcpy, &lp, &dp, NULL, NULL) == -1) {
+	if (a2id_parsestr(a2idstrcpy, &lp, &dp, &fp, NULL) == -1) {
 		errno = EINVAL;
 		goto err;
 	}
 
 	/*
+	 * If there is a localpart without options, let fp point to the end of
+	 * the localpart.
+	 * dp points the '@' in a2idstrcpy.
+	 */
+	if (lp && !fp)
+		fp = dp;
+
+	/*
 	 * Separate (any) localpart from the domain by replacing the '@' with a
-	 * '\0'. "dp" points into a2idstrcpy.
+	 * '\0'.
+	 * dp points the '@' in a2idstrcpy.
 	 */
 	assert(*dp == '@');
 	a2idstrcpy[dp - a2idstrcpy] = '\0';
 	dp++;
 
-	if ((a2id = a2id_alloc(lp, dp)) == NULL)
+	if ((a2id = a2id_alloc(dp, lp, fp)) == NULL)
 		goto err;
 
 	/* SUCCESS */

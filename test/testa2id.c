@@ -169,6 +169,8 @@ test_a2id_fromstr(void)
 	id = a2id_fromstr("user@example.com");
 	assert(id != NULL);
 	assert(strcmp(id->localpart, "user") == 0);
+	assert(*id->firstopt == '\0');
+	assert(id->firstopt - id->localpart == 4);
 	assert(strcmp(id->domain, "example.com") == 0);
 	assert(id->type == A2IDT_GENERIC);
 	a2id_free(&id);
@@ -176,6 +178,8 @@ test_a2id_fromstr(void)
 	id = a2id_fromstr("user+subid@example.com");
 	assert(id != NULL);
 	assert(strcmp(id->localpart, "user+subid") == 0);
+	assert(*id->firstopt == '+');
+	assert(id->firstopt - id->localpart == 4);
 	assert(strcmp(id->domain, "example.com") == 0);
 	assert(id->type == A2IDT_GENERIC);
 	a2id_free(&id);
@@ -183,6 +187,8 @@ test_a2id_fromstr(void)
 	id = a2id_fromstr("user+flags+signature@example.com");
 	assert(id != NULL);
 	assert(strcmp(id->localpart, "user+flags+signature") == 0);
+	assert(*id->firstopt == '+');
+	assert(id->firstopt - id->localpart == 4);
 	assert(strcmp(id->domain, "example.com") == 0);
 	assert(id->type == A2IDT_GENERIC);
 	a2id_free(&id);
@@ -190,6 +196,8 @@ test_a2id_fromstr(void)
 	id = a2id_fromstr("+service+arg1+arg2@example.com");
 	assert(id != NULL);
 	assert(strcmp(id->localpart, "+service+arg1+arg2") == 0);
+	assert(*id->firstopt == '+');
+	assert(id->firstopt - id->localpart == 8);
 	assert(strcmp(id->domain, "example.com") == 0);
 	assert(id->type == A2IDT_SERVICE);
 	a2id_free(&id);
@@ -198,6 +206,8 @@ test_a2id_fromstr(void)
 	id = a2id_fromstr("joe@example.com");
 	assert(id != NULL);
 	assert(strcmp(id->localpart, "joe") == 0);
+	assert(*id->firstopt == '\0');
+	assert(id->firstopt - id->localpart == 3);
 	assert(strcmp(id->domain, "example.com") == 0);
 	assert(id->type == A2IDT_GENERIC);
 	a2id_free(&id);
@@ -205,6 +215,8 @@ test_a2id_fromstr(void)
 	id = a2id_fromstr("fred@foo-9.example.com");
 	assert(id != NULL);
 	assert(strcmp(id->localpart, "fred") == 0);
+	assert(*id->firstopt == '\0');
+	assert(id->firstopt - id->localpart == 4);
 	assert(strcmp(id->domain, "foo-9.example.com") == 0);
 	assert(id->type == A2IDT_GENERIC);
 	a2id_free(&id);
@@ -212,6 +224,8 @@ test_a2id_fromstr(void)
 	id = a2id_fromstr("jack@3rd.depts.example.com");
 	assert(id != NULL);
 	assert(strcmp(id->localpart, "jack") == 0);
+	assert(*id->firstopt == '\0');
+	assert(id->firstopt - id->localpart == 4);
 	assert(strcmp(id->domain, "3rd.depts.example.com") == 0);
 	assert(id->type == A2IDT_GENERIC);
 	a2id_free(&id);
@@ -219,6 +233,8 @@ test_a2id_fromstr(void)
 	id = a2id_fromstr("fred.smith@example.com");
 	assert(id != NULL);
 	assert(strcmp(id->localpart, "fred.smith") == 0);
+	assert(*id->firstopt == '\0');
+	assert(id->firstopt - id->localpart == 10);
 	assert(strcmp(id->domain, "example.com") == 0);
 	assert(id->type == A2IDT_GENERIC);
 	a2id_free(&id);
@@ -226,6 +242,8 @@ test_a2id_fromstr(void)
 	id = a2id_fromstr("fred_smith@example.com");
 	assert(id != NULL);
 	assert(strcmp(id->localpart, "fred_smith") == 0);
+	assert(*id->firstopt == '\0');
+	assert(id->firstopt - id->localpart == 10);
 	assert(strcmp(id->domain, "example.com") == 0);
 	assert(id->type == A2IDT_GENERIC);
 	a2id_free(&id);
@@ -233,6 +251,8 @@ test_a2id_fromstr(void)
 	id = a2id_fromstr("fred$@example.com");
 	assert(id != NULL);
 	assert(strcmp(id->localpart, "fred$") == 0);
+	assert(*id->firstopt == '\0');
+	assert(id->firstopt - id->localpart == 5);
 	assert(strcmp(id->domain, "example.com") == 0);
 	assert(id->type == A2IDT_GENERIC);
 	a2id_free(&id);
@@ -240,6 +260,8 @@ test_a2id_fromstr(void)
 	id = a2id_fromstr("fred=?#$&*+-/^smith@example.com");
 	assert(id != NULL);
 	assert(strcmp(id->localpart, "fred=?#$&*+-/^smith") == 0);
+	assert(*id->firstopt == '+');
+	assert(id->firstopt - id->localpart == 10);
 	assert(strcmp(id->domain, "example.com") == 0);
 	assert(id->type == A2IDT_GENERIC);
 	a2id_free(&id);
@@ -247,6 +269,8 @@ test_a2id_fromstr(void)
 	id = a2id_fromstr("nancy@eng.example.net");
 	assert(id != NULL);
 	assert(strcmp(id->localpart, "nancy") == 0);
+	assert(*id->firstopt == '\0');
+	assert(id->firstopt - id->localpart == 5);
 	assert(strcmp(id->domain, "eng.example.net") == 0);
 	assert(id->type == A2IDT_GENERIC);
 	a2id_free(&id);
@@ -254,6 +278,8 @@ test_a2id_fromstr(void)
 	id = a2id_fromstr("eng.example.net!nancy@example.net");
 	assert(id != NULL);
 	assert(strcmp(id->localpart, "eng.example.net!nancy") == 0);
+	assert(*id->firstopt == '\0');
+	assert(id->firstopt - id->localpart == 21);
 	assert(strcmp(id->domain, "example.net") == 0);
 	assert(id->type == A2IDT_GENERIC);
 	a2id_free(&id);
@@ -261,6 +287,8 @@ test_a2id_fromstr(void)
 	id = a2id_fromstr("eng%nancy@example.net");
 	assert(id != NULL);
 	assert(strcmp(id->localpart, "eng%nancy") == 0);
+	assert(*id->firstopt == '\0');
+	assert(id->firstopt - id->localpart == 9);
 	assert(strcmp(id->domain, "example.net") == 0);
 	assert(id->type == A2IDT_GENERIC);
 	a2id_free(&id);
@@ -275,7 +303,9 @@ test_a2id_fromstr(void)
 	id = a2id_fromstr("\\(user\\)@example.net");
 	assert(id != NULL);
 	assert(id->localpart != NULL);
+	assert(*id->firstopt == '\0');
 	assert(strcmp(id->localpart, "\\(user\\)") == 0);
+	assert(id->firstopt - id->localpart == 8);
 	assert(strcmp(id->domain, "example.net") == 0);
 	assert(id->type == A2IDT_GENERIC);
 	a2id_free(&id);
@@ -283,7 +313,9 @@ test_a2id_fromstr(void)
 	id = a2id_fromstr("<user>@example.net");
 	assert(id != NULL);
 	assert(id->localpart != NULL);
+	assert(*id->firstopt == '\0');
 	assert(strcmp(id->localpart, "<user>") == 0);
+	assert(id->firstopt - id->localpart == 6);
 	assert(strcmp(id->domain, "example.net") == 0);
 	assert(id->type == A2IDT_GENERIC);
 	a2id_free(&id);
@@ -291,6 +323,8 @@ test_a2id_fromstr(void)
 	id = a2id_fromstr("alice@xn--tmonesimerkki-bfbb.example.net");
 	assert(id != NULL);
 	assert(strcmp(id->localpart, "alice") == 0);
+	assert(*id->firstopt == '\0');
+	assert(id->firstopt - id->localpart == 5);
 	assert(strcmp(id->domain, "xn--tmonesimerkki-bfbb.example.net") ==
 	    0);
 	assert(id->type == A2IDT_GENERIC);
