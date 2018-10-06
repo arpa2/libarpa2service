@@ -25,8 +25,8 @@
 
 /*
  * Allocate a new a2id structure. "domain" is required. "localpart" and
- * "firstopt" may be NULL. If "localpart" is not null than "firstopt" must not
- * be null. If "localpart" has no options than "firstopt" must point to it's
+ * "firstopt" may be NULL. If "localpart" is not null then "firstopt" must not
+ * be null. If "localpart" has no options then "firstopt" must point to it's
  * terminating '\0' character otherwise to the first '+' in "localpart".
  *
  * Return a newly allocated a2id structure on success that should be freed by
