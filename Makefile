@@ -62,5 +62,12 @@ a2idverify: a2id.o src/a2idverify.c
 a2idverifyafl: src/a2id.c src/a2idverify.c
 	afl-clang -Wall src/a2id.c src/a2idverify.c -o $@
 
+a2idselverify: a2id.o src/a2idselverify.c
+	cc -Wall a2id.o src/a2idselverify.c -o $@
+
+# create instrumented binary for use by afl-fuzz
+a2idselverifyafl: src/a2id.c src/a2idselverify.c
+	afl-clang -Wall src/a2id.c src/a2idselverify.c -o $@
+
 clean:
 	rm -f a2idmatch a2id.o testa2id liba2id.a a2idverify a2idverifyafl
