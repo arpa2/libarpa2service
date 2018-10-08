@@ -55,5 +55,12 @@ fsmpngsvg:
 	dot -Tpng doc/design/a2idselfsm.gv -o doc/design/a2idselfsm.png
 	dot -Tsvg doc/design/a2idselfsm.gv -o doc/design/a2idselfsm.svg
 
+a2idverify: a2id.o src/a2idverify.c
+	cc -Wall a2id.o src/a2idverify.c -o $@
+
+# create instrumented binary for use by afl-fuzz
+a2idverifyafl: src/a2id.c src/a2idverify.c
+	afl-clang -Wall src/a2id.c src/a2idverify.c -o $@
+
 clean:
-	rm -f a2idmatch a2id.o testa2id liba2id.a
+	rm -f a2idmatch a2id.o testa2id liba2id.a a2idverify a2idverifyafl
