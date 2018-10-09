@@ -12,6 +12,16 @@
 # OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 
+INSTALL_BIN 	= install -m 0555
+INSTALL_LIB	= install -m 0444
+INSTALL_MAN	= install -m 0444
+
+PREFIX	= /usr/local
+BINDIR	= $(PREFIX)/bin
+LIBDIR	= $(PREFIX)/lib
+MANDIR	= $(PREFIX)/man
+INCDIR	= $(PREFIX)/include
+
 a2idmatch: a2id.o src/a2idmatch.c
 	cc -Wall a2id.o src/a2idmatch.c -o $@
 
@@ -29,13 +39,27 @@ test:	testa2id a2idmatch
 	./test/testa2idmatch
 
 install: liba2id.a a2idmatch
-	cp liba2id.a /usr/local/lib/
-	cp src/a2id.h /usr/local/include/
-	cp a2idmatch /usr/local/bin/
-	test -e /usr/local/share/man/man3 || mkdir -p /usr/local/share/man/man3
-	cp doc/man/*.3 /usr/local/share/man/man3/
-	test -e /usr/local/share/man/man1 || mkdir -p /usr/local/share/man/man1
-	cp doc/man/*.1 /usr/local/share/man/man1/
+	mkdir -p $(DESTDIR)$(BINDIR)
+	mkdir -p $(DESTDIR)$(LIBDIR)
+	mkdir -p $(DESTDIR)$(INCDIR)
+	mkdir -p $(DESTDIR)$(MANDIR)/man1
+	mkdir -p $(DESTDIR)$(MANDIR)/man3
+	$(INSTALL_LIB) liba2id.a $(DESTDIR)$(LIBDIR)
+	$(INSTALL_LIB) src/a2id.h $(DESTDIR)$(INCDIR)
+	$(INSTALL_BIN) a2idmatch $(DESTDIR)$(BINDIR)
+	$(INSTALL_MAN) man/a2idmatch.1 $(DESTDIR)$(MANDIR)/man1
+	$(INSTALL_MAN) man/a2id_alloc.3 man/a2id_fromstr.3 man/a2id_match.3 \
+		man/a2id_parsestr.3 $(DESTDIR)$(MANDIR)/man3
+
+uninstall:
+	rm -f $(DESTDIR)$(LIBDIR)/liba2id.a
+	rm -f $(DESTDIR)$(INCDIR)/src/a2id.h
+	rm -f $(DESTDIR)$(BINDIR)/a2idmatch
+	rm -f $(DESTDIR)$(MANDIR)/man1/a2idmatch.1
+	rm -f $(DESTDIR)$(MANDIR)/man3/a2id_alloc.3
+	rm -f $(DESTDIR)$(MANDIR)/man3/a2id_fromstr.3
+	rm -f $(DESTDIR)$(MANDIR)/man3/a2id_match.3
+	rm -f $(DESTDIR)$(MANDIR)/man3/a2id_parsestr.3
 
 manhtml:
 	mkdir -p build
