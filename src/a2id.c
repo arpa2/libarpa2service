@@ -24,9 +24,9 @@
 #include "a2id.h"
 
 /*
- * Allocate a new a2id structure. "domain" is required. "localpart" and
- * "firstopt" may be NULL. If "localpart" is not null then "firstopt" must not
- * be null. If "localpart" has no options then "firstopt" must point to it's
+ * Allocate a new a2id structure. "domain" is required, while "localpart" and
+ * "firstopt" may be NULL. If "localpart" is not NULL then "firstopt" must not
+ * be NULL. If "localpart" has no options then "firstopt" must point to it's
  * terminating '\0' character otherwise to the first '+' in "localpart".
  *
  * Return a newly allocated a2id structure on success that should be freed by

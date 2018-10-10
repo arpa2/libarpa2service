@@ -23,20 +23,38 @@
 .In arpa2/a2id.h
 .Ft "struct a2id *"
 .Fo a2id_alloc
-.Fa "const char *localpart"
 .Fa "const char *domain"
+.Fa "const char *localpart"
+.Fa "const char *firstopt"
 .Fc
 .Ft void
 .Fn a2id_free "struct a2id **a2id"
 .Sh DESCRIPTION
 .Fn a2id_alloc
 allocates a new a2id structure.
-While
-.Fa localpart
-may be
-.Dv NULL ,
 .Fa domain
-is required.
+is required, while
+.Fa localpart
+and
+.Fa firstopt
+may be
+.Dv NULL .
+If
+.Fa localpart
+is not
+.Dv NULL
+then
+.Fa firstopt
+must not be
+.Dv NULL .
+If
+.Fa localpart
+has no options then
+.Fa firstopt
+must point to it's terminating null character otherwise to the first
+.Sq +
+in
+.Fa localpart .
 After allocating a new structure it's type is set to be one of:
 .Bl -tag -width Ds
 .It A2IDT_DOMAINONLY
@@ -49,13 +67,11 @@ and
 .Fa domain
 are set
 .It A2IDT_SERVICE
-If both
+If
 .Fa localpart
-and
-.Fa domain
-are set and
-.Fa localpart
-starts with a
+is not
+.Dv NULL
+and starts with a
 .Sq +
 .El
 .Pp
