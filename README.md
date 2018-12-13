@@ -66,8 +66,9 @@ $ sudo make install
 
 ## Documentation
 
-The syntax of an A2ID and an A2ID Selector is given in ABNF in [a2idgrammar.txt]
-and [a2idselgrammar.txt], respectively.
+An introduction into ARPA2 Identifiers and ACLs is given in [A2IDACL intro]. The
+syntax of an A2ID and an A2ID Selector is given in ABNF in [a2idgrammar.txt] and
+[a2idselgrammar.txt], respectively.
 
 For further documentation please refer to the corresponding man page:
 * [a2idmatch(1)]
@@ -104,3 +105,4 @@ THIS SOFTWARE.
 [a2id_parsestr(3)]: https://netsend.nl/a2id/a2id_parsestr.3.html
 [a2idgrammar.txt]: https://github.com/timkuijsten/libarpa2service/blob/a2id/doc/design/a2idgrammar.txt
 [a2idselgrammar.txt]: https://github.com/timkuijsten/libarpa2service/blob/a2id/doc/design/a2idselgrammar.txt
+[A2IDACL intro]: https://github.com/arpa2/libarpa2service/blob/master/doc/design/a2idacl-intro.md
