@@ -98,10 +98,10 @@ structure of this segment.
 
 An example A2ID extended with an optional segment and a sigflags segment:
 
-    john+doe+jzdxrpbn5iu0wca+@example.com
+    john+doe+n5iu0wca+@example.com
 
 Here the core form would be "john@example.com", it is extended with the alias
-"doe" and the sigflags segment "jzdxrpbn5iu0wca".
+"doe" and the sigflags segment "n5iu0wca".
 
 ## Communication ACL
 
@@ -111,8 +111,8 @@ communication may take place with some other A2ID. The other A2ID, hereafter
 [A2ID Selector].
 
 The combination of a remote ID and a local ID is called a communication pair. To
-answer the question about whether or not two A2IDs may communicate with each
-other the pair should be on one of the four following lists:
+answer the question about whether or not two IDs may communicate, the pair
+should be on one of the following lists:
 
 * _Blacklist_: communication between the remote and local ID is not allowed
 
@@ -121,76 +121,103 @@ other the pair should be on one of the four following lists:
 * _Greylist_: it is not yet decided whether communication between the remote
     and local ID is allowed or not
 
-* _Honeypot_: communication between the remote and local ID is not allowed
+* _Abandoned_: communication between the remote and local ID is not allowed
     and there is no guarantee this is communicated back to the remote
 
-A communication ACL consists of rules. Each rule is a triplet of the following
-form:
-    <remote selector, local ID, ACL segments>
+The way communication pairs are put on one of the above lists is by specifying
+a policy that consists of one or more *ACL rules*. Each rule is a triplet that
+consists of a remote ID in the form of a selector and a local ID in it's core
+form that is combined with *ACL segments* (explained hereafter). The triplet can
+be summarized as follows:
 
-The remote selector is an [A2ID Selector]. This selector is to be matched with
-the remote ID of a communication pair in process called generalization
-(explained later). The local ID is the core form of the local ID of the
-communication pair. Finally ACL segments is what glues different optional
-segments of the local ID to a list (explained later).
+    <remote selector, local ID core form, local ID ACL segments>
+
+The remote selector is to be matched with the remote ID of a communication pair
+in a process called *generalization* (explained later). The core form of the
+local ID must be combined with one of the segments in the *local ID ACL
+segments* part of the triplet. The chosen lists are embedded in this part.
 
 Because the remote ID of a policy is specified as an A2ID Selector it is
 possible to quickly define a policy for a broad range of remote A2IDs and set
 defaults. By using more specific selectors or even concrete A2IDs for the remote
 a more fine-grained policy can be set and overrule broader policies.
 
-### ACL segments
+### Local ID ACL segments
 
-An ACL segment binds different extended forms of the local ID to a list-type.
-This is done by using the first letter of a list (i.e. W for whitelist) followed
-by one or more ACL segments. ACL segment notation is like the optional segment
-notation of an extended local ID, with only a few exceptions:
+An ACL segment binds different extended forms of the local ID to a list.
+Multiple ACL segments may exist to bind different extended forms to different
+lists. The first matching one wins. Within an ACL segment, one or more *extra
+segments* can be specified using a syntax that allows for wildcard matching and
+the ability to require a signature in a local ID without having to specify the
+resulting signature upfront.
 
-1. Each segment must start with a *+* character.
+The ACL segment syntax can be described as follows:
 
-2. If presence of a signature is required, this can be expressed by terminating
-the segment with a *+*.
+1. Each ACL segment starts with a *%* followed by the first letter of the list
+it is subject to.
 
-3. If the segment consists of only a the *+* character this is to be interpreted
-as a wild-card match, matching all segments, including none.  This syntax can
-optionally combined with rule 2 which would yield *++*.
+2. Each following *extra segment* must start with a *+* character.
 
-This way different extended local IDs can be expressed and put on a list. I.e.
-in order to whitelist all local IDs that start with the segment "dev" the
-policy "%W +dev" could be set. Or in order to put all *signed* local IDs on a
-greylist the policy "%G ++" should be set, which stands for the wildcard *+* and
-a terminating *+* to express requirement of a signature. See [ACL grammar] for
-the exact definition.
+3. If presence of a signature is required, this can be expressed by terminating
+the *extra segment* with a *+*.
+
+4. If the *extra segment* consists of only the *+* character this is to be
+interpreted as a wildcard match, matching all extra segments, including none.
+This syntax may be combined with rule 3 to match all extended forms of the local
+ID that have a signature.
+
+See [ACL grammar] for the exact definition.
+
+For example, a whitelists of all extended local IDs that start with the segment
+"dev", would look like:
+
+    %W +dev
+
+If the local ID were jane@example.com, this segment would match
+jane+dev@example.com, jane+dev+clang@example.com, but not the core form
+jane@example.com.
+
+Greylist all *signed* local IDs:
+
+    %G ++
+    
+This ACL segment starts with the wildcard *+* and terminates with a *+* to
+express the requirement of a signature. If the local ID again were
+jane@example.com, this ACL segment would match the extended forms
+jane+dev+n5iu0wca+@example.com and jane+n5iu0wca+@example.com, but not
+jane@example.com (this time because a signature is required).
 
 ### Generalization
 
-Any A2ID Selector, including the remote Selector can be generalized.
-Generalization is the process of changing a Selector from abstract to concrete
-by pulling off one part at a time. At first the localpart is trimmed down, and
-once there is no more localpart, each label of the domain is cut-off. In the end
-yielding the most general selector "@.". The exact details of this process can
-be found in [A2ID Selector]. In order to see if a remote ID matches a remote
-Selector of an ACL rule, the remote ID is generalized until a match is found or
-until the ID can not be further generalized.
+Any A2ID Selector, including the remote selector can be generalized.
+Generalization is the process of removing segments from the localpart and labels
+from the domain, one part at a time and in a certain order. At first the
+localpart is generalized, and once all segments have been removed, each label of
+the domain is removed. The end result of is the most general selector "**@.**". The
+exact details of this process can be found in [A2ID Selector].
+
+In order to check if a remote ID matches a remote selector of an ACL rule (not
+to be confused with an ACL segment), the remote ID is generalized until a match
+is found or until the remote ID can not be further generalized.
 
 ### Examples
 
-Assume the following policy is set at the A2ID server of jane@example.com.
+Assume the following two ACL rules define the policy of *jane@example.com*.
 
-    @arpa2.net jane@example.com %W +dev
-    @. jane@example.com %B +
+    <@arpa2.net, jane@example.com, %W +dev>
+    <@., jane@example.com, %B +>
 
-This policy consists of two ACL rules (or triplets). The first triplet
-<@arpa2.net, jane@example.com, %W +dev> expresses that communication from anyone
-at arpa2.net to jane+dev@example.com is whitelisted. Remember that an ACL segment
-consists of a list-type, %W in this case, and one or more ACL segments, +dev in
-this case. These segments are to be combined with the local ID.
+The first triplet whitelists communication from anyone at arpa2.net with
+jane+dev@example.com. Remember that an ACL segment consists of a list (*%W* in
+this case), and one or more ACL extra segments (here it's *+dev*). These
+extra segments are to be combined with the local ID, hence we get
+jane+dev@example.com.
 
-The second triplet <@., jane@example.com, %B +> specifies a catch-all remote
-selector, namely "@." and a catch-all ACL segment for the local ID, the *+*
-without any suffix. This rule will catch each and every form of communication
-with jane@example.com as long as it is not machted by a more specific remote
-selector. It effectively means that a global blacklist policy is set.
+The second triplet specifies a catch-all remote selector, namely *@.* and a
+wildcard local ID ACL segment, the *+* without a suffix. This rule will apply to
+anyone that wants to communicate with jane@example.com as long as it is not
+machted by another triplet that has a more specific remote selector. It
+effectively means that a global blacklist policy is set.
 
 The full lookup process consists of a series of lookups on the remote ID and
 local ID of each triplet, in order to find a matching ACL segment that is
