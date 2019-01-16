@@ -180,7 +180,7 @@ jane@example.com (the remote selector *@.* is explained hereafter).
 Or an ACL segment to greylist all *signed* local IDs:
 
     %G ++
-    
+
 This ACL segment starts with the wildcard *+* and terminates with a *+* to
 express the requirement of a signature. If the local ID again were
 jane@example.com, this ACL segment would match the extended forms
