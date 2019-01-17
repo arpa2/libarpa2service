@@ -7,13 +7,19 @@ The grammar for an ARPA2 ID is given below, described in Augmented Backus-Naur
 Form (ABNF) as documented in [RFC5234].
 
 
-a2id           = [ localpart ] "@" domain
+A2ID           = GENERIC / SERVICE / DOMAINONLY
 
-localpart      = subject *( option ) /
-                 service *( option )
-subject        = localstring
-service        = "+" localstring
-option         = "+" [ localstring ]
+GENERIC        = localpart "@" domain
+SERVICE        = "+" localpart "@" domain
+DOMAINONLY     = "@" domain
+
+localpart      = name *( opt ) [ *( param ) sigflags "+" ]
+
+name           = localstring
+opt            = "+" localstring
+param          = "+" localstring
+sigflags       = "+" 1*( base32 )
+
 localstring    = 1*( localchar )
 
 domain         = label *( "." label )
@@ -25,3 +31,7 @@ basechar       = %x21-2A /           ; all visible (printing) characters, except
                  %x2C-2D /           ; SPACE " ", DOT ".", AT "@", PLUS "+"
                  %x2F-3F /
                  %x41-7E
+
+base32         = %x32-37 /           ; 2-7
+                 %x41-5a /           ; A-Z
+                 %x61-7a             ; a-z
