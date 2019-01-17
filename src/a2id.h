@@ -24,26 +24,54 @@
 #include <stdio.h>
 #include <string.h>
 
-/* Impose a practial upper bound to the lenght of an ARPA2 ID. */
+/*
+ * Practial upper bound to the lenght of an ARPA2 ID (not including an optional
+ * terminating null.
+ */
 #define A2ID_MAXLEN 512
 
-enum A2ID_TYPE { A2IDT_INVALID, A2IDT_DOMAINONLY, A2IDT_GENERIC, A2IDT_SERVICE };
+enum A2ID_TYPE { A2IDT_DOMAINONLY, A2IDT_GENERIC, A2IDT_SERVICE };
 
+/*
+ * The ARPA2 Identifier. Each string must be null terminated. The lengths are
+ * excluding the terminating null byte. Each string must have at least the
+ * terminating null byte and must never be NULL.
+ *
+ * XXX Consider removing strlen since generalization breaks up the string in the
+ * middle.
+ */
 struct a2id {
-	char *localpart;
-	char *domain;
 	enum A2ID_TYPE type;
-	char *firstopt;
+	int hassig;	/* whether the ID has a signature */
+	int nropts;	/* total number of options, may exceed three */
+	int generalized;	/* total times this a2id is generalized */
+	size_t localpartlen;
+	char *localpart;	/* points to '+' or '\0' in str */
+	size_t basenamelen;
+	char *basename;	/* points to '+' or NULL in str */
+	size_t firstoptlen;
+	char *firstopt;	/* points to '+' or NULL in str */
+	size_t sigflagslen;	/* length including leading '+', excluding
+				   trailing '+' */
+	char *sigflags;	/* points to '+' or NULL in str */
+	size_t domainlen;	/* can not be 0 because of '@' requirement */
+	char *domain;	/* points to '@' in str */
+	size_t strlen;
+	char str[A2ID_MAXLEN + 1]; /* contains the actual id */
 };
 
 struct a2id *a2id_alloc(const char *, const char *, const char *);
-void a2id_free(struct a2id **);
-struct a2id *a2id_fromstr(const char *);
+int a2id_copy(struct a2id *, const struct a2id *);
 struct a2id *a2id_fromselstr(const char *);
-int a2id_parsestr(const char *, const char **, const char **, const char **,
-    int *);
+int a2id_parsestr(struct a2id *, const char *);
 int a2id_parseselstr(const char *, const char **, const char **, const char **,
     int *);
-int a2id_match(const struct a2id *, const struct a2id *);
+int a2id_match(const struct a2id *, const struct a2id *, int);
+int a2id_generalize(struct a2id *);
+int a2id_coreform(char *, const struct a2id *, size_t *);
+int a2id_tostr(char *, const struct a2id *, size_t *);
+size_t a2id_optsegments(const char **, const struct a2id *);
+
+void printa2id(FILE *, const struct a2id *);
 
 #endif /* A2ID_H */
