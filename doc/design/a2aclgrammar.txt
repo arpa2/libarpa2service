@@ -1,0 +1,25 @@
+ARPA2 ACL Grammar
+=================
+
+ARPA2 ACL formal syntax.
+
+The grammar for an ARPA2 ACL is given below, described in Augmented Backus-Naur
+Form (ABNF) as documented in [RFC5234].
+
+a2acl          = 1*( listtype segments )
+
+listtype       = "%" ( "W" / "G" / "B" / "A" )
+
+segments       = segments / ( WSP segment )
+segment        = wildcard [ segmentname *( subsegment ) ] [ reqsigflags ]
+subsegment     = "+" segmentname
+segmentname    = 1*( localchar )
+wildcard       = "+"
+reqsigflags    = "+"
+
+localchar      = basechar / "."
+
+basechar       = %x21-2A /               ; all visible (printing) characters,
+                 %x2C-2D /               ; except SPACE " ", DOT ".", AT "@",
+                 %x2F-3F /               ; PLUS "+"
+                 %x41-7E

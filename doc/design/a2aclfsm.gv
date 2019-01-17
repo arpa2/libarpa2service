@@ -1,0 +1,37 @@
+digraph finite_state_machine {
+	rankdir = LR
+	node [shape = doublecircle]
+	WILDCARD
+	SEGMENTNAME
+	POSTSEGMENT
+	REQSIGFLAGS
+
+	node [shape = point]
+	qi
+
+	node [shape = circle]
+	qi	-> S
+
+	/* local or domain part */
+	S	-> S [ label = "blank" ]
+	S	-> SETLIST [ label = "%" ]
+	SETLIST	-> LIST [ label = "W G B A" ]
+	LIST	-> LIST [ label = "blank" ]
+	LIST	-> WILDCARD [ label = "+" ]
+	WILDCARD	-> POSTSEGMENT [ label = "blank" ]
+	WILDCARD	-> REQSIGFLAGS [ label = "+" ]
+	WILDCARD	-> SEGMENTNAME [ label = "basechar ." ]
+	SEGMENTNAME	-> SUBSEGMENT [ label = "+" ]
+	SEGMENTNAME	-> SEGMENTNAME [ label = "basechar ." ]
+	SEGMENTNAME	-> POSTSEGMENT [ label = "blank" ]
+	SEGMENTNAME	-> REQSIGFLAGS [ label = "+" ]
+	SUBSEGMENT	-> SEGMENTNAME [ label = "basechar ." ]
+	REQSIGFLAGS	-> POSTSEGMENT [ label = "blank" ]
+	POSTSEGMENT	-> WILDCARD [ label = "+" ]
+	POSTSEGMENT	-> POSTSEGMENT [ label = "blank" ]
+	POSTSEGMENT	-> SETLIST [ label = "%" ]
+
+	labelloc = t
+	labeljust = l
+	label = "ARPA2 ACL FSM\l\lblank: SPACE or TAB\lbasechar: all visible characters except SPACE, DOT, PLUS, AT\l	%x21-2A / %x2C-2D / %x2F-3F / %x41-7E\l"
+}
