@@ -1,0 +1,79 @@
+.\" Copyright (c) 2019 Tim Kuijsten
+.\"
+.\" Permission to use, copy, modify, and/or distribute this software for any
+.\" purpose with or without fee is hereby granted, provided that the above
+.\" copyright notice and this permission notice appear in all copies.
+.\"
+.\" THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+.\" WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+.\" MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+.\" ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+.\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+.\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+.\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+.\"
+.Dd $Mdocdate: February 8 2019 $
+.Dt A2ACL 1
+.Os
+.Sh NAME
+.Nm a2acl
+.Nd test whether two A2IDs may communicate according to an ACL policy
+.Sh SYNOPSIS
+.Nm
+.Op Fl hqv
+.Ar policyfile
+.Ar remoteid
+.Ar localid
+.Sh DESCRIPTION
+The
+.Nm
+utility tests whether a communication pair may communicate with each other under
+a given ACL policy.
+.Pp
+It's arguments are as follows.
+.Bl -tag -width Ds
+.It Fl h
+Print usage.
+.It Fl q
+Be less verbose.
+.It Fl v
+Be more verbose.
+Can be used multiple times.
+.It Ar policyfile
+Path to a file that contains one or more ACL rules, one per line.
+.It Ar remoteid
+The remote ARPA2 ID of the communication pair to test
+.It Ar localid
+The local ARPA2 ID of the communication pair to test
+.El
+.Pp
+The exit status of
+.Nm
+determines on which list the communication pair is
+listed. Additionally, if not silenced using
+.Fl q ,
+one of the following letters is output on
+.Dv stdout :
+.Bl -tag -width Ds
+.It W
+Whitelist
+.It G
+Greylist
+.It B
+Blacklist
+.It A
+Abandoned
+.El
+.Sh EXIT STATUS
+The
+.Nm
+utility exits 0 if communication is whitelisted, 1 if communication is
+greylisted, 2 if communication is blacklisted, 3 if communication is abandoned
+and 4 if an error occured.
+.Sh SEE ALSO
+.Xr a2acl 3
+.Pp
+.Lk https://github.com/arpa2/libarpa2service/blob/master/doc/design/a2idacl-intro.md "ARPA2 Identifier and ACL introduction"
+.Sh AUTHORS
+.An -nosplit
+.An Tim Kuijsten
