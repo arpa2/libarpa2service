@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Tim Kuijsten
+ * Copyright (c) 2018, 2019 Tim Kuijsten
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -13,6 +13,11 @@
  * OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
+
+#include <assert.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 /*
  * ARPA2 ID library
