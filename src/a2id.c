@@ -290,20 +290,19 @@ static const char basechar[256] = {
 /*
  * Static ARPA2 ID parser.
  *
- * Parse a null terminated input string.
+ * Parse a nul terminated input string.
  *
  * Returns 0 is if the input is a valid ARPA2 ID or -1 otherwise.
  *
- * If "input" is valid and has a localpart then "id->localpart" points to the
- * first character of "input" or NULL if there is no localpart. "id->domain"
- * points to the one and only "@" or otherwise the input is invalid.
- * "id->nropts" contains the number of options in the localpart. If the
- * localpart has one or more options then "id->firstopt" points to the '+' of
- * the first option in "input" or NULL if there are no options. The same goes
- * for "id->secondopt" and "id->thirdopt".
+ * On success a copy of "input" is made and pointers plus lengths are set in
+ * "out".
  *
- * On error id->str contains a null terminated up to but not including the first
- * erroneous character.
+ * The "localpart", "basename", "firstopt" and "sigflags" fields are not nul
+ * terminated but are pointers into the copy of the complete input string (which
+ * is nul terminated at the end).
+ *
+ * On error id->str contains a null terminated string up to but not including
+ * the first erroneous character.
  *
  * XXX rename firstopt to options + optionslen
  */

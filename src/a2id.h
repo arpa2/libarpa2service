@@ -34,7 +34,7 @@ enum A2ID_TYPE { A2IDT_DOMAINONLY, A2IDT_GENERIC, A2IDT_SERVICE };
 
 /*
  * The ARPA2 Identifier. Each string must be null terminated. The lengths are
- * excluding the terminating null byte. Each string must have at least the
+ * excluding the terminating nul byte. Each string must have at least the
  * terminating null byte and must never be NULL.
  *
  * XXX Consider removing strlen since generalization breaks up the string in the
@@ -45,19 +45,19 @@ struct a2id {
 	int hassig;	/* whether the ID has a signature */
 	int nropts;	/* total number of options, may exceed three */
 	int generalized;	/* total times this a2id is generalized */
-	size_t localpartlen;
 	char *localpart;	/* points to '+' or '\0' in str */
-	size_t basenamelen;
 	char *basename;	/* points to '+' or NULL in str */
-	size_t firstoptlen;
 	char *firstopt;	/* points to '+' or NULL in str */
+	char *sigflags;	/* points to '+' or NULL in str */
+	char *domain;	/* points to '@' in str */
+	char str[A2ID_MAXLEN + 1]; /* contains the actual id */
+	size_t localpartlen;
+	size_t basenamelen;
+	size_t firstoptlen;
 	size_t sigflagslen;	/* length including leading '+', excluding
 				   trailing '+' */
-	char *sigflags;	/* points to '+' or NULL in str */
 	size_t domainlen;	/* can not be 0 because of '@' requirement */
-	char *domain;	/* points to '@' in str */
 	size_t strlen;
-	char str[A2ID_MAXLEN + 1]; /* contains the actual id */
 };
 
 struct a2id *a2id_alloc(const char *, const char *, const char *);
