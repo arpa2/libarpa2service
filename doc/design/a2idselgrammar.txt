@@ -3,16 +3,27 @@ ARPA2 ID Selector Grammar
 
 ARPA2 ID Selector formal syntax.
 
-The grammar for an ARPA2 ID Selector is given below, described in Augmented
-Backus-Naur Form (ABNF) as documented in [RFC5234].
+The grammar for an ARPA2 ID Selector is the same as for ARPA2 ID with some
+small extensions:
 
-a2idsel        = [ localstring ] "@" domain
 
-localstring    = 1*( localchar / "+" )
+A2ID           = GENERIC / SERVICE / DOMAINONLY
 
-domain         = label *( "." label ) [ root ]
-label          = 1*( basechar )
-root           = "."
+GENERIC        = localpart "@" domain
+SERVICE        = "+" localpart "@" domain
+DOMAINONLY     = "@" domain
+
+localpart      = name *( opt ) [ *( param ) sigflags "+" ]
+
+name           = localstring
+opt            = "+" localstring
+param          = "+" localstring
+sigflags       = "+" 1*( base32 )
+
+localstring    = *( localchar )
+
+domain         = label *( "." label )
+label          = *( basechar )
 
 localchar      = basechar / "."      ; excluding "@" and "+"
 
@@ -20,3 +31,7 @@ basechar       = %x21-2A /           ; all visible (printing) characters, except
                  %x2C-2D /           ; SPACE " ", DOT ".", AT "@", PLUS "+"
                  %x2F-3F /
                  %x41-7E
+
+base32         = %x32-37 /           ; 2-7
+                 %x41-5a /           ; A-Z
+                 %x61-7a             ; a-z

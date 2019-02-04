@@ -2,29 +2,48 @@ digraph finite_state_machine {
 	rankdir=LR
 	node [shape = doublecircle];
 		DOMAIN;
+
+	node [color = red];
 		NEWLABEL;
+	node [color = black];
 
 	node [shape = point ];
 		qi
 
 	node [shape = circle];
+		SERVICE	-> OPTION [ label = "+" color = red ];
+		SERVICE	-> NEWLABEL [ label = "@" color = red ];
+		NEWLABEL -> NEWLABEL [ label = "." color = red ];
+
 		qi	-> S;
 
 		/* local or domain part */
-		S	-> LOCAL [ label = "basechar . +" ];
-		S	-> DOMAIN [ label = "@" ];
+		S	-> LOCAL [ label = "basechar ." ];
+		S	-> NEWLABEL [ label = "@" ];
+		S	-> SERVICE [ label = "+" ];
 
 		/* local */
-		LOCAL	-> LOCAL [ label = "basechar . +" ];
-		LOCAL	-> DOMAIN [ label = "@" ];
+		LOCAL	-> LOCAL [ label = "basechar ." ];
+		LOCAL	-> OPTION [ label = "+" ];
+		OPTION	-> OPTION [ label = "+" ];
+		OPTION	-> NEWLABEL [ label = "@" ];
+		OPTION	-> LOCAL [ label = "basechar ." ];
+		LOCAL	-> NEWLABEL [ label = "@" ];
+
+		/* service */
+		SERVICE	-> LOCAL [ label = "basechar ." ];
 
 		/* domain */
 		DOMAIN	-> NEWLABEL [ label = "." ];
 		NEWLABEL	-> DOMAIN [ label = "basechar" ];
 		DOMAIN	-> DOMAIN [ label = "basechar" ];
 
-	node[ shape=box, margin="0.2,0.2" ];
-		basechar[ label = "basechar - visible characters\nexcept SPACE, DOT, PLUS, AT \n%x21-2A / %x2C-2D / %x2F-3F / %x41-7E" ];
+	node[ shape=box, margin="0.1,0.1" ];
+		basechar[ label = "basechar - visible characters\nexcept SPACE,"
+		+ " DOT, PLUS, AT \n%x21-2A / %x2C-2D / %x2F-3F / %x41-7E
+
+		changes from the regular A2ID FSM are
+		colored in red" ];
 
 	// title
 	labelloc="t";

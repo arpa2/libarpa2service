@@ -290,7 +290,9 @@ static const char basechar[256] = {
 /*
  * Static ARPA2 ID parser.
  *
- * Parse a nul terminated input string.
+ * Parse a nul terminated input string. "selector" is a boolean that indicates
+ * wheter the input should be parsed as a selector, which is a relaxed
+ * generalization of an A2ID.
  *
  * Returns 0 is if the input is a valid ARPA2 ID or -1 otherwise.
  *
@@ -307,7 +309,7 @@ static const char basechar[256] = {
  * XXX rename firstopt to options + optionslen
  */
 int
-a2id_parsestr(struct a2id *out, const char *input)
+a2id_parsestr(struct a2id *out, const char *input, int selector)
 {
 	enum states { S, SERVICE, LOCALPART, OPTION, NEWLABEL, DOMAIN } state;
 	char *curopt, *prevopt, *secondopt;
@@ -319,12 +321,21 @@ a2id_parsestr(struct a2id *out, const char *input)
 
 	secondopt = prevopt = curopt = NULL;
 
+	out->generalized = 0;
+	out->hassig = 0;
 	out->nropts = 0;
 	out->localpart = NULL;
 	out->basename = NULL;
 	out->firstopt = NULL;
 	out->sigflags = NULL;
 	out->domain = NULL;
+	out->type = A2IDT_GENERIC;
+	out->localpartlen = 0;
+	out->basenamelen = 0;
+	out->firstoptlen = 0;
+	out->sigflagslen = 0;
+	out->domainlen = 0;
+	out->strlen = 0;
 
 	state = S;
 	for (i = 0; i < A2ID_MAXLEN && input[i] != '\0'; i++) {
@@ -352,6 +363,14 @@ a2id_parsestr(struct a2id *out, const char *input)
 			if (basechar[c] || c == '.') {
 				out->basename = &out->str[i];
 				state = LOCALPART;
+			} else if (selector && c == '@') {
+				out->domain = &out->str[i];
+				state = NEWLABEL;
+			} else if (selector && c == '+') {
+				curopt = &out->str[i];
+				out->firstopt = &out->str[i];
+				out->nropts++;
+				state = OPTION;
 			} else
 				goto done;
 			break;
@@ -402,6 +421,8 @@ a2id_parsestr(struct a2id *out, const char *input)
 		case NEWLABEL:
 			if (basechar[c]) {
 				state = DOMAIN;
+			} else if (selector && c == '.') {
+				/* keep going */
 			} else
 				goto done;
 			break;
@@ -421,8 +442,16 @@ done:
 	 * Make sure the end of the input is reached and the state is one of the
 	 * final states.
 	 */
-	if (input[i] != '\0' || state != DOMAIN)
+	if (input[i] != '\0')
 		return -1;
+
+	if (selector) {
+		if (state != DOMAIN && state != NEWLABEL)
+			return -1;
+	} else {
+		if (state != DOMAIN)
+			return -1;
+	}
 
 	/* Determine type. */
 	if (out->localpart) {
