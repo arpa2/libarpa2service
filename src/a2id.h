@@ -61,9 +61,7 @@ struct a2id {
 	size_t strlen;
 };
 
-struct a2id *a2id_alloc(const char *, const char *, const char *);
 int a2id_copy(struct a2id *, const struct a2id *);
-struct a2id *a2id_fromselstr(const char *);
 int a2id_parsestr(struct a2id *, const char *, int);
 int a2id_match(const struct a2id *, const struct a2id *);
 int a2id_generalize(struct a2id *);
