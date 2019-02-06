@@ -15,6 +15,7 @@
  */
 
 #include <assert.h>
+#include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -660,72 +661,97 @@ done:
  * Return 1 if the subject matches the selector, 0 otherwise. If the localpart
  * and/or domain in the selector are an empty string it is considered to be a
  * match to the respective part in the subject.
- *
- * XXX rename subject into id
- *	nextselopt => nextselp en nextsubp
  */
 int
-a2id_match(const struct a2id *subject, const struct a2id *selector,
-    int requiresig)
+a2id_match(const struct a2id *subject, const struct a2id *selector)
 {
 	char *selp, *subp;
 	size_t selplen, subplen;
+	int n;
 
-	if (subject == NULL || selector == NULL)
-		abort();
+	assert(subject && selector);
 
-	/* Default to "no match" on empty selectors. */
-	if (selector->localpart == NULL && selector->domain == NULL)
-		return 0;
-
-	if (selector->localpartlen > 0)
+	if (selector->localpartlen > 0) {
 		if (selector->localpartlen > subject->localpartlen)
 			return 0;
 
-	if (selector->basenamelen > 0) {
-		if (selector->basenamelen != subject->basenamelen)
-			return 0;
+		if (selector->hassig) {
+			if (!subject->hassig)
+				return 0;
 
-		if (strncmp(selector->basename, subject->basename,
-		    selector->basenamelen) != 0)
-			return 0;
-	}
+			/* if sigflags selector is not empty it must match */
+			if (selector->sigflagslen > 1 &&
+			    selector->sigflagslen != subject->sigflagslen)
+					return 0;
 
-	if (selector->nropts > 0) {
+			if (selector->sigflagslen > 1 &&
+			    strncmp(selector->sigflags, subject->sigflags,
+			    selector->sigflagslen) != 0)
+				return 0;
+		}
+
+		/* compare each segment */
+		selp = selector->localpart;
+		subp = subject->localpart;
+
+		if (selector->type == A2IDT_SERVICE) {
+			if (subject->type != A2IDT_SERVICE)
+				return 0;
+
+			/* skip leading '+' */
+			selp++;
+			subp++;
+		}
+
 		if (selector->nropts > subject->nropts)
 			return 0;
 
-		/* XXX guard against inconsistent a2id state */
-		assert(selector->firstopt && subject->firstopt);
+		/* Compare base and option segments. */
+		for (n = -1; n < selector->nropts; n++) {
+			/* lock-step comparison up till next separator */
+			for (selplen = subplen = 0;
+			    *selp != '+' && *selp != '@' && *selp != '\0' &&
+			    *subp != '+' && *subp != '@' && *subp != '\0';
+			    selplen++, selp++,
+			    subplen++, subp++) {
+				if (tolower(*selp) != tolower(*subp))
+					break;
+			}
 
-		/* compare each option */
-		selp = selector->firstopt;
-		subp = subject->firstopt;
-		for (int i = 0; i < selector->nropts; i++) {
-			/* XXX guard against inconsistent a2id state */
-			assert(*selp == '+' && *subp == '+');
+			/* selector must have reached a separator */
+			if (*selp != '+' && *selp != '@' && *selp != '\0')
+				return 0;
 
-			/* Step over leading plus of current option. */
+			/*
+			 * If there is no text in the segment of the selector
+			 * after the last '+', any segment in the subject will
+			 * do, as long as it exists (except for a leading or
+			 * trailing '+' which indicates a service or a
+			 * signature, respectively).
+			 */
+			if (selplen == 0) {
+				if (*subp == '+' ||
+				    *subp == '@' ||
+				    *subp == '\0')
+					return 0;
+
+				while (*subp != '+' && *subp != '@' && *subp != '\0')
+					subp++;
+			}
+
+			if (*subp != '+' && *subp != '@' && *subp != '\0')
+				return 0;
+
+			if (*selp == '@' || *selp == '\0')
+				break; /* done, every selector segment matches */
+
+			if (*subp != '+')
+				return 0;
+
 			selp++;
 			subp++;
-
-			selplen = strcspn(selp, "+");
-			subplen = strcspn(subp, "+");
-
-			if (selplen != subplen)
-				return 0;
-
-			if (strncasecmp(selp, subp, selplen) != 0)
-				return 0;
-
-			selp += selplen;
-			subp += subplen;
 		}
 	}
-
-	if (requiresig)
-		if (subject->hassig == 0)
-			return 0;
 
 	if (selector->domainlen > 0) {
 		/*
@@ -748,27 +774,41 @@ a2id_match(const struct a2id *subject, const struct a2id *selector,
 			if (*subp == '.')
 				subp--;
 
-			for (selplen = 0; *selp != '@' && *selp != '.';
-			    selplen++)
-				selp--;
+			/* lock-step comparison */
+			for (selplen = subplen = 0;
+			    *selp != '@' && *selp != '.' &&
+			    *subp != '@' && *subp != '.';
+			    selplen++, selp--,
+			    subplen++, subp--) {
+				if (tolower(*selp) != tolower(*subp))
+					break;
+			}
 
-			for (subplen = 0; *subp != '@' && *subp != '.';
-			    subplen++)
-				subp--;
+			if (*selp != '@' && *selp != '.')
+				return 0;
 
-			if (*selp == '@' && selplen == 0)
+			if (selplen == 0) {
+				/*
+				 * A dot without label means there must be a
+				 * label in the subject, no matter what the
+				 * content.
+				 */
+				if (*subp == '@' || *subp == '.')
+					return 0;
+
+				/*
+				 * Jump over the label now that we now it's
+				 * there.
+				 */
+				while (*subp != '@' && *subp != '.')
+					subp--;
+			}
+
+			if (*subp != '@' && *subp != '.')
+				return 0;
+
+			if (*selp == '@')
 				break; /* done, every selector label matches */
-
-			if (selplen == 0)
-				continue; /* label existence match */
-
-			if (selplen != subplen)
-				return 0;
-
-			if (strncasecmp(selp, subp, selplen) != 0)
-				return 0;
-
-			/* exact label match */
 		}
 	}
 

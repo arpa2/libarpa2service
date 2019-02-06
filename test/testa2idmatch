@@ -32,7 +32,7 @@ _haserr=0
 # $2 - the tested id
 perr_accept() {
 	_haserr=1
-	echo ERROR \""$1"\" accepts \""$2"\"
+	echo ERROR \""$2"\" matches \""$1"\"
 }
 
 # Print error for an erroneously unaccepted string.
@@ -40,7 +40,7 @@ perr_accept() {
 # $2 - the tested id
 perr_notaccept() {
 	_haserr=1
-	echo ERROR \""$1"\" does not accept \""$2"\"
+	echo ERROR \""$2"\" does not match \""$1"\"
 }
 
 
@@ -200,36 +200,49 @@ t="@."
 
 
 # ARPA2 ID subject
-s="john+sigtmpl+sig+@example.org"
+s="john+option+sig+@example.org"
+
+t="john+option+sig+@example.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
 
 t="john++sig+@example.org"
 "$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
 
-t="john+@example.org"
+t="john+option++@example.org"
 "$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
 
 t="john++@example.org"
 "$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
 
-t="john+sigtmpl@example.org"
+t="john+sig+@example.org"
 "$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
 
-t="john+sigtmpl+@example.org"
+t="john+option@example.org"
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+t="john+option+option2++@example.org"
+"$a2idmatch" -q "$s" "$t" && perr_notaccept "$s" "$t"
+
+t="john+@example.org"
 "$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
 
 t="@example.org"
 "$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
 
-t="john+sigtmpl@.org"
+t="john+option@.org"
 "$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
 
 t="@.org"
 "$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
 
-t="john+sigtmpl@."
+t="john+option@."
 "$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
 
 t="@."
+"$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
+
+# root dot in selector plus subdomain dot
+t="@.."
 "$a2idmatch" -q "$s" "$t" || perr_notaccept "$s" "$t"
 
 # ARPA2 ID subject
@@ -329,7 +342,8 @@ t="john@.example"
 t="john@.example."
 "$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
 
-t="@.."
+# root dot in selector plus two subdomains
+t="@..."
 "$a2idmatch" -q "$s" "$t" 2>/dev/null && perr_accept "$s" "$t"
 
 
@@ -410,7 +424,7 @@ t="salesjohn@example.org"
 "$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
 
 # ARPA2 ID subject
-s="john+sigtmpl+sig+@example.org"
+s="john+option+sig+@example.org"
 
 t="+@example.org"
 "$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
@@ -424,28 +438,16 @@ t="+++@example.org"
 t="++++@example.org"
 "$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
 
-t="john+sig@example.org"
+t="john+option+si@example.org"
 "$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
 
-t="john+sig+@example.org"
-"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
-
-t="john+sigtmpl+si@example.org"
-"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
-
-t="john+sigtmpl+si+@example.org"
-"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
-
-t="john+sigtmpl+sig++@example.org"
+t="john+option+si+@example.org"
 "$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
 
 t="joh+@example.org"
 "$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
 
 t="johnn+@example.org"
-"$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
-
-t="+john+sigtmpl+sig+@example.org"
 "$a2idmatch" -q "$s" "$t" && perr_accept "$s" "$t"
 
 ###

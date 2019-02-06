@@ -34,7 +34,7 @@ void printusage(FILE *);
 int
 main(int argc, char *argv[])
 {
-	struct a2id *a2id, *selector;
+	struct a2id id, selector;
 	int c;
 
 	if ((progname = basename(argv[0])) == NULL) {
@@ -67,17 +67,17 @@ main(int argc, char *argv[])
 		exit(1);
 	}
 
-	if ((a2id = a2id_fromstr(argv[0])) == NULL) {
+	if (a2id_parsestr(&id, argv[0], 0) == -1) {
 		fprintf(stderr, "illegal a2id: %s\n", argv[0]);
 		exit(1);
 	}
 
-	if ((selector = a2id_fromselstr(argv[1])) == NULL) {
+	if (a2id_parsestr(&selector, argv[1], 1) == -1) {
 		fprintf(stderr, "illegal selector: %s\n", argv[1]);
 		exit(1);
 	}
 
-	if (a2id_match(a2id, selector) == 0) {
+	if (a2id_match(&id, &selector) == 0) {
 		if (verbose > -1)
 			printf("MISMATCH\n");
 
