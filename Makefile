@@ -42,7 +42,7 @@ testa2id: a2id.o test/testa2id.c
 testa2acl: a2acl.o a2id.o test/testa2acl.c
 	${CC} ${CFLAGS} a2id.o a2acl.o test/testa2acl.c -o $@
 
-runtest:	testa2id testa2acl
+runtest: a2idmatch testa2id testa2acl
 	./testa2id
 	./testa2acl
 

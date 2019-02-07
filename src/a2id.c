@@ -67,35 +67,35 @@ a2id_copy(struct a2id *out, const struct a2id *id)
 	out->domainlen = id->domainlen;
 
 	if (id->localpartlen)
-		memcpy(out->str, id->localpart, id->localpartlen);
+		memcpy(out->_str, id->localpart, id->localpartlen);
 
-	memcpy(&out->str[id->localpartlen], id->domain,
+	memcpy(&out->_str[id->localpartlen], id->domain,
 	    id->domainlen);
 
 	if (id->localpartlen > 0)
-		out->localpart = out->str;
+		out->localpart = out->_str;
 	else /* point to trailing 0 */
-		out->localpart = &out->str[sizeof(out->str) - 1];
+		out->localpart = &out->_str[sizeof(out->_str) - 1];
 
 	if (id->basenamelen > 0)
 		out->basename = id->basename;
 	else /* point to trailing 0 */
-		out->basename = &out->str[sizeof(out->str) - 1];
+		out->basename = &out->_str[sizeof(out->_str) - 1];
 
 	if (id->firstoptlen > 0)
 		out->firstopt = id->firstopt;
 	else /* point to trailing 0 */
-		out->firstopt = &out->str[sizeof(out->str) - 1];
+		out->firstopt = &out->_str[sizeof(out->_str) - 1];
 
 	if (id->sigflagslen > 0)
 		out->sigflags = id->sigflags;
 	else /* point to trailing 0 */
-		out->sigflags = &out->str[sizeof(out->str) - 1];
+		out->sigflags = &out->_str[sizeof(out->_str) - 1];
 
 	if (id->domainlen > 0)
-		out->domain = (char *)id->str;
+		out->domain = (char *)id->_str;
 	else /* point to trailing 0 */
-		out->domain = &out->str[sizeof(out->str) - 1];
+		out->domain = &out->_str[sizeof(out->_str) - 1];
 
 	out->type = id->type;
 	out->hassig = id->hassig;
@@ -163,7 +163,7 @@ static const char basechar[256] = {
  * terminated but are pointers into the copy of the complete input string (which
  * is nul terminated at the end).
  *
- * On error id->str contains a null terminated string up to but not including
+ * On error id->_str contains a null terminated string up to but not including
  * the first erroneous character.
  *
  * XXX rename firstopt to options + optionslen
@@ -202,33 +202,33 @@ a2id_parsestr(struct a2id *out, const char *input, int selector)
 		c = input[i];
 
 		/* Copy string. */
-		out->str[i] = c;
+		out->_str[i] = c;
 
 		switch (state) {
 		case S:
 			if (basechar[c] || c == '.') {
-				out->localpart = &out->str[i];
-				out->basename = &out->str[i];
+				out->localpart = &out->_str[i];
+				out->basename = &out->_str[i];
 				state = LOCALPART;
 			} else if (c == '+') {
-				out->localpart = &out->str[i];
+				out->localpart = &out->_str[i];
 				state = SERVICE;
 			} else if (c == '@') {
-				out->domain = &out->str[i];
+				out->domain = &out->_str[i];
 				state = NEWLABEL;
 			} else
 				goto done;
 			break;
 		case SERVICE:
 			if (basechar[c] || c == '.') {
-				out->basename = &out->str[i];
+				out->basename = &out->_str[i];
 				state = LOCALPART;
 			} else if (selector && c == '@') {
-				out->domain = &out->str[i];
+				out->domain = &out->_str[i];
 				state = NEWLABEL;
 			} else if (selector && c == '+') {
-				curopt = &out->str[i];
-				out->firstopt = &out->str[i];
+				curopt = &out->_str[i];
+				out->firstopt = &out->_str[i];
 				out->nropts++;
 				state = OPTION;
 			} else
@@ -239,17 +239,17 @@ a2id_parsestr(struct a2id *out, const char *input, int selector)
 				/* keep going */
 			} else if (c == '+') {
 				prevopt = curopt;
-				curopt = &out->str[i];
+				curopt = &out->_str[i];
 				if (out->firstopt == NULL) {
-					out->firstopt = &out->str[i];
+					out->firstopt = &out->_str[i];
 				} else if (secondopt == NULL) {
-					secondopt = &out->str[i];
+					secondopt = &out->_str[i];
 				}
 
 				out->nropts++;
 				state = OPTION;
 			} else if (c == '@') {
-				out->domain = &out->str[i];
+				out->domain = &out->_str[i];
 				state = NEWLABEL;
 			} else
 				goto done;
@@ -259,13 +259,13 @@ a2id_parsestr(struct a2id *out, const char *input, int selector)
 				state = LOCALPART;
 			} else if (c == '+') {
 				prevopt = curopt;
-				curopt = &out->str[i];
+				curopt = &out->_str[i];
 				if (secondopt == NULL) {
-					secondopt = &out->str[i];
+					secondopt = &out->_str[i];
 				}
 				out->nropts++;
 			} else if (c == '@') {
-				out->domain = &out->str[i];
+				out->domain = &out->_str[i];
 				state = NEWLABEL;
 			} else
 				goto done;
@@ -294,7 +294,7 @@ a2id_parsestr(struct a2id *out, const char *input, int selector)
 done:
 	/* Ensure termination. */
 	out->strlen = i;
-	out->str[i] = '\0';
+	out->_str[i] = '\0';
 
 	out->generalized = 0;
 
@@ -325,13 +325,13 @@ done:
 
 	/* Calculate lengths and point to trailing '\0' if length is 0. */
 
-	out->domainlen = &out->str[i] - out->domain;
+	out->domainlen = &out->_str[i] - out->domain;
 	assert(out->domainlen > 0);
 
-	out->localpartlen = out->domain - out->str;
+	out->localpartlen = out->domain - out->_str;
 
 	if (out->localpartlen == 0)
-		out->localpart = &out->str[i];
+		out->localpart = &out->_str[i];
 
 	/* First determine if there was a signature. */
 	if (curopt && prevopt && curopt + 1 == out->domain) {
@@ -351,7 +351,7 @@ done:
 	} else {
 		out->hassig = 0;
 		out->sigflagslen = 0;
-		out->sigflags = &out->str[i];
+		out->sigflags = &out->_str[i];
 	}
 
 	if (out->firstopt) {
@@ -363,7 +363,7 @@ done:
 			out->firstoptlen = out->domain - out->firstopt;
 	} else {
 		out->firstoptlen = 0;
-		out->firstopt = &out->str[i];
+		out->firstopt = &out->_str[i];
 	}
 
 	if (out->basename) {
@@ -376,7 +376,7 @@ done:
 		}
 	} else {
 		out->basenamelen = 0;
-		out->basename = &out->str[i];
+		out->basename = &out->_str[i];
 	}
 
 	return 0;
@@ -682,7 +682,7 @@ printa2id(FILE *fp, const struct a2id *id)
 	    id->sigflags);
 	fprintf(fp, "domain %zu %.*s\n", id->domainlen, (int)id->domainlen,
 	    id->domain);
-	fprintf(fp, "str %zu %.*s\n", id->strlen, (int)id->strlen, id->str);
+	fprintf(fp, "str %zu %.*s\n", id->strlen, (int)id->strlen, id->_str);
 }
 
 /*

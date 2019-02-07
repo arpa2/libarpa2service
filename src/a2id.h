@@ -37,8 +37,7 @@ enum A2ID_TYPE { A2IDT_DOMAINONLY, A2IDT_GENERIC, A2IDT_SERVICE };
  * excluding the terminating nul byte. Each string must have at least the
  * terminating null byte and must never be NULL.
  *
- * XXX Consider removing strlen since generalization breaks up the string in the
- * middle.
+ * "_str" is private and should not be used.
  */
 struct a2id {
 	enum A2ID_TYPE type;
@@ -50,7 +49,7 @@ struct a2id {
 	char *firstopt;	/* points to '+' or NULL in str */
 	char *sigflags;	/* points to '+' or NULL in str */
 	char *domain;	/* points to '@' in str */
-	char str[A2ID_MAXLEN + 1];	/* contains the actual id, might be
+	char _str[A2ID_MAXLEN + 1];	/* contains the actual id, might be
 					 * broken up by generalization */
 	size_t localpartlen;
 	size_t basenamelen;
