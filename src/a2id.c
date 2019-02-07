@@ -59,7 +59,7 @@ a2id_copy(struct a2id *out, const struct a2id *id)
 
 	memset(out, 0, sizeof(*out));
 
-	out->strlen = id->localpartlen + id->domainlen;
+	out->idlen = id->localpartlen + id->domainlen;
 	out->localpartlen = id->localpartlen;
 	out->basenamelen = id->basenamelen;
 	out->firstoptlen = id->firstoptlen;
@@ -150,33 +150,45 @@ static const char basechar[256] = {
 /*
  * Static ARPA2 ID parser.
  *
- * Parse a nul terminated input string. "selector" is a boolean that indicates
- * wheter the input should be parsed as a selector, which is a relaxed
- * generalization of an A2ID.
+ * Parse the string "in" and write the results to "out". "in" must be a nul
+ * terminated string. "selector" is a boolean that indicates wheter the input
+ * should be parsed as a selector. A selector is a generalization of an A2ID.
  *
- * Returns 0 is if the input is a valid ARPA2 ID or -1 otherwise.
+ * On success the following fiels of "out" are set:
  *
- * On success a copy of "input" is made and pointers plus lengths are set in
- * "out".
+ *	type
+ *	hassig	whether the ID has a signature or not
+ *	nropts	total number of options
+ *	localpart	points to the first character of the ID
+ *	localpartlen	length, 0 if there is no localpart
+ *	basename	points to the first character of the name
+ *	basenamelen	length, 0 if there is no basename
+ *	firstopt	points to leading '+' if it exists
+ *	firstoptlen	length including leading '+', 0 if there is no firstopt
+ *	sigflags	points to leading '+' if it exists
+ *	sigflagslen	length including leading '+', 0 if there is no sigflags
+ *	domain	points to '@' in str trailing '+'
+ *	domainlen	length including '@', every valid ID requires a domain
+ *	idlen	total length of the ID
  *
- * The "localpart", "basename", "firstopt" and "sigflags" fields are not nul
- * terminated but are pointers into the copy of the complete input string (which
- * is nul terminated at the end).
+ * "localpart", "basename", "firstopt", "sigflags" and "domain" are not
+ * guaranteed to be nul terminated.
  *
- * On error id->_str contains a null terminated string up to but not including
- * the first erroneous character.
+ * On error "idlen" contains the length of the string up to but not including
+ * the first erroneous character in "in". Another way to read this is, on error
+ * "idlen" contains the index of the first erroneaous character in "in".
  *
- * XXX rename firstopt to options + optionslen
+ * Return 0 is if "in" could be parsed, -1 otherwise.
  */
 int
-a2id_parsestr(struct a2id *out, const char *input, int selector)
+a2id_parsestr(struct a2id *out, const char *in, int selector)
 {
 	enum states { S, SERVICE, LOCALPART, OPTION, NEWLABEL, DOMAIN } state;
 	char *curopt, *prevopt, *secondopt;
 	size_t i;
 	unsigned char c;
 
-	if (input == NULL || out == NULL)
+	if (in == NULL || out == NULL)
 		return -1;
 
 	secondopt = prevopt = curopt = NULL;
@@ -195,11 +207,11 @@ a2id_parsestr(struct a2id *out, const char *input, int selector)
 	out->firstoptlen = 0;
 	out->sigflagslen = 0;
 	out->domainlen = 0;
-	out->strlen = 0;
+	out->idlen = 0;
 
 	state = S;
-	for (i = 0; i < A2ID_MAXLEN && input[i] != '\0'; i++) {
-		c = input[i];
+	for (i = 0; i < A2ID_MAXLEN && in[i] != '\0'; i++) {
+		c = in[i];
 
 		/* Copy string. */
 		out->_str[i] = c;
@@ -293,7 +305,7 @@ a2id_parsestr(struct a2id *out, const char *input, int selector)
 
 done:
 	/* Ensure termination. */
-	out->strlen = i;
+	out->idlen = i;
 	out->_str[i] = '\0';
 
 	out->generalized = 0;
@@ -302,7 +314,7 @@ done:
 	 * Make sure the end of the input is reached and the state is one of the
 	 * final states.
 	 */
-	if (input[i] != '\0')
+	if (in[i] != '\0')
 		return -1;
 
 	if (selector) {
@@ -578,7 +590,7 @@ a2id_generalize(struct a2id *id)
 			id->hassig = 0;
 		}
 
-		id->strlen = id->localpartlen + id->domainlen;
+		id->idlen = id->localpartlen + id->domainlen;
 		id->generalized++;
 		return 1;
 	}
@@ -606,7 +618,7 @@ a2id_generalize(struct a2id *id)
 			for (; *cp != '+'; cp--, id->localpartlen--)
 				*cp = '\0';
 
-		id->strlen = id->localpartlen + id->domainlen;
+		id->idlen = id->localpartlen + id->domainlen;
 		id->generalized++;
 		return 1;
 	}
@@ -615,7 +627,7 @@ a2id_generalize(struct a2id *id)
 		*id->basename = '\0';
 		id->localpartlen -= id->basenamelen;
 		id->basenamelen = 0;
-		id->strlen = id->localpartlen + id->domainlen;
+		id->idlen = id->localpartlen + id->domainlen;
 		id->generalized++;
 		return 1;
 	}
@@ -682,7 +694,7 @@ printa2id(FILE *fp, const struct a2id *id)
 	    id->sigflags);
 	fprintf(fp, "domain %zu %.*s\n", id->domainlen, (int)id->domainlen,
 	    id->domain);
-	fprintf(fp, "str %zu %.*s\n", id->strlen, (int)id->strlen, id->_str);
+	fprintf(fp, "str %zu %.*s\n", id->idlen, (int)id->idlen, id->_str);
 }
 
 /*

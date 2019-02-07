@@ -57,7 +57,7 @@ struct a2id {
 	size_t sigflagslen;	/* length including leading '+', excluding
 				   trailing '+' */
 	size_t domainlen;	/* can not be 0 because of '@' requirement */
-	size_t strlen;
+	size_t idlen;
 };
 
 int a2id_copy(struct a2id *, const struct a2id *);

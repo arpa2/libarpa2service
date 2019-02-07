@@ -82,14 +82,17 @@ test_a2id_parsestr(void)
 	input = " @example.com";
 	r = a2id_parsestr(&id, input, 0);
 	assert(r == -1);
+	assert(id.idlen == 0);
 
 	input = "@";
 	r = a2id_parsestr(&id, input, 0);
 	assert(r == -1);
+	assert(id.idlen == 1);
 
 	input = "\x7f@example.com";
 	r = a2id_parsestr(&id, input, 0);
 	assert(r == -1);
+	assert(id.idlen == 0);
 
 	input = "+a@example.com";
 	r = a2id_parsestr(&id, input, 0);
@@ -101,6 +104,7 @@ test_a2id_parsestr(void)
 	input = "+@example.com";
 	r = a2id_parsestr(&id, input, 0);
 	assert(r == -1);
+	assert(id.idlen == 1);
 
 	input = "a+@example.com";
 	r = a2id_parsestr(&id, input, 0);
@@ -132,10 +136,12 @@ test_a2id_parsestr(void)
 	input = "++@example.com";
 	r = a2id_parsestr(&id, input, 0);
 	assert(r == -1);
+	assert(id.idlen == 1);
 
 	input = "foo! bar~\177@example.com";
 	r = a2id_parsestr(&id, input, 0);
 	assert(r == -1);
+	assert(id.idlen == 4);
 
 	/* test valid ids */
 	input = "@example.com";
@@ -312,8 +318,11 @@ test_a2id_parsestr(void)
 
 	/* test invalid ids */
 	assert(a2id_parsestr(&id, "", 0) == -1);
+	assert(id.idlen == 0);
 	assert(a2id_parsestr(&id, "joe", 0) == -1);
+	assert(id.idlen == 3);
 	assert(a2id_parsestr(&id, "fred@example.net@example.net", 0) == -1);
+	assert(id.idlen == 16);
 }
 
 void
@@ -387,8 +396,7 @@ test_a2id_parsestr_selector(void)
 	input = " @example.com";
 	r = a2id_parsestr(&id, input, 1);
 	assert(r == -1);
-	assert(id.localpart == NULL);
-	assert(id.domain == NULL);
+	assert(id.idlen == 0);
 
 	input = "@.";
 	r = a2id_parsestr(&id, input, 1);
@@ -411,8 +419,7 @@ test_a2id_parsestr_selector(void)
 	input = "\x7f@example.com";
 	r = a2id_parsestr(&id, input, 1);
 	assert(r == -1);
-	assert(id.localpart == NULL);
-	assert(id.domain == NULL);
+	assert(id.idlen == 0);
 
 	input = "+a@example.com";
 	r = a2id_parsestr(&id, input, 1);
@@ -496,6 +503,7 @@ test_a2id_parsestr_selector(void)
 	input = "foo! bar~\177@example.com";
 	r = a2id_parsestr(&id, input, 1);
 	assert(r == -1);
+	assert(id.idlen == 4);
 	assert(strcmp(id.localpart, "foo!") == 0);
 	assert(id.domain == NULL);
 	assert(id.type == A2IDT_GENERIC);
