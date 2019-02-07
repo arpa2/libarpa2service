@@ -1,0 +1,143 @@
+.\" Copyright (c) 2019 Tim Kuijsten
+.\"
+.\" Permission to use, copy, modify, and/or distribute this software for any
+.\" purpose with or without fee is hereby granted, provided that the above
+.\" copyright notice and this permission notice appear in all copies.
+.\"
+.\" THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+.\" WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+.\" MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+.\" ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+.\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+.\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+.\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+.\"
+.Dd February 7, 2019
+.Dt A2ID 3
+.Os
+.Sh NAME
+.Nm a2id_coreform ,
+.Nm a2id_generalize ,
+.Nm a2id_optsegments ,
+.Nm a2id_print ,
+.Nm a2id_tostr
+.Nd library to work with A2IDs and A2ID Selectors
+.Sh SYNOPSIS
+.In a2id.h
+.Ft int
+.Fo a2id_coreform
+.Fa "char *dst"
+.Fa "const struct a2id *id"
+.Fa "size_t *dstsize"
+.Fc
+.Ft int
+.Fo a2id_generalize
+.Fa "struct a2id *id"
+.Fc
+.Ft size_t
+.Fo a2id_optsegments
+.Fa "const char **optseg"
+.Fa "const struct a2id *id"
+.Fc
+.Ft void
+.Fo a2id_print
+.Fa "FILE *fp"
+.Fa "const struct a2id *id"
+.Fc
+.Ft int
+.Fo a2id_tostr
+.Fa "char *dst"
+.Fa "const struct a2id *id"
+.Fa "size_t *dstsize"
+.Fc
+.Sh DESCRIPTION
+The
+.Fn a2id_coreform
+function writes the core form of
+.Fa id
+as a string into
+.Fa dst .
+.Fa dstsize
+is a value/result parameter and should be at least A2ID_MAXLEN + 1 bytes to
+ensure it will not fail.
+.Pp
+The
+.Fn a2id_generalize
+function generalizes an A2ID structure by one step.
+Generalization is the process of removing segments and labels from the localpart
+and domain, in that order.
+Each function call represents one generalization.
+As long as there are segments in the localpart, one segment is removed from the
+localpart from right to left.
+As soon as the localpart can't be generalized any further, domain labels are
+removed from left to right, until no labels are left.
+.Fa id
+is a value/result parameter.
+.Pp
+The
+.Fn a2id_optsegments
+function determines the start and length of optional segments, excluding any
+sigflags segment.
+.Fa optseg
+will be set to point to the first character of the first option, right after
+it's leading
+.Sq + .
+If
+.Fa id
+has no optional segments then
+.Fa optseg
+is not set.
+.Pp
+The
+.Fn a2id_print
+function prints the different parts of
+.Fa id
+to
+.Fa fp .
+.Pp
+The
+.Fn a2id_tostr
+function writes the string representation of
+.Fa id
+into
+.Fa dst .
+.Fa dstsize
+is a value/result parameter and should be at least A2ID_MAXLEN + 1 bytes to
+ensure it will not fail.
+.Sh RETURN VALUES
+.Fn a2id_coreform
+returns 0 on success, -1 if
+.Fa dst
+is too short.
+.Pp
+.Fn a2id_generalize
+returns 1 if a component is removed from the localpart or the domain of
+.Fa id .
+Returns 0 if
+.Fa id
+can not be further generalized.
+.Pp
+.Fn a2id_optsegments
+returns the length of
+.Fa optseg
+or 0 if
+.Fa optseg
+is not set.
+.Pp
+.Fn a2id_generalize
+returns 1 if a component is removed from the localpart or the domain.
+Returns 0 if
+.Fa id
+can not be further generalized.
+.Pp
+.Fn a2id_tostr
+returns 0 on success, -1 if
+.Fa dst
+is too short.
+.Sh SEE ALSO
+.Xr a2idmatch 1
+.Xr a2id_match 3
+.Xr a2id_parsestr 3
+.Sh AUTHOR
+.An -nosplit
+.An Tim Kuijsten Aq Mt tim@netsend.nl

@@ -558,11 +558,16 @@ a2id_match(const struct a2id *subject, const struct a2id *selector)
 }
 
 /*
- * Generalize an A2ID structure by one step.
+ * Generalize an A2ID structure by one step. Generalization is the process of
+ * removing segments and labels from the localpart and domain, in that order.
+ * Each function call represents one generalization. As long as there are
+ * segments in the localpart, one segment is removed from the localpart from
+ * right to left. As soon as the localpart can't be generalized any further,
+ * domain labels are removed from left to right, until no labels are left. "id"
+ * is a value/result parameter.
  *
- * Returns 1 if a component is stripped from the localpart or the domain.
- * Returns 0 if nothing is stripped ("id" has an empty localpart and the catch-
- * all domain "@."). Returns 0 if id is NULL.
+ * Returns 1 if a component is removed from the localpart or the domain.
+ * Returns 0 if "id" can not be further generalized.
  *
  * XXX don't move domain by removing every label, just increment the domain
  * pointer now that the memory is allocated statically in the structure.
@@ -677,6 +682,9 @@ a2id_generalize(struct a2id *id)
 	return 0;
 }
 
+/*
+ * Print the different parts of "id" to "fp".
+ */
 void
 a2id_print(FILE *fp, const struct a2id *id)
 {
@@ -700,10 +708,10 @@ a2id_print(FILE *fp, const struct a2id *id)
 
 /*
  * Write the core form of "id" as a string into "dst". "dstsize" is a
- * valid/result parameter.
+ * value/result parameter and should be at least A2ID_MAXLEN + 1 bytes to ensure
+ * it will not fail.
  *
- * Return 0 on success, -1 if dst is too short (this should never happen if dst
- * is at least A2ID_MAXLEN + 1 bytes).
+ * Return 0 on success, -1 if dst is too short.
  */
 int
 a2id_coreform(char *dst, const struct a2id *id, size_t *dstsize)
@@ -742,10 +750,10 @@ a2id_coreform(char *dst, const struct a2id *id, size_t *dstsize)
 
 /*
  * Write the string representation of "id" into "dst". dstsize is a value/result
- * parameter.
+ * parameter and should be at least A2ID_MAXLEN + 1 bytes to ensure it will not
+ * fail.
  *
- * Return 0 on success, -1 if dst is too short (this should never happen if dst
- * is at least A2ID_MAXLEN + 1 bytes).
+ * Return 0 on success, -1 if dst is too short.
  */
 int
 a2id_tostr(char *dst, const struct a2id *id, size_t *dstsize)
