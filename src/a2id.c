@@ -150,11 +150,12 @@ static const char basechar[256] = {
 /*
  * Static ARPA2 ID parser.
  *
- * Parse the string "in" and write the results to "out". "in" must be a nul
- * terminated string. "selector" is a boolean that indicates wheter the input
- * should be parsed as a selector. A selector is a generalization of an A2ID.
+ * Parse the string "in" and writes the result in "out". "in" must be a nul
+ * terminated string. "selector" is a boolean that indicates wheter or not the
+ * input should be parsed as a selector. A selector is a generalization of an
+ * A2ID.
  *
- * On success the following fiels of "out" are set:
+ * On success the following fiels of the "out" structure are set:
  *
  *	type
  *	hassig	whether the ID has a signature or not
@@ -166,8 +167,8 @@ static const char basechar[256] = {
  *	firstopt	points to leading '+' if it exists
  *	firstoptlen	length including leading '+', 0 if there is no firstopt
  *	sigflags	points to leading '+' if it exists
- *	sigflagslen	length including leading '+', 0 if there is no sigflags
- *	domain	points to '@' in str trailing '+'
+ *	sigflagslen	length including leading '+', 0 if there are no sigflags
+ *	domain	points to leading '@', always exists in a valid ID
  *	domainlen	length including '@', every valid ID requires a domain
  *	idlen	total length of the ID
  *
@@ -178,7 +179,7 @@ static const char basechar[256] = {
  * the first erroneous character in "in". Another way to read this is, on error
  * "idlen" contains the index of the first erroneaous character in "in".
  *
- * Return 0 is if "in" could be parsed, -1 otherwise.
+ * Return 0 if "in" is a valid A2ID and could be parsed, -1 otherwise.
  */
 int
 a2id_parsestr(struct a2id *out, const char *in, int selector)

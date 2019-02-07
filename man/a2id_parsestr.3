@@ -1,4 +1,4 @@
-.\" Copyright (c) 2018 Tim Kuijsten
+.\" Copyright (c) 2018, 2019 Tim Kuijsten
 .\"
 .\" Permission to use, copy, modify, and/or distribute this software for any
 .\" purpose with or without fee is hereby granted, provided that the above
@@ -12,134 +12,111 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd September 7, 2018
+.Dd February 7, 2019
 .Dt A2ID_PARSESTR 3
 .Os
 .Sh NAME
-.Nm a2id_parsestr ,
-.Nm a2id_parseselstr
+.Nm a2id_parsestr
 .Nd parse an A2ID or A2ID Selector string
 .Sh SYNOPSIS
 .In arpa2/a2id.h
 .Ft int
 .Fo a2id_parsestr
-.Fa "const char *input"
-.Fa "const char **localpart"
-.Fa "const char **domain"
-.Fa "const char **firstopt"
-.Fa "int *nropts"
-.Fc
-.Ft int
-.Fo a2id_parseselstr
-.Fa "const char *input"
-.Fa "const char **localpart"
-.Fa "const char **domain"
-.Fa "const char **firstopt"
-.Fa "int *nropts"
+.Fa "struct a2id *out"
+.Fa "const char *in"
+.Fa "int selector"
 .Fc
 .Sh DESCRIPTION
 .Fn a2id_parsestr
-parses
-.Fa input
-as an A2ID and updates
-.Fa localpart
-to point to the first character of
-.Fa input
-or
-.Dv NULL
-if there is no localpart.
-.Fa domain
-is set to point to the
-.Sq @
-character.
-Note that each valid A2ID has exactly one
-.Sq @
-character.
-If the localpart has one or more options then
-.Fa firstopt
-points to the
-.Sq +
-of the first option in
-.Fa input
-or
-.Dv NULL
-if there are no options.
-If
-.Fa nropts
-is passed it is set to contain the number of options in the localpart.
+parses the string
+.Fa in
+and writes the result in
+.Fa out .
+.Fa in
+must be a nul terminated string.
+.Fa selector
+is a boolean that indicates wheter or not the input should be parsed as a
+selector. A selector is a generalization of an A2ID.
 .Pp
-.Fn a2id_parseselstr
-parses
-.Fa input
-as an A2ID Selector and updates
-.Fa localpart
-to point to the first character of
-.Fa input
-or
-.Dv NULL
-if there is no localpart.
-.Fa domain
-is set to point to the
-.Sq @
-character.
-Note that each valid A2ID Selector has exactly one
-.Sq @
-character.
-If the localpart has one or more options then
-.Fa firstopt
-points to the
+On success the following fiels of the
+.Fa out
+structure are set:
+.Bl -tag -width Ds
+.It Fa type
+.It Fa hassig
+whether the ID has a signature or not
+.It Fa nropts
+total number of options
+.It Fa localpart
+points to the first character of the ID
+.It Fa localpartlen
+length, 0 if there is no localpart
+.It Fa basename
+points to the first character of the name
+.It Fa basenamelen
+length, 0 if there is no basename
+.It Fa firstopt
+points to leading
 .Sq +
-of the first option in
-.Fa input
-or
-.Dv NULL
-if there are no options.
-If
-.Fa nropts
-is passed it is set to contain the number of options in the localpart.
+if it exists
+.It Fa firstoptlen
+length including leading
+.Sq + ,
+0 if there is no firstopt
+.It Fa sigflags
+points to leading
+.Sq +
+if it exists
+.It Fa sigflagslen
+length including leading
+.Sq + ,
+0 if there are no sigflags
+.It Fa domain
+points to leading
+.Sq @ ,
+always exists in a valid ID
+.It Fa domainlen
+length including
+.Sq @ ,
+every valid ID requires a domain
+.It Fa idlen
+total length of the ID
+.El
+.Pp
+.Fa localpart ,
+.Fa basename ,
+.Fa firstopt ,
+.Fa sigflags
+and
+.Fa domain
+are not guaranteed to be nul terminated.
+.Pp
+On error
+.Fa idlen
+contains the length of the string up to but not including the first erroneous
+character in
+.Fa in .
+Another way to read this is, on error
+.Fa idlen
+contains the index of the first erroneaous character in
+.Fa in .
 .Sh RETURN VALUES
-Both
 .Fn a2id_parsestr
-and
-.Fn a2id_parseselstr
-return 0 if the
-.Fa input
-is a valid A2ID or A2ID Selector, respectively.
-If
-.Fa input
-is invalid then -1 is returned and
-.Fa localpart
-and
-.Fa domain
-are updated to point to the first erroneous character encountered in
-.Fa input .
-.Pp
-If the error was encountered in the localpart of
-.Fa input
-than
-.Fa localpart
-points to the first erroneous character and
-.Fa domain
-points to
-.Dv NULL .
-If the error was encountered in the domain than
-.Fa domain
-points to the first erroneous character in
-.Fa input
-and
-.Fa localpart
-points to
-.Dv NULL .
+returns 0 if
+.Fa in
+is a valid A2ID and could be parsed. On error -1 is returned and
+.Fa idlen
+contains the index of the first erroneous character in
+.Fa in .
 .Sh SEE ALSO
-.Xr a2id_fromselstr 3 ,
-.Xr a2id_fromstr 3 ,
+.Xr a2id_copy 3 ,
 .Xr isgraph 3
 .Sh STANDARDS
-For the exact grammar supported by these functions see a2idgrammar.txt and
+The grammar of an A2ID and A2ID Selector is documented in a2idgrammar.txt and
 a2idselgrammar.txt in the doc/design directory of the source code
 .Lk https://github.com/arpa2/libarpa2service repository
 .Pp
-The ARPA2 ID is inspired by the Network Access Identifier as specified in
+The ARPA2 ID is based on the Network Access Identifier as specified in
 RFC 4282.
 .Sh AUTHOR
 .An -nosplit
@@ -149,7 +126,6 @@ The current grammar of an A2ID only supports a subset of US-ASCII, notably the
 set supported by
 .Xr isgraph 3 .
 In the future UTF-8 should probably be supported, but special care needs to be
-taken for any Unicode characters that have the same visual representation.
-A
+taken for any Unicode characters that have the same visual representation. A
 good pointer to start with would be RFC 8265 and 7542 and the notes about
 normalization in these documents.
