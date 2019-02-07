@@ -12,7 +12,7 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd September 8, 2018
+.Dd $Mdocdate: February 7 2019 $
 .Dt A2IDMATCH 1
 .Os
 .Sh NAME
@@ -33,7 +33,8 @@ It's arguments are as follows.
 .It Fl h
 Print usage.
 .It Fl q
-Be quiet and don't write to stdout. Exit 0 if
+Be quiet and don't write to stdout.
+Exit 0 if
 .Ar a2id
 matches with
 .Ar selector ,
@@ -55,13 +56,13 @@ matches with
 .Ar selector ,
 2 if there is a mismatch, and 1 if an error occured.
 .Sh SEE ALSO
-For the exact grammar supported by A2ID and A2ID Selector see
-a2idgrammar.txt and a2idselgrammar.txt in the doc/design directory of the
-source code
-.Lk https://github.com/arpa2/libarpa2service repository
+.Xr a2id_match 3
 .Pp
-The ARPA2 ID is inspired by the Network Access Identifier as specified in
-RFC 4282.
-.Sh AUTHOR
+.Lk https://github.com/arpa2/libarpa2service/blob/master/doc/design/a2idacl-intro.md "ARPA2 Identifier and ACL introduction"
+.Pp
+.Lk https://github.com/arpa2/libarpa2service/blob/master/doc/design/a2idgrammar.txt "ARPA2 ID Grammar"
+.Pp
+.Lk https://github.com/arpa2/libarpa2service/blob/master/doc/design/a2idselgrammar.txt "ARPA2 ID Selector Grammar"
+.Sh AUTHORS
 .An -nosplit
-.An Tim Kuijsten Aq Mt tim@netsend.nl
+.An Tim Kuijsten

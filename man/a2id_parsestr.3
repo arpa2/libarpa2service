@@ -12,14 +12,14 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd February 7, 2019
+.Dd $Mdocdate: February 7 2019 $
 .Dt A2ID_PARSESTR 3
 .Os
 .Sh NAME
 .Nm a2id_parsestr
 .Nd parse an A2ID or A2ID Selector string
 .Sh SYNOPSIS
-.In arpa2/a2id.h
+.In a2id.h
 .Ft int
 .Fo a2id_parsestr
 .Fa "struct a2id *out"
@@ -36,7 +36,8 @@ and writes the result in
 must be a nul terminated string.
 .Fa selector
 is a boolean that indicates wheter or not the input should be parsed as a
-selector. A selector is a generalization of an A2ID.
+selector.
+A selector is a generalization of an A2ID.
 .Pp
 On success the following fiels of the
 .Fa out
@@ -104,28 +105,32 @@ contains the index of the first erroneaous character in
 .Fn a2id_parsestr
 returns 0 if
 .Fa in
-is a valid A2ID and could be parsed. On error -1 is returned and
+is a valid A2ID and could be parsed.
+On error -1 is returned and
 .Fa idlen
 contains the index of the first erroneous character in
 .Fa in .
 .Sh SEE ALSO
+.Xr a2id 3 ,
 .Xr a2id_match 3 ,
 .Xr isgraph 3
-.Sh STANDARDS
-The grammar of an A2ID and A2ID Selector is documented in a2idgrammar.txt and
-a2idselgrammar.txt in the doc/design directory of the source code
-.Lk https://github.com/arpa2/libarpa2service repository
 .Pp
+.Lk https://github.com/arpa2/libarpa2service/blob/master/doc/design/a2idacl-intro.md "ARPA2 Identifier and ACL introduction"
+.Pp
+.Lk https://github.com/arpa2/libarpa2service/blob/master/doc/design/a2idgrammar.txt "ARPA2 ID Grammar"
+.Pp
+.Lk https://github.com/arpa2/libarpa2service/blob/master/doc/design/a2idselgrammar.txt "ARPA2 ID Selector Grammar"
+.Sh STANDARDS
 The ARPA2 ID is based on the Network Access Identifier as specified in
 RFC 4282.
-.Sh AUTHOR
+.Sh AUTHORS
 .An -nosplit
-.An Tim Kuijsten Aq Mt tim@netsend.nl
+.An Tim Kuijsten
 .Sh CAVEATS
 The current grammar of an A2ID only supports a subset of US-ASCII, notably the
 set supported by
 .Xr isgraph 3 .
 In the future UTF-8 should probably be supported, but special care needs to be
-taken for any Unicode characters that have the same visual representation. A
-good pointer to start with would be RFC 8265 and 7542 and the notes about
+taken for any Unicode characters that have the same visual representation.
+A good pointer to start with would be RFC 8265 and 7542 and the notes about
 normalization in these documents.
