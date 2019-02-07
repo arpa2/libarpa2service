@@ -60,7 +60,6 @@ struct a2id {
 	size_t idlen;
 };
 
-int a2id_copy(struct a2id *, const struct a2id *);
 int a2id_parsestr(struct a2id *, const char *, int);
 int a2id_match(const struct a2id *, const struct a2id *);
 int a2id_generalize(struct a2id *);

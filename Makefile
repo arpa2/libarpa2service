@@ -73,10 +73,6 @@ manhtml:
 	mkdir -p build
 	mandoc -T html -Ostyle=man.css man/a2idmatch.1 > \
 		build/a2idmatch.1.html
-	mandoc -T html -Ostyle=man.css man/a2id_alloc.3 > \
-		build/a2id_alloc.3.html
-	mandoc -T html -Ostyle=man.css man/a2id_fromstr.3 > \
-		build/a2id_fromstr.3.html
 	mandoc -T html -Ostyle=man.css man/a2id_match.3 > \
 		build/a2id_match.3.html
 	mandoc -T html -Ostyle=man.css man/a2id_parsestr.3 > \
