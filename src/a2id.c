@@ -678,7 +678,7 @@ a2id_generalize(struct a2id *id)
 }
 
 void
-printa2id(FILE *fp, const struct a2id *id)
+a2id_print(FILE *fp, const struct a2id *id)
 {
 	fprintf(fp, "type %d\n", id->type);
 	fprintf(fp, "hassig %d\n", id->hassig);

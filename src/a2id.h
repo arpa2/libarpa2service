@@ -60,13 +60,12 @@ struct a2id {
 	size_t idlen;
 };
 
-int a2id_parsestr(struct a2id *, const char *, int);
-int a2id_match(const struct a2id *, const struct a2id *);
-int a2id_generalize(struct a2id *);
 int a2id_coreform(char *, const struct a2id *, size_t *);
+int a2id_generalize(struct a2id *);
+int a2id_match(const struct a2id *, const struct a2id *);
+int a2id_parsestr(struct a2id *, const char *, int);
 int a2id_tostr(char *, const struct a2id *, size_t *);
+void a2id_print(FILE *, const struct a2id *);
 size_t a2id_optsegments(const char **, const struct a2id *);
-
-void printa2id(FILE *, const struct a2id *);
 
 #endif /* A2ID_H */
