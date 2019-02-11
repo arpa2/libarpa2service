@@ -624,7 +624,7 @@ a2acl_isnewer(const char *subject, const char *reference)
 	if (fstat(subd, &sst) == -1)
 		goto out; /* errno set */
 
-	if (rst.st_mtim.tv_sec < sst.st_mtim.tv_sec)
+	if (rst.st_mtime < sst.st_mtime)
 		r = 1;
 
 out:
