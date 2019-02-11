@@ -404,7 +404,7 @@ a2acl_parsepolicyline(const char **remotesel, size_t *remoteselsize,
     const char **localid, size_t *localidsize, const char **aclrule,
     size_t *aclrulesize, const char *line, size_t linesize, const char **err)
 {
-	const ssize_t minrulelen = sizeof("@. a@b %B+") - 1;
+	const size_t minrulelen = sizeof("@. a@b %B+") - 1;
 	size_t n;
 
 	*err = NULL;
