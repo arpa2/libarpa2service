@@ -596,9 +596,9 @@ a2acl_fromdes(int d, char *errstr, size_t errstrsize)
  * Check if "subject" is newer than "reference" when looking at the last
  * modification times.
  *
- * Return 1 if "subject" is newer than "reference", 0 if subject is older or
- * equal to "reference", -1 if an error occurred with errno set (i.e. if one of
- * the files does not exist).
+ * Return 1 if "subject" is newer than "reference" or if "reference" does not
+ * exist. Return 0 if subject is older or equal to "reference". Return -1 if an
+ * error occurred with errno set (i.e. subject does not exist).
  */
 int
 a2acl_isnewer(const char *subject, const char *reference)
@@ -609,11 +609,11 @@ a2acl_isnewer(const char *subject, const char *reference)
 	if (subject == NULL || reference == NULL)
 		return -1;
 
-	if ((refd = open(reference, O_RDONLY|O_CLOEXEC)) == -1)
-		return -1;
-
 	if ((subd = open(subject, O_RDONLY|O_CLOEXEC)) == -1)
 		return -1;
+
+	if ((refd = open(reference, O_RDONLY|O_CLOEXEC)) == -1)
+		return 1;
 
 	r = 0;
 
@@ -685,6 +685,9 @@ a2acl_fromfile(const char *filename, char *errstr, size_t errstrsize)
 
 	/* remove stale db caches before opening/creating */
         recreate = a2acl_isnewer(filename, dbcache);
+        if (recreate == -1)
+		return -1;
+
         if (recreate != 0)
 		if (unlink(dbcache) == -1 && errno != ENOENT)
 			return -1; /* errno set */
@@ -697,7 +700,7 @@ a2acl_fromfile(const char *filename, char *errstr, size_t errstrsize)
 		return -1;
 	}
 
-        if (!recreate) {
+        if (recreate) {
 		if ((fd = open(filename, O_RDONLY|O_CLOEXEC)) == -1) {
 			a2acl_dbclose();
 			return -1; /* errno set */
