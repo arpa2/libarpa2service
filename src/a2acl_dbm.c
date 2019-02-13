@@ -44,9 +44,9 @@ void
 printdbmentry(FILE *fp, const struct dbmentry *ep)
 {
 	fprintf(fp, "remotesel: %zu %.*s\nlocalid: %zu %.*s\naclrule: %zu %.*s\n",
-	    ep->remoteselsize, (int)ep->remoteselsize, ep->remotesel,
-	    ep->localidsize, (int)ep->localidsize, ep->localid, ep->aclrulesize,
-	    (int)ep->aclrulesize, ep->aclrule);
+	    ep->remoteselsize, (int)ep->remoteselsize, (char*)ep->remotesel,
+	    ep->localidsize, (int)ep->localidsize, (char*)ep->localid, ep->aclrulesize,
+	    (int)ep->aclrulesize, (char*)ep->aclrule);
 }
 
 struct dbmentry *dbm_alloc(const void *, size_t, const void *, size_t,
