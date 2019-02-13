@@ -1,17 +1,3 @@
-# Copyright (c) 2018 Tim Kuijsten
-#
-# Permission to use, copy, modify, and/or distribute this software for any
-# purpose with or without fee is hereby granted, provided that the above
-# copyright notice and this permission notice appear in all copies.
-#
-# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-# REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-# AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-# INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-# LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-# OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-# PERFORMANCE OF THIS SOFTWARE.
-
 CFLAGS = -O0 -g -W -Wall -Wextra -Wpedantic
 
 INSTALL_BIN 	= install -m 0555
@@ -23,6 +9,8 @@ BINDIR	= $(PREFIX)/bin
 LIBDIR	= $(PREFIX)/lib
 MANDIR	= $(PREFIX)/man
 INCDIR	= $(PREFIX)/include
+
+all:	a2idmatch a2acl
 
 a2idmatch: a2id.o src/a2idmatch.c
 	cc -Wall a2id.o src/a2idmatch.c -o $@
@@ -44,6 +32,7 @@ testa2acl: a2acl.o a2id.o test/testa2acl.c
 
 runtest: a2idmatch testa2id testa2acl
 	./testa2id
+	./test/testa2idmatch
 	./testa2acl
 
 install: liba2id.a a2idmatch
@@ -54,32 +43,38 @@ install: liba2id.a a2idmatch
 	mkdir -p $(DESTDIR)$(MANDIR)/man3
 	$(INSTALL_LIB) liba2id.a $(DESTDIR)$(LIBDIR)
 	$(INSTALL_LIB) src/a2id.h $(DESTDIR)$(INCDIR)
-	$(INSTALL_BIN) a2idmatch $(DESTDIR)$(BINDIR)
-	$(INSTALL_MAN) man/a2idmatch.1 $(DESTDIR)$(MANDIR)/man1
-	$(INSTALL_MAN) man/a2id.3 man/a2id_match.3 man/a2id_parsestr.3 \
-		$(DESTDIR)$(MANDIR)/man3
+	$(INSTALL_BIN) a2acl a2idmatch $(DESTDIR)$(BINDIR)
+	$(INSTALL_MAN) man/a2acl.3 man/a2id.3 man/a2id_match.3 \
+		man/a2id_parsestr.3 $(DESTDIR)$(MANDIR)/man3
+	$(INSTALL_MAN) man/a2acl.1 man/a2idmatch.1 $(DESTDIR)$(MANDIR)/man1
 
 uninstall:
 	rm -f $(DESTDIR)$(LIBDIR)/liba2id.a
 	rm -f $(DESTDIR)$(INCDIR)/src/a2id.h
 	rm -f $(DESTDIR)$(BINDIR)/a2idmatch
-	rm -f $(DESTDIR)$(MANDIR)/man1/a2idmatch.1
+	rm -f $(DESTDIR)$(MANDIR)/man3/a2acl.3
 	rm -f $(DESTDIR)$(MANDIR)/man3/a2id.3
 	rm -f $(DESTDIR)$(MANDIR)/man3/a2id_match.3
 	rm -f $(DESTDIR)$(MANDIR)/man3/a2id_parsestr.3
+	rm -f $(DESTDIR)$(MANDIR)/man1/a2acl.1
+	rm -f $(DESTDIR)$(MANDIR)/man1/a2idmatch.1
 
 manhtml:
 	mkdir -p build
-	mandoc -T html -Ostyle=man.css man/a2idmatch.1 > \
-		build/a2idmatch.1.html
-	mandoc -T html -Ostyle=man.css man/a2id.3 > \
-		build/a2id.3.html
-	mandoc -T html -Ostyle=man.css man/a2id_match.3 > \
-		build/a2id_match.3.html
-	mandoc -T html -Ostyle=man.css man/a2id_parsestr.3 > \
-		build/a2id_parsestr.3.html
+	cd man && mandoc -T html -Ostyle=man.css a2acl.3 > \
+		../build/a2acl.3.html
+	cd man && mandoc -T html -Ostyle=man.css a2id.3 > \
+		../build/a2id.3.html
+	cd man && mandoc -T html -Ostyle=man.css a2id_match.3 > \
+		../build/a2id_match.3.html
+	cd man && mandoc -T html -Ostyle=man.css a2id_parsestr.3 > \
+		../build/a2id_parsestr.3.html
+	cd man && mandoc -T html -Ostyle=man.css a2acl.1 > \
+		../build/a2acl.1.html
+	cd man && mandoc -T html -Ostyle=man.css a2idmatch.1 > \
+		../build/a2idmatch.1.html
 
-fsmpngsvg:
+gv:
 	dot -Tpng doc/design/a2idfsm.gv -o doc/design/a2idfsm.png
 	dot -Tsvg doc/design/a2idfsm.gv -o doc/design/a2idfsm.svg
 	dot -Tpng doc/design/a2idselfsm.gv -o doc/design/a2idselfsm.png
@@ -105,11 +100,13 @@ lmdb:	lmdb.c
 
 clean:
 	rm -f a2idmatch a2id.o a2acl.o liba2id.a testa2id testa2acl a2idverify \
-		a2idverifyafl lmdb a2acl_dbm.o a2acl_dblmdb.o a2acllmdb
+		a2idverifyafl lmdb a2acl_dbm.o a2acl_dblmdb.o a2acllmdb a2acl \
+		tags src/tags test/tags
 
 tags: src/*.[ch]
 	ctags src/*.[ch]
 	cd src && ctags *.[ch]
+	cd test && ctags *.[ch]
 
 a2acl_dbm.o: src/a2acl_dbm.c
 	${CC} ${CFLAGS} -c src/a2acl_dbm.c
