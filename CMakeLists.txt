@@ -94,7 +94,7 @@ target_link_libraries(a2acl a2aclShared)
 target_link_libraries(a2idmatch a2idShared)
 
 # starting from CMake 3.14, drop DESTINATION and use platform defaults
-install(TARGETS a2idShared a2aclShared DESTINATION lib PUBLIC_HEADER DESTINATION include/arpa2)
+install(TARGETS a2idShared a2aclShared a2acldb DESTINATION lib PUBLIC_HEADER DESTINATION include/arpa2)
 install(TARGETS a2idmatch a2acl DESTINATION bin)
 install(FILES src/a2id.h DESTINATION include/arpa2)
 install(FILES src/a2acl.h DESTINATION include/arpa2)
