@@ -1,88 +1,177 @@
 # ARPA2 ID library
 
-This repository contains both a command-line tool and a library of functions to
-test and parse ARPA2 identities and selectors.
+This repository contains command-line tools and libraries to work with ARPA2
+Identities, Selectors and ACLs.
 
 Features:
-* a2idmatch - Command line tool to test A2IDs with a selector
-* libarpa2id - C89 library without dependencies to parse and match A2IDs
+* a2acl - command-line tool to test if communication between two A2IDs is allowed
+* a2idmatch - command-line tool to test if an A2ID matches a selector
+* liba2acl - library to work with A2ACLs
+* liba2id - library to parse and match A2IDs
+* Libraries are POSIX C89 without extra dependencies
 
 Status: **beta**
 
+## Requirements
+
+Build requirements:
+* A C89 compiler
+* CMake >= 3.3
+
+Run-time requirements:
+* Any POSIX-compliant system
+
+## Installation
+
+```sh
+$ git clone https://github.com/arpa2/libarpa2service.git
+$ cd libarpa2service/build
+$ cmake ..
+$ make
+$ sudo make install
+$ sudo ldconfig
+```
+
+## Using the libraries
+
+After the libraries are installed, make sure to include `arpa2/a2id.h` or
+`arpa2/a2acl.h` in your source file and hint the compiler to include the a2id or
+a2acl library with the -l flag.
+
+```sh
+$ cc -la2id yourcode.c
+```
+
+## Documentation
+
+For further documentation please refer to [ARPA2 Identifier and ACL introduction]
+and the manpages:
+* [a2acl(1)]
+* [a2idmatch(1)]
+* [a2acl(3)]
+* [a2id(3)]
+* [a2id_match(3)]
+* [a2id_parsestr(3)]
 
 ## Examples
 
-### command-line a2idmatch
-Test whether the A2ID "john+singer@example.com" matches the A2ID selector
-"@example.com".
+Some examples on how-to use the two included command-line tools [a2acl(1)] and
+[a2idmatch(1)]. If you're not yet familiar with ARPA2 IDs or ACLs, please see
+the [ARPA2 Identifier and ACL introduction].
+
+### a2acl
+
+> NOTE: the following example can be easily replayed by using the docker-demo:
+> ```sh
+> git clone https://github.com/timkuijsten/docker-demo.git
+> cd docker-demo/demo-acl
+> docker build -t a2acl .
+> docker run -it a2acl bash
+> cd /root/arpa2
+> ```
+
+We are going to define the following policy:
+1. Whitelist all communication from anyone @ashop.example.com to tim+ashop@dev.arpa2.org
+2. Blacklist all communication from anyone @ashop.example.com to tim@dev.arpa2.org or
+any other alias of tim@dev.arpa2.org
+3. Abandon all communication from anyone @.tk to tim@dev.arpa2.org (or any
+alias)
+4. Blacklist all communication from anyone to tim@dev.arpa2.org (or any alias)
+
+The above ACL policy is notated in the text file `demopolicy` as follows:
+
+```ascii
+@ashop.example.com tim@dev.arpa2.org %W +ashop
+@ashop.example.com tim@dev.arpa2.org %B +
+@.tk tim@dev.arpa2.org %A +
+@. tim@dev.arpa2.org %B +
+```
+
+Each line in the file contains one ACL rule. A rule is a triplet of a remote
+selector, a local ID in core form, and one (or more) ACL segments. So the first
+rule can be broken down as follows:
+* the remote selector: `@ashop.example.com`
+* the local ID in core form: `tim@dev.arpa2.org`
+* the ACL segment: `%W +ashop`
+
+The ACL segment consists of the first letter of the list and an alias, `%W` and
+`+ashop`, respectively. The alias must be combined with the local ID and would
+yield tim+ashop@dev.arpa2.org. So the full meaning of the first rule is that any
+communication from remote selector `@ashop.example.com` to
+`tim+ashop@dev.arpa2.org` is whitelisted.
+
+A couple of other things to note. Order is significant and the first match wins,
+so if a rule matches, subsequent rules are not evaluated. Second, `@.tk` matches
+any user at any subdomain of the `.tk` top-level domain. Third, `@.` is the
+catch-all selector, matching any user at any domain. And at last, the `+` alias
+in an ACL segment matches any alias. As said, for a detailed explanation see
+[ARPA2 Identifier and ACL introduction].
+
+The policy can be used with [a2acl(1)] by testing different combinations of
+sender and receiver.  The first test will check whether communication between
+order@ashop.example.com and tim@dev.arpa2.org is allowed according to the above
+policy.
+
 ```sh
-$ a2idmatch john+singer@example.com @example.com
+$ a2acl demopolicy order@ashop.example.com tim@dev.arpa2.org
+B
+```
+The result of this test is that communication between these two A2IDs is
+blacklisted. The first letter of the list this pair is listed on is echoed back,
+in this case the `B` of blacklist because it matches the second rule.
+
+```sh
+$ a2acl demopolicy order@ashop.example.com tim+ashop@dev.arpa2.org
+W
+```
+
+This matches the first rule and the result is that communication between
+order@ashop.example.com and tim+ashop@dev.arpa2.org is whitelisted.
+
+```sh
+$ a2acl demopolicy some@one.com tim+analias@dev.arpa2.org
+B
+```
+
+This matches the fourth rule and the result is that this communication pair is
+blacklisted.
+
+```sh
+$ a2acl demopolicy jane@somedomain.tk tim@dev.arpa2.org
+A
+```
+
+This matches the third rule and communication between these two IDs is abandoned.
+
+Remember that you can easily execute these examples yourself by using the
+docker-demo as noted at the beginning of this chapter.
+
+### a2idmatch
+
+This tool is created to easily experiment with A2IDs and A2ID Selectors. This
+way you can test whether a selector matches an ID.
+
+For example, test whether the A2ID "john+dev@example.com" matches the A2ID
+selector "@example.com".
+
+```sh
+$ a2idmatch john+dev@example.com @example.com
 MATCH
 ```
 
-Test whether the A2ID "john@example.com" matches the A2ID selector
+Or test whether the A2ID "john@example.com" matches the A2ID selector
 "@.example.com".
+
 ```sh
 $ a2idmatch john@example.com @.example.com
 MISMATCH
 ```
 
-### arpa2id library
-
-After the library is installed, make sure to include arpa2/a2id.h in your source
-file and hint the compiler to include the arpa2id library with the -l flag.
-
-```sh
-$ cc -Wall -larpa2id yourcode.c
-```
-
-
-## Requirements
-
-Build requirements:
-* CMake >= 3.1
-* CMake [ARPA2CM] package
-* A C89 compiler
-
-Run-time requirements:
-* Any POSIX-compliant system
-
-
-## Installation
-
-Make sure the [ARPA2CM] module is installed. Then compile and install
-a2idmatch(1) and the arpa2id library:
-
-```sh
-$ git clone https://github.com/arpa2/libarpa2service.git
-$ cd libarpa2service
-$ mkdir build
-$ cd build
-$ cmake ..
-$ make
-$ sudo make install
-```
-
-
-## Documentation
-
-An introduction into ARPA2 Identifiers and ACLs is given in [A2IDACL intro]. The
-syntax of an A2ID and an A2ID Selector is given in ABNF in [a2idgrammar.txt] and
-[a2idselgrammar.txt], respectively.
-
-For further documentation please refer to the corresponding man page:
-* [a2idmatch(1)]
-* [a2id_alloc(3)]
-* [a2id_fromstr(3)]
-* [a2id_match(3)]
-* [a2id_parsestr(3)]
-
-
 ## License
 
 ISC
 
-Copyright (c) 2018 Tim Kuijsten
+Copyright (c) 2018, 2019 Tim Kuijsten
 
 Permission to use, copy, modify, and/or distribute this software for any purpose
 with or without fee is hereby granted, provided that the above copyright notice
@@ -96,13 +185,13 @@ OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
 TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
 THIS SOFTWARE.
 
-
+[ARPA2 Identifier and ACL introduction]: /doc/design/a2idacl-intro.md
+[a2acl(1)]: https://netsend.nl/arpa2/a2acl.1.html
+[a2idmatch(1)]: https://netsend.nl/arpa2/a2idmatch.1.html
+[a2id(3)]: https://netsend.nl/arpa2/a2id.3.html
+[a2acl(3)]: https://netsend.nl/arpa2/a2acl.3.html
+[a2id_match(3)]: https://netsend.nl/arpa2/a2id_match.3.html
+[a2id_parsestr(3)]: https://netsend.nl/arpa2/a2id_parsestr.3.html
+[a2idgrammar.txt]: /doc/design/a2idgrammar.txt
+[a2idselgrammar.txt]: /doc/design/a2idselgrammar.txt
 [ARPA2CM]: https://github.com/arpa2/arpa2cm
-[a2idmatch(1)]: https://netsend.nl/a2id/a2idmatch.1.html
-[a2id_alloc(3)]: https://netsend.nl/a2id/a2id_alloc.3.html
-[a2id_fromstr(3)]: https://netsend.nl/a2id/a2id_fromstr.3.html
-[a2id_match(3)]: https://netsend.nl/a2id/a2id_match.3.html
-[a2id_parsestr(3)]: https://netsend.nl/a2id/a2id_parsestr.3.html
-[a2idgrammar.txt]: https://github.com/timkuijsten/libarpa2service/blob/a2id/doc/design/a2idgrammar.txt
-[a2idselgrammar.txt]: https://github.com/timkuijsten/libarpa2service/blob/a2id/doc/design/a2idselgrammar.txt
-[A2IDACL intro]: https://github.com/arpa2/libarpa2service/blob/master/doc/design/a2idacl-intro.md
