@@ -259,8 +259,8 @@ of different policy lists. The following rights are defined:
 
 See [ACL] for a more precise specification of resource ACLs.
 
-[A2ID grammar]: https://github.com/timkuijsten/libarpa2service/blob/master/doc/design/a2idgrammar.txt
-[ACL grammar]: https://github.com/timkuijsten/libarpa2service/blob/acl/doc/design/a2aclgrammar.txt
+[A2ID grammar]: https://github.com/arpa2/libarpa2service/blob/master/doc/design/a2idgrammar.txt
+[ACL grammar]: https://github.com/arpa2/libarpa2service/blob/master/doc/design/a2aclgrammar.txt
 [SIGFLAGS]: http://a2id.arpa2.org/sigflags.html
 [A2ID Selector]: http://donai.arpa2.net/selector.html
 [ACL]: http://donai.arpa2.net/acl-impl.html

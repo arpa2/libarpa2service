@@ -13,7 +13,7 @@ RUN apt-get install -y \
 	nvi \
 	tmux
 
-#RUN git clone https://github.com/timkuijsten/libarpa2service.git
+#RUN git clone https://github.com/arpa2/libarpa2service.git
 COPY . libarpa2service
 RUN rm -rf libarpa2service/build/*
 

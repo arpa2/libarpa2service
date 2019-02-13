@@ -63,7 +63,7 @@ the [ARPA2 Identifier and ACL introduction].
 
 > NOTE: the following example can be easily replayed by using the docker-demo:
 > ```sh
-> git clone https://github.com/timkuijsten/docker-demo.git
+> git clone https://github.com/arpa2/docker-demo.git
 > cd docker-demo/demo-acl
 > docker build -t a2acl .
 > docker run -it a2acl bash
