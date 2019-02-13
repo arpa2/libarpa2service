@@ -18,11 +18,12 @@
 # Test the a2idmatch binary; the optional $1 is the executable a2idmatch
 ###
 
-if [ "$#" -ge 1 ]
-then
+if [ -n "$1" ]; then
 	a2idmatch="$1"
-else
+elif [ -x "$(dirname $0)/../a2idmatch" ]; then
 	a2idmatch="$(dirname $0)/../a2idmatch"
+else
+	a2idmatch="$(which a2idmatch)"
 fi
 
 _haserr=0
