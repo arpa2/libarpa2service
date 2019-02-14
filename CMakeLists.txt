@@ -64,17 +64,9 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
 
 add_definitions(-Wall -Wextra -pedantic)
 
-# TODO doesn't work on macOS with lmdb.h installed in /usr/local/lib via brew
-#include(CheckSymbolExists)
-#set(CMAKE_REQUIRED_INCLUDES "/usr/local/lib")
-#check_symbol_exists(MDB_VERSION_MINOR lmdb.h HAVE_LMDB)
-#check_symbol_exists(MDB_VERSION_MINOR "lmdb.h" HAVE_LMDB)
-#check_symbol_exists(MDB_val "lmdb.h" HAVE_LMDB)
-include(CheckLibraryExists)
-check_library_exists(lmdb mdb_txn_begin lib HAVE_LMDB)
-#check_library_exists(lmdb mdb_txn_begin local/lib HAVE_LMDB)
+find_package(lmdb)
 
-if (HAVE_LMDB)
+if (LMDB_FOUND)
 	set(acldb_SRC src/a2acl_dblmdb.c)
 else()
 	set(acldb_SRC src/a2acl_dbm.c)
