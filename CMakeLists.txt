@@ -47,9 +47,9 @@ project ("ARPA2 Service Libraries" C)
 # OPTIONS / BUILD SETTINGS
 #
 #option (DEBUG "Produce verbose output" ON)
-#option (NO_TESTING "Disable testing." OFF)
 #get_version_from_git (libarpa2service 0.0)
 
+option (NO_TESTING "Disable testing" OFF)
 if (NOT NO_TESTING)
 	enable_testing()
 endif()
