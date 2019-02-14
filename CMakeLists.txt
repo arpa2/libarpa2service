@@ -70,8 +70,10 @@ find_package(lmdb)
 
 if (LMDB_FOUND)
 	set(acldb_SRC src/a2acl_dblmdb.c)
+	set(acldb_INCLUDES ${LMDB_INCLUDE_DIR})
 else()
 	set(acldb_SRC src/a2acl_dbm.c)
+	set(acldb_INCLUDES "")
 endif()
 
 add_library(a2acldb SHARED ${acldb_SRC})
@@ -80,6 +82,8 @@ add_library(a2idShared SHARED src/a2id.c)
 
 add_executable(a2acl src/a2aclcli.c)
 add_executable(a2idmatch src/a2idmatch.c)
+
+target_include_directories(a2acldb PRIVATE ${acldb_INCLUDES})
 
 target_link_libraries(a2aclShared a2idShared a2acldb)
 target_link_libraries(a2acl a2aclShared)
