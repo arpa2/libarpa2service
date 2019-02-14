@@ -109,7 +109,7 @@ add_executable(testa2id test/testa2id.c src/a2id.c)
 add_executable(testa2acl test/testa2acl.c src/a2acl.c src/a2id.c)
 
 add_test(testa2id testa2id)
-add_test(testa2idmatch ${CMAKE_CURRENT_SOURCE_DIR}/test/testa2idmatch)
+add_test(testa2idmatch ${CMAKE_CURRENT_SOURCE_DIR}/test/testa2idmatch ${CMAKE_CURRENT_BINARY_DIR}/a2idmatch)
 add_test(testa2acl testa2acl)
 
 #add_uninstall_target ()
