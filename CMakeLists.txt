@@ -75,11 +75,12 @@ check_library_exists(lmdb mdb_txn_begin lib HAVE_LMDB)
 #check_library_exists(lmdb mdb_txn_begin local/lib HAVE_LMDB)
 
 if (HAVE_LMDB)
-	add_library(a2acldb SHARED src/a2acl_dblmdb.c)
+	set(acldb_SRC src/a2acl_dblmdb.c)
 else()
-	add_library(a2acldb SHARED src/a2acl_dbm.c)
+	set(acldb_SRC src/a2acl_dbm.c)
 endif()
 
+add_library(a2acldb SHARED ${acldb_SRC})
 add_library(a2aclShared SHARED src/a2acl.c)
 add_library(a2idShared SHARED src/a2id.c)
 
