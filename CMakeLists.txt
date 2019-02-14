@@ -11,6 +11,8 @@ project ("ARPA2 Service Libraries" C)
 
 #include (FeatureSummary)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
+
 #
 # XXX don't require ARPA2CM just yet, we're still trying to grasp CMake in
 # general.
