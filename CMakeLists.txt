@@ -46,7 +46,6 @@ project ("ARPA2 Service Libraries" C)
 #
 # OPTIONS / BUILD SETTINGS
 #
-#option (DEBUG "Produce verbose output" ON)
 #get_version_from_git (libarpa2service 0.0)
 
 option (NO_TESTING "Disable testing" OFF)
@@ -60,10 +59,8 @@ endif()
 
 # SRC
 
-# Forward the CMake option to the compiler
-if (DEBUG)
-	add_definitions(-DDEBUG)
-endif()
+# In debug configurations, add compile flag.
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
 
 add_definitions(-Wall -Wextra -pedantic)
 
