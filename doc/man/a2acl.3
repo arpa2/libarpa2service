@@ -24,6 +24,8 @@
 .Ft ssize_t
 .Fo a2acl_fromfile
 .Fa "const char *filename"
+.Fa "size_t *totrules"
+.Fa "size_t *updrules"
 .Fa "char *errstr"
 .Fa "size_t errstrsize"
 .Fc
@@ -62,6 +64,16 @@ is an ARPA2 ID in core form and
 .Dq ACL segments
 are one or more ACL segments.
 Extraneous blanks are ignored.
+If
+.Fa totrules
+is not
+.Dv NULL ,
+it will be updated with the total number of rules in the database.
+If
+.Fa updrules
+is not
+.Dv NULL
+it will be updated with the number of newly imported rules by this call.
 If there is an error and
 .Fa errstr
 is not
@@ -95,12 +107,7 @@ general selector
 .Dq @.
 which can not be further generalized.
 .Sh RETURN VALUES
-The
-.Fn a2acl_fromfile
-function returns the number of imported ACL rules if successful; otherwise the
-value -1 is returned and the global variable
-.Va errno
-is set to indicate the error.
+.Rv -std a2acl_fromfile
 .Pp
 The
 .Fn a2acl_whichlist

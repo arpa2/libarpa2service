@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Tim Kuijsten
+ * Copyright (c) 2018, 2019 Tim Kuijsten
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -52,16 +52,16 @@ int
 main(int argc, char *argv[])
 {
 	char errstr[100];
-	ssize_t n;
-	int c, list;
+	size_t t, u;
+	int r, list;
 
 	if ((progname = basename(argv[0])) == NULL) {
 		perror("basename");
 		exit(1);
 	}
 
-	while ((c = getopt(argc, argv, "hqv")) != -1) {
-		switch (c) {
+	while ((r = getopt(argc, argv, "hqv")) != -1) {
+		switch (r) {
 		case 'h':
 			printusage(stdout);
 			exit(0);
@@ -85,17 +85,18 @@ main(int argc, char *argv[])
 		exit(1);
 	}
 
-	if ((n = a2acl_fromfile(argv[0], errstr, sizeof(errstr))) <= 0) {
-		if (n == -1) {
-			fprintf(stderr, "%s: %s %s\n", argv[0], strerror(errno), errstr);
-		} else {
-			fprintf(stderr, "%s: no rules could be loaded\n", argv[0]);
-		}
+	if (a2acl_fromfile(argv[0], &t, &u, errstr, sizeof(errstr)) == -1) {
+		fprintf(stderr, "%s: %s %s\n", argv[0], strerror(errno), errstr);
+		exit(4);
+	}
+
+	if (t == 0) {
+		fprintf(stderr, "%s: empty ruleset\n", argv[0]);
 		exit(4);
 	}
 
 	if (verbose > 0)
-		fprintf(stdout, "imported %zu ACL rules\n", n);
+		fprintf(stdout, "total number of ACL rules: %zu, newly imported %zu\n", t, u);
 
 	list = whichlist(argv[1], argv[2]);
 	a2acl_dbclose();

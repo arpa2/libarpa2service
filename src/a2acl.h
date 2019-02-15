@@ -24,7 +24,7 @@
 #define A2ACL_MAXLEN 500
 
 int a2acl_whichlist(char *, struct a2id *, const struct a2id *);
-ssize_t a2acl_fromfile(const char *, char *, size_t);
+int a2acl_fromfile(const char *, size_t *, size_t *, char *, size_t);
 
 /*
  * When implementing a new database backend like "dbm" and "dblmdb", the

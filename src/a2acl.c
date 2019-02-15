@@ -648,15 +648,19 @@ out:
  * core form and ACL segments are one or more ACL segments. Extraneous blanks
  * are ignored.
  *
+ * If "totrules" is not NULL, it will be updated with the total number of rules
+ * in the database. If "updrules" is not NULL it will be updated with the number
+ * of newly imported rules by this call.
+ *
  * If there is an error and "errstr" is not NULL, then "errstr" is updated with
  * a descriptive error of at most "errstrsize" bytes, including the terminating
  * nul.
  *
- * Returns the number of imported ACL rules on success or -1 on error with errno
- * set.
+ * Returns 0 on success or -1 on error with errno set.
  */
-ssize_t
-a2acl_fromfile(const char *filename, char *errstr, size_t errstrsize)
+int
+a2acl_fromfile(const char *filename, size_t *totrules, size_t *updrules,
+    char *errstr, size_t errstrsize)
 {
 	char dbcache[104];
 	size_t s;
@@ -700,13 +704,16 @@ a2acl_fromfile(const char *filename, char *errstr, size_t errstrsize)
 		return -1;
 	}
 
+	if (updrules)
+		*updrules = 0;
+
         if (recreate) {
 		if ((fd = open(filename, O_RDONLY|O_CLOEXEC)) == -1) {
 			a2acl_dbclose();
 			return -1; /* errno set */
 		}
 
-		if ((r = a2acl_fromdes(fd, errstr, sizeof(errstr))) == -1) {
+		if ((r = a2acl_fromdes(fd, errstr, sizeof(errstr))) < 0) {
 			a2acl_dbclose();
 			close(fd);
 			errno = EINVAL;
@@ -714,7 +721,16 @@ a2acl_fromfile(const char *filename, char *errstr, size_t errstrsize)
 		}
 
 		close(fd);
-		return r;
+		if (updrules)
+			*updrules = r;
+	}
+
+
+	if (totrules) {
+		if (a2acl_count(totrules) == -1) {
+			errno = EINVAL;
+			return -1;
+		}
 	}
 
 	return 0;
