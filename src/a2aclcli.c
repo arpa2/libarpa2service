@@ -86,7 +86,7 @@ main(int argc, char *argv[])
 	}
 
 	if (a2acl_fromfile(argv[0], &t, &u, errstr, sizeof(errstr)) == -1) {
-		fprintf(stderr, "%s: %s %s\n", argv[0], strerror(errno), errstr);
+		fprintf(stderr, "%s: %s, %s\n", argv[0], strerror(errno), errstr);
 		exit(4);
 	}
 
