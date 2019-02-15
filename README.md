@@ -81,8 +81,7 @@ alias)
 The above ACL policy is notated in the text file `demopolicy` as follows:
 
 ```ascii
-@ashop.example.com tim@dev.arpa2.org %W +ashop
-@ashop.example.com tim@dev.arpa2.org %B +
+@ashop.example.com tim@dev.arpa2.org %W +ashop %B +
 @.tk tim@dev.arpa2.org %A +
 @. tim@dev.arpa2.org %B +
 ```
@@ -92,23 +91,38 @@ selector, a local ID in core form, and one (or more) ACL segments. So the first
 rule can be broken down as follows:
 * the remote selector: `@ashop.example.com`
 * the local ID in core form: `tim@dev.arpa2.org`
-* the ACL segment: `%W +ashop`
+* the ACL segments: `%W +ashop` and `%B +`
 
-The ACL segment consists of the first letter of the list and an alias, `%W` and
+Each ACL segment consists of the first letter of the list and an alias, `%W` and
 `+ashop`, respectively. The alias must be combined with the local ID and would
-yield tim+ashop@dev.arpa2.org. So the full meaning of the first rule is that any
-communication from remote selector `@ashop.example.com` to
-`tim+ashop@dev.arpa2.org` is whitelisted.
+yield tim+ashop@dev.arpa2.org. This holds for each ACL segment. The full meaning
+of the first rule is that any communication from remote selector
+`@ashop.example.com` to `tim+ashop@dev.arpa2.org` is whitelisted and any
+communication from remote selector `@ashop.example.com` to `tim@dev.arpa2.org`
+or any other alias of tim@dev.arpa2.org is blacklisted.
 
 A couple of other things to note. Order is significant and the first match wins,
 so if a rule matches, subsequent rules are not evaluated. Second, `@.tk` matches
 any user at any subdomain of the `.tk` top-level domain. Third, `@.` is the
-catch-all selector, matching any user at any domain. And at last, the `+` alias
-in an ACL segment matches any alias. As said, for a detailed explanation see
-[ARPA2 Identifier and ACL introduction].
+catch-all selector, matching any user at any domain. Fourth, the `+` alias in an
+ACL segment matches any alias. And at last, the combination of a remote selector
+and the local ID in core form must be unique. As said, for a detailed
+explanation see [ARPA2 Identifier and ACL introduction].
+
+> XXX The current rule syntax closely resembles the internal storage format
+> which is fine for a machine, but not for human beings. At the same time it is
+> vital that no mistakes are made, so expect a new import format somewhere in
+> the future. Possibly something like the following (open for suggestions):
+>
+> ```ascii
+> W @ashop.example.com tim+ashop@dev.arpa2.org
+> B @ashop.example.com tim+@dev.arpa2.org
+> A @.tk tim+@dev.arpa2.org
+> B @. tim+@dev.arpa2.org
+> ```
 
 The policy can be used with [a2acl(1)] by testing different combinations of
-sender and receiver.  The first test will check whether communication between
+sender and receiver. The first test will check whether communication between
 order@ashop.example.com and tim@dev.arpa2.org is allowed according to the above
 policy.
 
