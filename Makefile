@@ -61,18 +61,18 @@ uninstall:
 
 manhtml:
 	mkdir -p build
-	cd man && mandoc -T html -Ostyle=man.css a2acl.3 > \
-		../build/a2acl.3.html
-	cd man && mandoc -T html -Ostyle=man.css a2id.3 > \
-		../build/a2id.3.html
-	cd man && mandoc -T html -Ostyle=man.css a2id_match.3 > \
-		../build/a2id_match.3.html
-	cd man && mandoc -T html -Ostyle=man.css a2id_parsestr.3 > \
-		../build/a2id_parsestr.3.html
-	cd man && mandoc -T html -Ostyle=man.css a2acl.1 > \
-		../build/a2acl.1.html
-	cd man && mandoc -T html -Ostyle=man.css a2idmatch.1 > \
-		../build/a2idmatch.1.html
+	cd doc/man && mandoc -T html -Ostyle=man.css a2acl.3 > \
+		../../a2acl.3.html
+	cd doc/man && mandoc -T html -Ostyle=man.css a2id.3 > \
+		../../a2id.3.html
+	cd doc/man && mandoc -T html -Ostyle=man.css a2id_match.3 > \
+		../../a2id_match.3.html
+	cd doc/man && mandoc -T html -Ostyle=man.css a2id_parsestr.3 > \
+		../../a2id_parsestr.3.html
+	cd doc/man && mandoc -T html -Ostyle=man.css a2acl.1 > \
+		../../a2acl.1.html
+	cd doc/man && mandoc -T html -Ostyle=man.css a2idmatch.1 > \
+		../../a2idmatch.1.html
 
 gv:
 	dot -Tpng doc/design/a2idfsm.gv -o doc/design/a2idfsm.png
