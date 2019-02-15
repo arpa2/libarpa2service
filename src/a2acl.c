@@ -581,8 +581,11 @@ a2acl_fromdes(int d, char *errstr, size_t errstrsize)
 
 		if (a2acl_putaclrule(aclrule, aclrulesize, remotesel,
 		    remoteselsize, localid, localidsize) == -1) {
-			free(line);
+			if (errstr && errstrsize)
+				snprintf(errstr, errstrsize, "failed to save "
+				    "ACL rule #%zu: %s", i, line);
 			errno = EINVAL;
+			free(line);
 			return -1;
 		}
 	}
