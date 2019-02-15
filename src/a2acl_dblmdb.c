@@ -93,7 +93,7 @@ void
 printkey(FILE *fp, MDB_val *key)
 {
 	fprintf(fp, "key: %zu %.*s\n", key->mv_size, (int)key->mv_size,
-	    key->mv_data);
+	    (char *)key->mv_data);
 }
 
 /*
