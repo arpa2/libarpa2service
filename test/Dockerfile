@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
 	cmake
 
 RUN apt-get install -y \
+	liblmdb-dev \
 	git \
 	nvi \
 	tmux
