@@ -317,7 +317,7 @@ int
 a2acl_putaclrule(const char *aclrule, size_t aclrulesize, const char *remotesel,
     size_t remoteselsize, const char *localid, size_t localidsize)
 {
-	MDB_val *key, *data;
+	MDB_val *key, *data, *d2;
 	int r;
 
 	key = data = NULL;
@@ -340,11 +340,17 @@ a2acl_putaclrule(const char *aclrule, size_t aclrulesize, const char *remotesel,
 	if ((r = mdb_txn_begin(env, NULL, 0, &txn)) != 0)
 		printerrx(stderr, r, 1);
 
-	if ((r = mdb_put(txn, dbi, key, data, 0)) != 0) {
-		printerr(stderr, r);
+	d2 = data;
+	if ((r = mdb_put(txn, dbi, key, d2, MDB_NOOVERWRITE)) != 0) {
 		mdb_txn_abort(txn);
 		db_freeval(key);
+		/*
 		db_freeval(data);
+		 * XXX somehow we cannot free "data" anymore even though mdb.c
+		 * doesn't seem to free it on first sight.  malloc: *** error
+		 * for object 0x10886bfbb: pointer being freed was not
+		 * allocated.
+		 */
 		return -1;
 	}
 
