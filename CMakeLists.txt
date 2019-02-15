@@ -82,6 +82,9 @@ add_library(a2acldb SHARED ${acldb_SRC})
 add_library(a2aclShared SHARED src/a2acl.c)
 add_library(a2idShared SHARED src/a2id.c)
 
+set_target_properties(a2aclShared PROPERTIES OUTPUT_NAME a2acl)
+set_target_properties(a2idShared PROPERTIES OUTPUT_NAME a2id)
+
 add_executable(a2acl src/a2aclcli.c)
 add_executable(a2idmatch src/a2idmatch.c)
 
