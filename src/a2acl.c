@@ -724,6 +724,7 @@ a2acl_fromfile(const char *filename, size_t *totrules, size_t *updrules,
 			a2acl_dbclose();
 			close(fd);
 			errno = EINVAL;
+			unlink(dbcache);
 			return -1;
 		}
 
@@ -736,6 +737,7 @@ a2acl_fromfile(const char *filename, size_t *totrules, size_t *updrules,
 	if (totrules) {
 		if (a2acl_count(totrules) == -1) {
 			errno = EINVAL;
+			unlink(dbcache);
 			return -1;
 		}
 	}
