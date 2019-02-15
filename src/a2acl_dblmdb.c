@@ -182,6 +182,28 @@ a2acl_dbclose(void)
 }
 
 /*
+ * Update "count" to the total number of rules in the database.
+ *
+ * Return 0 on success, -1 on failure.
+ */
+int
+a2acl_count(size_t *count)
+{
+	MDB_stat st;
+
+	if (mdb_txn_begin(env, NULL, MDB_RDONLY, &txn) != 0)
+		return -1;
+
+	if (mdb_stat(txn, dbi, &st) != 0)
+		return -1;
+	*count = st.ms_entries;
+
+	mdb_txn_abort(txn);
+
+	return 0;
+}
+
+/*
  * Free "val".
  */
 void

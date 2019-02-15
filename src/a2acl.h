@@ -28,10 +28,12 @@ ssize_t a2acl_fromfile(const char *, char *, size_t);
 
 /*
  * When implementing a new database backend like "dbm" and "dblmdb", the
- * following four functions must be implemented:
+ * following five functions must be implemented:
  *    a2acl_dbopen: Initialize a database backend.
  *
  *    a2acl_dbclose: Close a database backend.
+ *
+ *    a2acl_count: Update "count" to the total number of rules in the database.
  *
  *    a2acl_putaclrule: Store a communication ACL rule given a remote and local
  * 	ID. A copy of "aclrule", "remotesel" and "localid" must be made since
@@ -43,11 +45,12 @@ ssize_t a2acl_fromfile(const char *, char *, size_t);
  *	then "aclrule" is left untouched, "aclrulesize" is set to 0 and 0 is
  *	returned.
  *
- * All four functions must return 0 on success, and -1 on failure.
+ * All five functions must return 0 on success, and -1 on failure.
  */
 
 int a2acl_dbopen(const char *path);
 int a2acl_dbclose(void);
+int a2acl_count(size_t *count);
 int a2acl_putaclrule(const char *aclrule, size_t aclrulesize,
     const char *remotesel, size_t remoteselsize, const char *localid,
     size_t localidsize);

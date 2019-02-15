@@ -99,6 +99,17 @@ a2acl_dbclose(void)
 }
 
 /*
+ * Update "count" to the total number of rules in the database.
+ *
+ * Return 0 on success, -1 on failure.
+ */
+int a2acl_count(size_t *count)
+{
+	*count = listsize;
+	return 0;
+}
+
+/*
  * Store a communication ACL rule given a remote and local ID. A copy of
  * "aclrule", "remotesel" and "localid" must be made since these are being
  * free(3)d after this functions returns.

@@ -31,7 +31,7 @@ int a2acl_parsepolicyline(const char **aclrule, size_t *aclrulesize,
     size_t *localidsize, const char *line, size_t linesize, const char **err);
 
 /*
- * DB shims.
+ * DB mock.
  */
 int
 a2acl_dbopen(const char *path)
@@ -43,6 +43,13 @@ a2acl_dbopen(const char *path)
 int
 a2acl_dbclose(void)
 {
+	return 0;
+}
+
+int
+a2acl_count(size_t *count)
+{
+	count = NULL;
 	return 0;
 }
 
