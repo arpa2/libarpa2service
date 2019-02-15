@@ -1,6 +1,6 @@
 # ARPA2 ID library
 
-This repository contains command-line tools and libraries to work with ARPA2
+This repository contains command-line tools and libraries to work with [ARPA2]
 Identities, Selectors and ACLs.
 
 Features:
@@ -199,6 +199,7 @@ OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
 TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
 THIS SOFTWARE.
 
+[ARPA2]: http://arpa2.net
 [ARPA2 Identifier and ACL introduction]: /doc/design/a2idacl-intro.md
 [a2acl(1)]: https://netsend.nl/arpa2/a2acl.1.html
 [a2idmatch(1)]: https://netsend.nl/arpa2/a2idmatch.1.html
