@@ -550,14 +550,16 @@ a2acl_fromdes(int d, char *errstr, size_t errstrsize)
 		if (n < minrulelen) {
 			if (errstrsize)
 				snprintf(errstr, errstrsize, "illegal ACL rule "
-				    "at line %zu: %s\n", i, line);
+				    "at line %zu: %s", i, line);
 			errno = EINVAL;
 			free(line);
 			return -1;
 		}
 
-		if (line[n - 1] == '\n')
+		if (line[n - 1] == '\n') {
+			line[n - 1] = '\0';
 			n--;
+		}
 
 		if (a2acl_parsepolicyline((const char **)&remotesel,
 		    &remoteselsize, (const char **)&localid, &localidsize,
@@ -567,7 +569,7 @@ a2acl_fromdes(int d, char *errstr, size_t errstrsize)
 			if (err) {
 				if (errstrsize)
 					snprintf(errstr, errstrsize, "illegal "
-					    "ACL policy line at #%zu,%lu: %s\n",
+					    "ACL policy line at #%zu,%lu: %s",
 					    i, err - line, line);
 				errno = EINVAL;
 				return -1;
