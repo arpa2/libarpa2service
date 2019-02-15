@@ -565,16 +565,18 @@ a2acl_fromdes(int d, char *errstr, size_t errstrsize)
 		    &remoteselsize, (const char **)&localid, &localidsize,
 		    (const char **)&aclrule, &aclrulesize, line, n,
 		    (const char **)&err) == -1) {
-			free(line);
 			if (err) {
 				if (errstrsize)
 					snprintf(errstr, errstrsize, "illegal "
 					    "ACL policy line at #%zu,%lu: %s",
 					    i, err - line, line);
 				errno = EINVAL;
+				free(line);
 				return -1;
-			} else
+			} else {
+				free(line);
 				return -1; /* errno is set */
+			}
 		}
 
 		if (a2acl_putaclrule(aclrule, aclrulesize, remotesel,
