@@ -86,7 +86,7 @@ printerrx(FILE *fp, int r, int e)
 void
 printerr(FILE *fp, int r)
 {
-	fprintf(fp, "%s", mdb_strerror(r));
+	fprintf(fp, "%s\n", mdb_strerror(r));
 }
 
 void
