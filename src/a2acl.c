@@ -720,7 +720,7 @@ a2acl_fromfile(const char *filename, size_t *totrules, size_t *updrules,
 			return -1; /* errno set */
 		}
 
-		if ((r = a2acl_fromdes(fd, errstr, sizeof(errstr))) < 0) {
+		if ((r = a2acl_fromdes(fd, errstr, errstrsize)) < 0) {
 			a2acl_dbclose();
 			close(fd);
 			errno = EINVAL;
