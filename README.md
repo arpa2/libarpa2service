@@ -52,6 +52,7 @@ and the manpages:
 * [a2id(3)]
 * [a2id_match(3)]
 * [a2id_parsestr(3)]
+* [a2acl.conf(5)]
 
 ## Examples
 
@@ -207,6 +208,7 @@ THIS SOFTWARE.
 [a2acl(3)]: https://netsend.nl/arpa2/a2acl.3.html
 [a2id_match(3)]: https://netsend.nl/arpa2/a2id_match.3.html
 [a2id_parsestr(3)]: https://netsend.nl/arpa2/a2id_parsestr.3.html
+[a2acl.conf(5)]: https://netsend.nl/arpa2/a2acl.conf.5.html
 [a2idgrammar.txt]: /doc/design/a2idgrammar.txt
 [a2idselgrammar.txt]: /doc/design/a2idselgrammar.txt
 [ARPA2CM]: https://github.com/arpa2/arpa2cm
