@@ -1,0 +1,140 @@
+.\" Copyright (c) 2019 Tim Kuijsten
+.\"
+.\" Permission to use, copy, modify, and/or distribute this software for any
+.\" purpose with or without fee is hereby granted, provided that the above
+.\" copyright notice and this permission notice appear in all copies.
+.\"
+.\" THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+.\" WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+.\" MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+.\" ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+.\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+.\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+.\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+.\"
+.Dd $Mdocdate: February 19 2019 $
+.Dt A2ACL.CONF 5
+.Os
+.Sh NAME
+.Nm a2acl.conf
+.Nd ARPA2 ACL policy file
+.Sh DESCRIPTION
+.Nm
+is the configuration file used by
+.Xr a2acl 1 .
+Each line in the file must consist of exactly one ACL rule, which is a triplet
+of the form:
+.Pp
+.Aq "remote selector", "local ID", "ACL segments"
+.Pp
+Where
+.Dq remote selector
+is an ARPA2 ID Selector,
+.Dq local ID
+is an ARPA2 ID in core form and
+.Dq ACL segments
+are one or more ACL segments.
+Extraneous blanks in the file are ignored.
+.Bl -ohang -offset Ds
+.It Em "remote selector"
+The syntax for this is the same as for an ARPA2 ID, except that aliases in the
+localpart and labels in the domain may be left out in order to match multiple of
+IDs.
+.It Em "local ID"
+This must be an ARPA2 ID in core form.
+.It Em "ACL segments"
+An ACL segment binds a local ID with alias to a list.
+Within an ACL segment, one or more aliases can be specified using a syntax that
+allows for wildcard matching and the ability to require a signature in a local
+ID without having to specify the resulting signature upfront.
+.Pp
+The ACL segment syntax can be described as follows:
+.Bl -enum
+.It
+Each ACL segment starts with a list specifier, a
+.Sq %
+followed by the first letter of the list it is subject to, which must be one of
+.Sq W ,
+.Sq G ,
+.Sq B
+or
+.Sq A .
+.It
+Each following alias must start with a
+.Sq +
+character.
+.It
+If presence of a signature is required, this can be expressed by terminating
+the alias with a
+.Sq + .
+.It
+If the alias consists of only the + character this is to be interpreted as a
+wildcard match, matching all aliases, including none.
+This syntax may be combined with rule 3 to match all forms of the local ID that
+have a signature.
+.El
+.El
+.Pp
+Rules are grouped by remote selector and local ID and the first match wins.
+.Sh EXAMPLES
+Whitelist communication from anyone at arpa2.net to jane+dev@example.com:
+.Bd -literal -offset indent
+@arpa2.net jane@example.com %W +dev
+.Ed
+.Pp
+Here,
+.Em @arpa2.net
+is the remote selector and matches anyone at the domain arpa2.net.
+.Em jane@example.com
+is the local ID in core form and has to be combined with the aliases in the ACL
+segments.
+The ACL segments part of the rule contains only one ACL segment, namely:
+.Em "%W +dev" .
+This should be combined with the local ID and would match jane+dev@example.com,
+and i.e. jane+dev+clang@example.com, but not the core form jane@example.com
+itself.
+.Pp
+Whitelist communication from anyone at arpa2.net to a signed address of
+jane+dev@example.com:
+.Bd -literal -offset indent
+@arpa2.net jane@example.com %W +dev+
+.Ed
+.Pp
+Here, the trailing + in
+.Em "%W +dev+"
+requires anyone at arpa2.net to communicate only with signed addresses of
+jane+dev@example.com. An example of a signed addresses could be
+jane+dev+n5iu0wca+@example.com.
+.Pp
+Blacklist all communication from anyone to jane+dev@example.com:
+.Bd -literal -offset indent
+@. jane@example.com %B +
+.Ed
+.Pp
+Here,
+.Em @.
+is the wildcard remote selector and matches anyone at any domain.
+.Em jane@example.com
+is the local ID in core form.
+The third part of the rule contains one ACL segment, namely:
+.Em "%B +" .
+A single
+.Sq +
+is a wildcard alias and matches both the core form as well as any form with alias.
+I.e. both jane@example.com and jane+any+alias@example.com are black listed.
+.Sh SEE ALSO
+.Xr a2acl 1 ,
+.Xr a2acl 3
+.Pp
+.Lk https://github.com/arpa2/libarpa2service/blob/master/doc/design/a2aclgrammar.txt "ARPA2 ACL Grammar"
+.Lk https://github.com/arpa2/libarpa2service/blob/master/doc/design/a2idselgrammar.txt "ARPA2 ID Selector Grammar"
+.Lk https://github.com/arpa2/libarpa2service/blob/master/doc/design/a2idacl-intro.md "ARPA2 Identifier and ACL introduction"
+.Lk http://donai.arpa2.net/selector.html "DoNAI selectors"
+.Sh AUTHORS
+.An -nosplit
+.An Tim Kuijsten
+.Sh CAVEATS
+The current file format closely resembles the internal storage format and is
+hard to explain, read or write.
+At the same time it is vital that no mistakes are made so the current format is
+far from ideal.
