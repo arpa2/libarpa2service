@@ -103,6 +103,7 @@ install(FILES src/a2acl.h DESTINATION include/arpa2)
 # starting from CMake 3.14, use TYPE MAN... instead of DESTINATION
 install(DIRECTORY doc/man/ DESTINATION share/man/man1 FILES_MATCHING PATTERN "*.1")
 install(DIRECTORY doc/man/ DESTINATION share/man/man3 FILES_MATCHING PATTERN "*.3")
+install(DIRECTORY doc/man/ DESTINATION share/man/man5 FILES_MATCHING PATTERN "*.5")
 
 # TEST
 

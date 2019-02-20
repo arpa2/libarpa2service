@@ -41,12 +41,14 @@ install: liba2id.a a2idmatch
 	mkdir -p $(DESTDIR)$(INCDIR)
 	mkdir -p $(DESTDIR)$(MANDIR)/man1
 	mkdir -p $(DESTDIR)$(MANDIR)/man3
+	mkdir -p $(DESTDIR)$(MANDIR)/man5
 	$(INSTALL_LIB) liba2id.a $(DESTDIR)$(LIBDIR)
 	$(INSTALL_LIB) src/a2id.h $(DESTDIR)$(INCDIR)
 	$(INSTALL_BIN) a2acl a2idmatch $(DESTDIR)$(BINDIR)
 	$(INSTALL_MAN) man/a2acl.3 man/a2id.3 man/a2id_match.3 \
 		man/a2id_parsestr.3 $(DESTDIR)$(MANDIR)/man3
 	$(INSTALL_MAN) man/a2acl.1 man/a2idmatch.1 $(DESTDIR)$(MANDIR)/man1
+	$(INSTALL_MAN) man/a2acl.conf.5 $(DESTDIR)$(MANDIR)/man5
 
 uninstall:
 	rm -f $(DESTDIR)$(LIBDIR)/liba2id.a
@@ -58,6 +60,7 @@ uninstall:
 	rm -f $(DESTDIR)$(MANDIR)/man3/a2id_parsestr.3
 	rm -f $(DESTDIR)$(MANDIR)/man1/a2acl.1
 	rm -f $(DESTDIR)$(MANDIR)/man1/a2idmatch.1
+	rm -f $(DESTDIR)$(MANDIR)/man1/a2acl.conf.5
 
 manhtml:
 	mkdir -p build
@@ -73,6 +76,8 @@ manhtml:
 		../../a2acl.1.html
 	cd doc/man && mandoc -T html -Ostyle=man.css a2idmatch.1 > \
 		../../a2idmatch.1.html
+	cd doc/man && mandoc -T html -Ostyle=man.css a2acl.conf.5 > \
+		../../a2acl.conf.5.html
 
 gv:
 	dot -Tpng doc/design/a2idfsm.gv -o doc/design/a2idfsm.png
