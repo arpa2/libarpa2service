@@ -40,7 +40,8 @@ Be less verbose.
 Be more verbose.
 Can be used multiple times.
 .It Ar policyfile
-Path to a file that contains one or more ACL rules, one per line.
+Path to a file that contains one or more ACL rules, one per line. See
+.Xr a2acl.conf 5 .
 .It Ar remoteid
 The remote ARPA2 ID of the communication pair to test
 .It Ar localid
@@ -72,7 +73,8 @@ utility exits 0 if communication is whitelisted, 1 if communication is
 greylisted, 2 if communication is blacklisted, 3 if communication is abandoned
 and 4 if an error occured.
 .Sh SEE ALSO
-.Xr a2acl 3
+.Xr a2acl 3 ,
+.Xr a2acl.conf 5
 .Pp
 .Lk https://github.com/arpa2/libarpa2service/blob/master/doc/design/a2idacl-intro.md "ARPA2 Identifier and ACL introduction"
 .Sh AUTHORS

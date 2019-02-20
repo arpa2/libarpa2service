@@ -49,21 +49,6 @@ and
 .Dq dblmdb
 of which the first is a simple memory based key-value store, and the latter is
 using LMDB.
-.Pp
-Each line in
-.Fa filename
-must consist of exactly one ACL rule, which is a triplet of the form:
-.Pp
-.Aq "remote selector", "local ID", "ACL segments"
-.Pp
-Where
-.Dq remote selector
-is an ARPA2 ID Selector,
-.Dq local ID
-is an ARPA2 ID in core form and
-.Dq ACL segments
-are one or more ACL segments.
-Extraneous blanks are ignored.
 If
 .Fa totrules
 is not
@@ -83,6 +68,10 @@ then
 is updated with a descriptive error of at most
 .Fa errstrsize
 bytes, including a terminating nul.
+The syntax of
+.Fa filename
+is described in
+.Xr a2acl.conf 5 .
 .Pp
 The
 .Fn a2acl_whichlist
@@ -116,7 +105,8 @@ funcion returns 0 if successful and updates
 to point to the applicable list-character; otherwise the value -1 is returned.
 .Sh SEE ALSO
 .Xr a2id 3 ,
-.Xr a2id_parsestr 3
+.Xr a2id_parsestr 3 ,
+.Xr a2acl.conf 5
 .Pp
 .Lk https://github.com/arpa2/libarpa2service/blob/master/doc/design/a2idacl-intro.md "ARPA2 Identifier and ACL introduction"
 .Lk https://symas.com/lmdb/ "LMDB"
