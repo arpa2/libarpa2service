@@ -95,6 +95,13 @@ will be generalized until an ACL rule is found or until it equals the most
 general selector
 .Dq @.
 which can not be further generalized.
+If
+.Fn a2acl_whichlist
+succeeds, the caller can get the specific generalization on which a match was
+made by calling
+.Fn a2id_tostr 3
+on
+.Fa remoteid .
 .Sh RETURN VALUES
 .Rv -std a2acl_fromfile
 .Pp
