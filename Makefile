@@ -22,7 +22,10 @@ a2acl.o: src/a2acl.c src/a2acl.h
 	${CC} ${CFLAGS} -c src/a2acl.c
 
 liba2id.a: a2id.o
-	ar -q liba2id.a a2id.o
+	ar -rs liba2id.a a2id.o
+
+liba2acl.a: a2acl_dbm.o a2id.o a2acl.o
+	ar -rs liba2acl.a a2acl_dbm.o a2id.o a2acl.o
 
 testa2id: a2id.o test/testa2id.c
 	${CC} ${CFLAGS} a2id.o test/testa2id.c -o $@
@@ -35,14 +38,14 @@ runtest: a2idmatch testa2id testa2acl
 	./test/testa2idmatch
 	./testa2acl
 
-install: liba2id.a a2idmatch
+install: liba2id.a liba2acl.a a2idmatch
 	mkdir -p $(DESTDIR)$(BINDIR)
 	mkdir -p $(DESTDIR)$(LIBDIR)
 	mkdir -p $(DESTDIR)$(INCDIR)
 	mkdir -p $(DESTDIR)$(MANDIR)/man1
 	mkdir -p $(DESTDIR)$(MANDIR)/man3
 	mkdir -p $(DESTDIR)$(MANDIR)/man5
-	$(INSTALL_LIB) liba2id.a $(DESTDIR)$(LIBDIR)
+	$(INSTALL_LIB) liba2id.a liba2acl.a $(DESTDIR)$(LIBDIR)
 	$(INSTALL_LIB) src/a2id.h src/a2acl.h $(DESTDIR)$(INCDIR)
 	$(INSTALL_BIN) a2acl a2idmatch $(DESTDIR)$(BINDIR)
 	$(INSTALL_MAN) doc/man/a2acl.3 doc/man/a2id.3 doc/man/a2id_match.3 \
@@ -53,6 +56,7 @@ install: liba2id.a a2idmatch
 
 uninstall:
 	rm -f $(DESTDIR)$(LIBDIR)/liba2id.a
+	rm -f $(DESTDIR)$(LIBDIR)/liba2acl.a
 	rm -f $(DESTDIR)$(INCDIR)/src/a2id.h
 	rm -f $(DESTDIR)$(BINDIR)/a2idmatch
 	rm -f $(DESTDIR)$(MANDIR)/man3/a2acl.3
@@ -105,9 +109,9 @@ lmdb:	lmdb.c
 	cc -Wall -g -lpthread midl.o mdb.o lmdb.c -o $@
 
 clean:
-	rm -f a2idmatch a2id.o a2acl.o liba2id.a testa2id testa2acl a2idverify \
-		a2idverifyafl lmdb a2acl_dbm.o a2acl_dblmdb.o a2acllmdb a2acl \
-		tags src/tags test/tags
+	rm -f a2idmatch a2id.o a2acl.o liba2id.a liba2acl.a testa2id testa2acl \
+	    a2idverify a2idverifyafl lmdb a2acl_dbm.o a2acl_dblmdb.o a2acllmdb \
+	    a2acl tags src/tags test/tags
 
 tags: src/*.[ch]
 	ctags src/*.[ch]
