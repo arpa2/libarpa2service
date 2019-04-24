@@ -111,8 +111,7 @@ returns 0 on success, -1 if
 is too short.
 .Pp
 .Fn a2id_generalize
-returns 1 if a component is removed from the localpart or the domain of
-.Fa id .
+returns 1 if a component is removed from the localpart or the domain.
 Returns 0 if
 .Fa id
 can not be further generalized.
@@ -123,12 +122,6 @@ returns the length of
 or 0 if
 .Fa optseg
 is not set.
-.Pp
-.Fn a2id_generalize
-returns 1 if a component is removed from the localpart or the domain.
-Returns 0 if
-.Fa id
-can not be further generalized.
 .Pp
 .Fn a2id_tostr
 returns 0 on success, -1 if
