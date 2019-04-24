@@ -8,7 +8,7 @@ PREFIX	= /usr/local
 BINDIR	= $(PREFIX)/bin
 LIBDIR	= $(PREFIX)/lib
 MANDIR	= $(PREFIX)/man
-INCDIR	= $(PREFIX)/include
+INCDIR	= $(PREFIX)/include/arpa2
 
 all:	a2idmatch a2acl
 
@@ -43,12 +43,13 @@ install: liba2id.a a2idmatch
 	mkdir -p $(DESTDIR)$(MANDIR)/man3
 	mkdir -p $(DESTDIR)$(MANDIR)/man5
 	$(INSTALL_LIB) liba2id.a $(DESTDIR)$(LIBDIR)
-	$(INSTALL_LIB) src/a2id.h $(DESTDIR)$(INCDIR)
+	$(INSTALL_LIB) src/a2id.h src/a2acl.h $(DESTDIR)$(INCDIR)
 	$(INSTALL_BIN) a2acl a2idmatch $(DESTDIR)$(BINDIR)
-	$(INSTALL_MAN) man/a2acl.3 man/a2id.3 man/a2id_match.3 \
-		man/a2id_parsestr.3 $(DESTDIR)$(MANDIR)/man3
-	$(INSTALL_MAN) man/a2acl.1 man/a2idmatch.1 $(DESTDIR)$(MANDIR)/man1
-	$(INSTALL_MAN) man/a2acl.conf.5 $(DESTDIR)$(MANDIR)/man5
+	$(INSTALL_MAN) doc/man/a2acl.3 doc/man/a2id.3 doc/man/a2id_match.3 \
+		doc/man/a2id_parsestr.3 $(DESTDIR)$(MANDIR)/man3
+	$(INSTALL_MAN) doc/man/a2acl.1 doc/man/a2idmatch.1 \
+		$(DESTDIR)$(MANDIR)/man1
+	$(INSTALL_MAN) doc/man/a2acl.conf.5 $(DESTDIR)$(MANDIR)/man5
 
 uninstall:
 	rm -f $(DESTDIR)$(LIBDIR)/liba2id.a
