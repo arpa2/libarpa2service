@@ -9,7 +9,6 @@ Features:
 * liba2acl - library to work with A2ACLs
 * liba2id - library to parse and match A2IDs
 * Libraries are POSIX C89 without extra dependencies
-* a2aclmilter - ACL milter that can be used with Postfix and Sendmail
 
 Status: **beta**
 
@@ -183,11 +182,6 @@ $ a2idmatch john@example.com @.example.com
 MISMATCH
 ```
 
-### a2aclmilter
-
-Please see [a2aclmilter].
-
-
 ## License
 
 ISC
@@ -215,7 +209,6 @@ THIS SOFTWARE.
 [a2id_match(3)]: https://netsend.nl/arpa2/a2id_match.3.html
 [a2id_parsestr(3)]: https://netsend.nl/arpa2/a2id_parsestr.3.html
 [a2acl.conf(5)]: https://netsend.nl/arpa2/a2acl.conf.5.html
-[a2aclmilter]: /a2aclmilter
 [a2idgrammar.txt]: /doc/design/a2idgrammar.txt
 [a2idselgrammar.txt]: /doc/design/a2idselgrammar.txt
 [ARPA2CM]: https://github.com/arpa2/arpa2cm
