@@ -23,7 +23,7 @@
 
 #define A2ACL_MAXLEN 500
 
-int a2acl_whichlist(char *, struct a2id *, const struct a2id *);
+int a2acl_whichlist(char *, a2id *, const a2id *);
 int a2acl_fromfile(const char *, size_t *, size_t *, char *, size_t);
 
 /*

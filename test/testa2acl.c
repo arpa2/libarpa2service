@@ -16,6 +16,8 @@
 
 #include <assert.h>
 #include <err.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "../src/a2acl.h"
 
@@ -247,17 +249,17 @@ test_a2acl_nextsegment(void)
 void
 test_a2acl_whichlist(void)
 {
-	struct a2id remoteid, localid;
+	a2id remoteid, localid;
 	int r;
 	char list;
 
-	if (a2id_parsestr(&localid, "foo+bar@example.net", 0) == -1)
+	if (a2id_fromstr(&localid, "foo+bar@example.net", 0) == -1)
 		abort();
 
 	aclrule = "";
 	aclrulesize = strlen(aclrule);
 	fetchcalled = 0;
-	if (a2id_parsestr(&remoteid, "baz@example.com", 0) == -1)
+	if (a2id_fromstr(&remoteid, "baz@example.com", 0) == -1)
 		abort();
 	r = a2acl_whichlist(&list, &remoteid, &localid);
 	assert(r == 0);
@@ -267,7 +269,7 @@ test_a2acl_whichlist(void)
 	aclrule = "%W +bar";
 	aclrulesize = strlen(aclrule);
 	fetchcalled = 0;
-	if (a2id_parsestr(&remoteid, "baz@example.com", 0) == -1)
+	if (a2id_fromstr(&remoteid, "baz@example.com", 0) == -1)
 		abort();
 	r = a2acl_whichlist(&list, &remoteid, &localid);
 	assert(r == 0);
@@ -277,7 +279,7 @@ test_a2acl_whichlist(void)
 	aclrule = "%W +baz";
 	aclrulesize = strlen(aclrule);
 	fetchcalled = 0;
-	if (a2id_parsestr(&remoteid, "baz@example.com", 0) == -1)
+	if (a2id_fromstr(&remoteid, "baz@example.com", 0) == -1)
 		abort();
 	r = a2acl_whichlist(&list, &remoteid, &localid);
 	assert(r == 0);
@@ -287,7 +289,7 @@ test_a2acl_whichlist(void)
 	aclrule = "%W +foo +barbaz %B +foo +bar";
 	aclrulesize = strlen(aclrule);
 	fetchcalled = 0;
-	if (a2id_parsestr(&remoteid, "baz@example.com", 0) == -1)
+	if (a2id_fromstr(&remoteid, "baz@example.com", 0) == -1)
 		abort();
 	r = a2acl_whichlist(&list, &remoteid, &localid);
 	assert(r == 0);
@@ -297,7 +299,7 @@ test_a2acl_whichlist(void)
 	aclrule = "%W +foo +barbaz %B +foo+bar";
 	aclrulesize = strlen(aclrule);
 	fetchcalled = 0;
-	if (a2id_parsestr(&remoteid, "baz@example.com", 0) == -1)
+	if (a2id_fromstr(&remoteid, "baz@example.com", 0) == -1)
 		abort();
 	r = a2acl_whichlist(&list, &remoteid, &localid);
 	assert(r == 0);
@@ -307,20 +309,20 @@ test_a2acl_whichlist(void)
 	aclrule = "%W +foo +barbaz %B +foo +bar+baz";
 	aclrulesize = strlen(aclrule);
 	fetchcalled = 0;
-	if (a2id_parsestr(&remoteid, "baz@example.com", 0) == -1)
+	if (a2id_fromstr(&remoteid, "baz@example.com", 0) == -1)
 		abort();
 	r = a2acl_whichlist(&list, &remoteid, &localid);
 	assert(r == 0);
 	assert(list == 'G');
 	assert(fetchcalled == 5);
 
-	if (a2id_parsestr(&localid, "foo+bar+baz@example.net", 0) == -1)
+	if (a2id_fromstr(&localid, "foo+bar+baz@example.net", 0) == -1)
 		abort();
 
 	aclrule = "%W +foo +barbaz %B +foo +bar+baz";
 	aclrulesize = strlen(aclrule);
 	fetchcalled = 0;
-	if (a2id_parsestr(&remoteid, "baz@example.com", 0) == -1)
+	if (a2id_fromstr(&remoteid, "baz@example.com", 0) == -1)
 		abort();
 	r = a2acl_whichlist(&list, &remoteid, &localid);
 	assert(r == 0);
@@ -330,7 +332,7 @@ test_a2acl_whichlist(void)
 	aclrule = "%X +foo";
 	aclrulesize = strlen(aclrule);
 	fetchcalled = 0;
-	if (a2id_parsestr(&remoteid, "baz@example.com", 0) == -1)
+	if (a2id_fromstr(&remoteid, "baz@example.com", 0) == -1)
 		abort();
 	r = a2acl_whichlist(&list, &remoteid, &localid);
 	assert(r == -1);

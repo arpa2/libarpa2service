@@ -76,6 +76,10 @@ static const char basechar[256] = {
 	/* let rest of static array initialize to 0 */
 };
 
+/* semi-public function of upcoming liba2id API */
+size_t a2id_localpart_options(char *dst, size_t dstsize, int *nropts,
+    const a2id *a2id);
+
 /*
  * Allocate and initialize a new ACL rule segment iterator, to be used by
  * a2acl_nextsegment(3).
@@ -110,9 +114,9 @@ a2acl_newit(const char *aclrule, size_t aclrulesize)
  * Return 1 if true, 0 if false.
  */
 int
-a2acl_aclsegmatch(const struct a2id *id, const struct a2aclseg *aclseg)
+a2acl_aclsegmatch(const a2id *id, const struct a2aclseg *aclseg)
 {
-	const char *idoptseg;
+	char idoptseg[A2ID_MAXLOCALPART_OPTIONSSZ];
 	size_t idoptsegsize;
 
 	if (id == NULL || aclseg == NULL)
@@ -120,14 +124,16 @@ a2acl_aclsegmatch(const struct a2id *id, const struct a2aclseg *aclseg)
 
 	/* Handle signature presence requirements. */
 	if (aclseg->reqsigflags)
-		if (id->sigflagslen == 0)
+		if (a2id_hassignature(id) == 0)
 			return 0;
 
 	/* Handle wildcard ACL */
 	if (aclseg->segsize == 0)
 		return 1;
 
-	if ((idoptsegsize = a2id_optsegments(&idoptseg, id)) == 0)
+	idoptsegsize = a2id_localpart_options(idoptseg, sizeof(idoptseg), NULL,
+	    id);
+	if (idoptsegsize == 0)
 		return 0;
 
 	/* assume no leading '+' in segments */
@@ -321,21 +327,21 @@ done:
  * better be done on import.
  */
 int
-a2acl_whichlist(char *list, struct a2id *remoteid, const struct a2id *localid)
+a2acl_whichlist(char *list, a2id *remoteid, const a2id *localid)
 {
 	struct a2aclseg aclseg;
 	struct a2aclit *it;
-	char aclrule[A2ACL_MAXLEN], coreid[A2ID_MAXLEN + 1], remotestr[A2ID_MAXLEN + 1];
+	char aclrule[A2ACL_MAXLEN], coreid[A2ID_MAXSZ], remotestr[A2ID_MAXSZ];
 	size_t aclrulesize, remotestrsz, coreidsz;
 	int match, r;
 
-	coreidsz = sizeof(coreid);
-	if (a2id_coreform(coreid, localid, &coreidsz) == -1)
+	coreidsz = a2id_coreform(coreid, sizeof(coreid), localid);
+	if (coreidsz >= sizeof(coreid))
 		return -1;
 
 	for (;;) {
-		remotestrsz = sizeof(remotestr);
-		if (a2id_tostr(remotestr, remoteid, &remotestrsz) == -1)
+		remotestrsz = a2id_tostr(remotestr, sizeof(remotestr), remoteid);
+		if (remotestrsz >= sizeof(remotestr))
 			return -1;
 
 		aclrulesize = sizeof(aclrule);

@@ -14,9 +14,11 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <errno.h>
 #include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 #include "a2acl.h"
@@ -120,15 +122,15 @@ main(int argc, char *argv[])
 int
 whichlist(const char *remotestr, const char *localstr)
 {
-	struct a2id remoteid, localid;
+	a2id remoteid, localid;
 	int list;
 
-	if (a2id_parsestr(&remoteid, remotestr, 0) == -1) {
+	if (a2id_fromstr(&remoteid, remotestr, 0) == -1) {
 		fprintf(stderr, "illegal remoteid: %s\n", remotestr);
 		exit(4);
 	}
 
-	if (a2id_parsestr(&localid, localstr, 0) == -1) {
+	if (a2id_fromstr(&localid, localstr, 0) == -1) {
 		fprintf(stderr, "illegal localid: %s\n", localstr);
 		exit(4);
 	}
