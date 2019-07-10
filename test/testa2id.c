@@ -599,11 +599,59 @@ test_a2id_parsestr_selector(void)
 	assert(id.hassig == 1);
 }
 
+void
+test_a2id_generalize(void)
+{
+	struct a2id id;
+	char output[128];
+	const char *input;
+	size_t outsz;
+	int r;
+
+	input = "foo@some.example.org";
+
+	r = a2id_parsestr(&id, input, 1);
+	assert(r == 0);
+	assert(a2id_tostr(output, &id, &outsz) == 0);
+	assert(strcmp(output, input) == 0);
+
+	outsz = sizeof(output);
+	assert(a2id_generalize(&id) == 1);
+	assert(a2id_tostr(output, &id, &outsz) == 0);
+	assert(strcmp(output, "@some.example.org") == 0);
+
+	outsz = sizeof(output);
+	assert(a2id_generalize(&id) == 1);
+	assert(a2id_tostr(output, &id, &outsz) == 0);
+	assert(strcmp(output, "@.example.org") == 0);
+
+	outsz = sizeof(output);
+	assert(a2id_generalize(&id) == 1);
+	assert(a2id_tostr(output, &id, &outsz) == 0);
+	assert(strcmp(output, "@example.org") == 0);
+
+	outsz = sizeof(output);
+	assert(a2id_generalize(&id) == 1);
+	assert(a2id_tostr(output, &id, &outsz) == 0);
+	assert(strcmp(output, "@.org") == 0);
+
+	outsz = sizeof(output);
+	assert(a2id_generalize(&id) == 1);
+	assert(a2id_tostr(output, &id, &outsz) == 0);
+	assert(strcmp(output, "@org") == 0);
+
+	outsz = sizeof(output);
+	assert(a2id_generalize(&id) == 1);
+	assert(a2id_tostr(output, &id, &outsz) == 0);
+	assert(strcmp(output, "@.") == 0);
+}
+
 int
 main(void)
 {
 	test_a2id_parsestr();
 	test_a2id_parsestr_selector();
+	test_a2id_generalize();
 
 	return 0;
 }
