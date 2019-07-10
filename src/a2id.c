@@ -29,6 +29,34 @@
 #include "a2id.h"
 
 /*
+ * The ARPA2 Identifier. Each string must be null terminated. The lengths are
+ * excluding the terminating nul byte. Each string must have at least the
+ * terminating null byte and must never be NULL.
+ *
+ * Note: keep the size in sync with the public opaque a2id type.
+ */
+struct a2id {
+	enum A2ID_TYPE type;
+	int hassig;	/* whether the ID has a signature */
+	int nropts;	/* total number of options, may exceed three */
+	int generalized;	/* total times this a2id is generalized */
+	char *localpart;	/* points to '+' or '\0' in str */
+	char *basename;	/* points to '+' or NULL in str */
+	char *firstopt;	/* points to '+' or NULL in str */
+	char *sigflags;	/* points to '+' or NULL in str */
+	char *domain;	/* points to '@' in str */
+	char _str[A2ID_MAXLEN + 1];	/* contains the actual id, might be
+					 * broken up by generalization */
+	size_t localpartlen;
+	size_t basenamelen;
+	size_t firstoptlen;
+	size_t sigflagslen;	/* length including leading '+', excluding
+				   trailing '+' */
+	size_t domainlen;	/* can not be 0 because of '@' requirement */
+	size_t idlen;
+};
+
+/*
  * Copy an a2id structure.
  *
  * Note: domain, localpart, basename, firstopt and sigflags all point into the
@@ -182,8 +210,9 @@ static const char basechar[256] = {
  * Return 0 if "in" is a valid A2ID and could be parsed, -1 otherwise.
  */
 int
-a2id_parsestr(struct a2id *out, const char *in, int selector)
+a2id_parsestr(a2id *a2id, const char *in, int selector)
 {
+	struct a2id *out = (struct a2id *)a2id;
 	enum states { S, SERVICE, LOCALPART, OPTION, NEWLABEL, DOMAIN } state;
 	char *curopt, *prevopt, *secondopt;
 	size_t i;
@@ -403,39 +432,41 @@ done:
  * match to the respective part in the subject.
  */
 int
-a2id_match(const struct a2id *subject, const struct a2id *selector)
+a2id_match(const a2id *subject, const a2id *selector)
 {
+	const struct a2id *subid = (const struct a2id *)subject;
+	const struct a2id *selid = (const struct a2id *)selector;
 	char *selp, *subp;
 	size_t selplen, subplen;
 	int n;
 
-	assert(subject && selector);
+	assert(subid && selid);
 
-	if (selector->localpartlen > 0) {
-		if (selector->localpartlen > subject->localpartlen)
+	if (selid->localpartlen > 0) {
+		if (selid->localpartlen > subid->localpartlen)
 			return 0;
 
-		if (selector->hassig) {
-			if (!subject->hassig)
+		if (selid->hassig) {
+			if (!subid->hassig)
 				return 0;
 
 			/* if sigflags selector is not empty it must match */
-			if (selector->sigflagslen > 1 &&
-			    selector->sigflagslen != subject->sigflagslen)
+			if (selid->sigflagslen > 1 &&
+			    selid->sigflagslen != subid->sigflagslen)
 					return 0;
 
-			if (selector->sigflagslen > 1 &&
-			    strncmp(selector->sigflags, subject->sigflags,
-			    selector->sigflagslen) != 0)
+			if (selid->sigflagslen > 1 &&
+			    strncmp(selid->sigflags, subid->sigflags,
+			    selid->sigflagslen) != 0)
 				return 0;
 		}
 
 		/* compare each segment */
-		selp = selector->localpart;
-		subp = subject->localpart;
+		selp = selid->localpart;
+		subp = subid->localpart;
 
-		if (selector->type == A2IDT_SERVICE) {
-			if (subject->type != A2IDT_SERVICE)
+		if (selid->type == A2IDT_SERVICE) {
+			if (subid->type != A2IDT_SERVICE)
 				return 0;
 
 			/* skip leading '+' */
@@ -443,11 +474,11 @@ a2id_match(const struct a2id *subject, const struct a2id *selector)
 			subp++;
 		}
 
-		if (selector->nropts > subject->nropts)
+		if (selid->nropts > subid->nropts)
 			return 0;
 
 		/* Compare base and option segments. */
-		for (n = -1; n < selector->nropts; n++) {
+		for (n = -1; n < selid->nropts; n++) {
 			/* lock-step comparison up till next separator */
 			for (selplen = subplen = 0;
 			    *selp != '+' && *selp != '@' && *selp != '\0' &&
@@ -493,18 +524,18 @@ a2id_match(const struct a2id *subject, const struct a2id *selector)
 		}
 	}
 
-	if (selector->domainlen > 0) {
+	if (selid->domainlen > 0) {
 		/*
 		 * Can't compare domain lengths because of optional trailing
 		 * dots and possibly empty labels in the selector.
 		 */
-		if (subject->domainlen < 1)
+		if (subid->domainlen < 1)
 			return 0;
 
 		/* compare each label, starting from the back */
-		assert(*selector->domain == '@' && *subject->domain == '@');
-		selp = &selector->domain[selector->domainlen - 1];
-		subp = &subject->domain[subject->domainlen - 1];
+		assert(*selid->domain == '@' && *subid->domain == '@');
+		selp = &selid->domain[selid->domainlen - 1];
+		subp = &subid->domain[subid->domainlen - 1];
 
 		for (;;) {
 			/* Step over leading dot of current label. */
@@ -573,8 +604,9 @@ a2id_match(const struct a2id *subject, const struct a2id *selector)
  * pointer now that the memory is allocated statically in the structure.
  */
 int
-a2id_generalize(struct a2id *id)
+a2id_generalize(a2id *a2id)
 {
+	struct a2id *id = (struct a2id *)a2id;
 	char *cp;
 	size_t i, n;
 
@@ -686,8 +718,10 @@ a2id_generalize(struct a2id *id)
  * Print the different parts of "id" to "fp".
  */
 void
-a2id_print(FILE *fp, const struct a2id *id)
+a2id_print(FILE *fp, const a2id *a2id)
 {
+	const struct a2id *id = (const struct a2id *)a2id;
+
 	fprintf(fp, "type %d\n", id->type);
 	fprintf(fp, "hassig %d\n", id->hassig);
 	fprintf(fp, "nropts %d\n", id->nropts);
@@ -714,8 +748,9 @@ a2id_print(FILE *fp, const struct a2id *id)
  * Return 0 on success, -1 if dst is too short.
  */
 int
-a2id_coreform(char *dst, const struct a2id *id, size_t *dstsize)
+a2id_coreform(char *dst, const a2id *a2id, size_t *dstsize)
 {
+	const struct a2id *id = (const struct a2id *)a2id;
 	size_t r;
 
 	switch (id->type) {
@@ -756,8 +791,9 @@ a2id_coreform(char *dst, const struct a2id *id, size_t *dstsize)
  * Return 0 on success, -1 if dst is too short.
  */
 int
-a2id_tostr(char *dst, const struct a2id *id, size_t *dstsize)
+a2id_tostr(char *dst, const a2id *a2id, size_t *dstsize)
 {
+	const struct a2id *id = (const struct a2id *)a2id;
 	size_t r;
 
 	r = snprintf(dst, *dstsize, "%.*s%.*s", (int)id->localpartlen,
@@ -784,8 +820,9 @@ a2id_tostr(char *dst, const struct a2id *id, size_t *dstsize)
  * XXX might want to make this part of a2id_parsestr
  */
 size_t
-a2id_optsegments(const char **optseg, const struct a2id *id)
+a2id_optsegments(const char **optseg, const a2id *a2id)
 {
+	const struct a2id *id = (const struct a2id *)a2id;
 	size_t s;
 
 	if (id->firstoptlen <= 1)

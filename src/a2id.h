@@ -32,40 +32,16 @@
 
 enum A2ID_TYPE { A2IDT_DOMAINONLY, A2IDT_GENERIC, A2IDT_SERVICE };
 
-/*
- * The ARPA2 Identifier. Each string must be null terminated. The lengths are
- * excluding the terminating nul byte. Each string must have at least the
- * terminating null byte and must never be NULL.
- *
- * "_str" is private and should not be used.
- */
-struct a2id {
-	enum A2ID_TYPE type;
-	int hassig;	/* whether the ID has a signature */
-	int nropts;	/* total number of options, may exceed three */
-	int generalized;	/* total times this a2id is generalized */
-	char *localpart;	/* points to '+' or '\0' in str */
-	char *basename;	/* points to '+' or NULL in str */
-	char *firstopt;	/* points to '+' or NULL in str */
-	char *sigflags;	/* points to '+' or NULL in str */
-	char *domain;	/* points to '@' in str */
-	char _str[A2ID_MAXLEN + 1];	/* contains the actual id, might be
-					 * broken up by generalization */
-	size_t localpartlen;
-	size_t basenamelen;
-	size_t firstoptlen;
-	size_t sigflagslen;	/* length including leading '+', excluding
-				   trailing '+' */
-	size_t domainlen;	/* can not be 0 because of '@' requirement */
-	size_t idlen;
-};
+typedef struct {
+	uint8_t a2id[((A2ID_MAXLEN) + 128)];
+} a2id;
 
-int a2id_coreform(char *, const struct a2id *, size_t *);
-int a2id_generalize(struct a2id *);
-int a2id_match(const struct a2id *, const struct a2id *);
-int a2id_parsestr(struct a2id *, const char *, int);
-int a2id_tostr(char *, const struct a2id *, size_t *);
-void a2id_print(FILE *, const struct a2id *);
-size_t a2id_optsegments(const char **, const struct a2id *);
+int a2id_coreform(char *, const a2id *, size_t *);
+int a2id_generalize(a2id *);
+int a2id_match(const a2id *, const a2id *);
+int a2id_parsestr(a2id *, const char *, int);
+int a2id_tostr(char *, const a2id *, size_t *);
+void a2id_print(FILE *, const a2id *);
+size_t a2id_optsegments(const char **, const a2id *);
 
 #endif /* A2ID_H */

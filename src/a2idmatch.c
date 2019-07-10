@@ -34,7 +34,7 @@ void printusage(FILE *);
 int
 main(int argc, char *argv[])
 {
-	struct a2id id, selector;
+	a2id id, selector;
 	int c;
 
 	if ((progname = basename(argv[0])) == NULL) {
