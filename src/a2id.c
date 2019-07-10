@@ -73,6 +73,43 @@ a2id_hassignature(const a2id *a2id)
 }
 
 /*
+ * Copy the full string representation of "a2id" into "dst". Up to "dstsz" - 1
+ * characters of the id are copied. It is guaranteed that "dst" is terminated
+ * with a nul byte, unless "dstsz" is 0. Furthermore, if "dstsz" >= A2ID_MAXLEN
+ * + 1, then every imaginable valid A2ID will fit.
+ *
+ * Returns the length of the id in "a2id", excluding the terminating nul byte.
+ * If the return value is >= "dstsz", then "dst" contains a truncated copy.
+ */
+size_t
+a2id_tostr(char *dst, size_t dstsz, const a2id *a2id)
+{
+	const struct a2id *id = (const struct a2id *)a2id;
+	size_t len, origlen;
+
+	origlen = id->localpartlen + id->domainlen;
+
+	/* localpartlen can be 0 */
+	if (origlen < id->domainlen)
+		abort(); /* overflow */
+
+	if (dstsz == 0)
+		return origlen;
+
+	len = dstsz - 1 > id->localpartlen ? id->localpartlen : dstsz - 1;
+	memcpy(dst, id->localpart, len);
+	dst += len;
+	dstsz -= len;
+
+	len = dstsz - 1 > id->domainlen ? id->domainlen : dstsz - 1;
+	memcpy(dst, id->domain, len);
+
+	dst[len] = '\0';
+
+	return origlen;
+}
+
+/*
  * Copy an a2id structure.
  *
  * Note: domain, localpart, basename, firstopt and sigflags all point into the
@@ -797,30 +834,6 @@ a2id_coreform(char *dst, const a2id *a2id, size_t *dstsize)
 	}
 
 	return -1;
-}
-
-/*
- * Write the string representation of "id" into "dst". dstsize is a value/result
- * parameter and should be at least A2ID_MAXLEN + 1 bytes to ensure it will not
- * fail.
- *
- * Return 0 on success, -1 if dst is too short.
- */
-int
-a2id_tostr(char *dst, const a2id *a2id, size_t *dstsize)
-{
-	const struct a2id *id = (const struct a2id *)a2id;
-	size_t r;
-
-	r = snprintf(dst, *dstsize, "%.*s%.*s", (int)id->localpartlen,
-	    id->localpart, (int)id->domainlen, id->domain);
-
-	if (r >= *dstsize)
-		return -1;
-
-	*dstsize = r;
-
-	return 0;
 }
 
 /*

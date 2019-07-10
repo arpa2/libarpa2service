@@ -608,45 +608,54 @@ test_a2id_generalize(void)
 	a2id *idp = (a2id *)&id;
 	char output[128];
 	const char *input;
-	size_t outsz;
+	const size_t outputsz = sizeof(output);
 	int r;
 
-	input = "foo@some.example.org";
+	input = "foo+bar++@some.example.org";
 
 	r = a2id_parsestr(idp, input, 1);
 	assert(r == 0);
-	outsz = sizeof(output);
-	assert(a2id_tostr(output, idp, &outsz) == 0);
+	assert(a2id_tostr(output, outputsz, idp) < outputsz);
 	assert(strcmp(output, input) == 0);
 
-	outsz = sizeof(output);
 	assert(a2id_generalize(idp) == 1);
-	assert(a2id_tostr(output, idp, &outsz) == 0);
+	assert(a2id_tostr(output, outputsz, idp) < outputsz);
+	assert(strcmp(output, "foo+bar@some.example.org") == 0);
+
+	assert(a2id_generalize(idp) == 1);
+	assert(a2id_tostr(output, outputsz, idp) < outputsz);
+	assert(strcmp(output, "foo+@some.example.org") == 0);
+
+	assert(a2id_generalize(idp) == 1);
+	assert(a2id_tostr(output, outputsz, idp) < outputsz);
+	assert(strcmp(output, "foo@some.example.org") == 0);
+
+	assert(a2id_generalize(idp) == 1);
+	assert(a2id_tostr(output, outputsz, idp) < outputsz);
 	assert(strcmp(output, "@some.example.org") == 0);
 
-	outsz = sizeof(output);
 	assert(a2id_generalize(idp) == 1);
-	assert(a2id_tostr(output, idp, &outsz) == 0);
+	assert(a2id_tostr(output, outputsz, idp) < outputsz);
 	assert(strcmp(output, "@.example.org") == 0);
 
-	outsz = sizeof(output);
 	assert(a2id_generalize(idp) == 1);
-	assert(a2id_tostr(output, idp, &outsz) == 0);
+	assert(a2id_tostr(output, outputsz, idp) < outputsz);
 	assert(strcmp(output, "@example.org") == 0);
 
-	outsz = sizeof(output);
 	assert(a2id_generalize(idp) == 1);
-	assert(a2id_tostr(output, idp, &outsz) == 0);
+	assert(a2id_tostr(output, outputsz, idp) < outputsz);
 	assert(strcmp(output, "@.org") == 0);
 
-	outsz = sizeof(output);
 	assert(a2id_generalize(idp) == 1);
-	assert(a2id_tostr(output, idp, &outsz) == 0);
+	assert(a2id_tostr(output, outputsz, idp) < outputsz);
 	assert(strcmp(output, "@org") == 0);
 
-	outsz = sizeof(output);
 	assert(a2id_generalize(idp) == 1);
-	assert(a2id_tostr(output, idp, &outsz) == 0);
+	assert(a2id_tostr(output, outputsz, idp) < outputsz);
+	assert(strcmp(output, "@.") == 0);
+
+	assert(a2id_generalize(idp) == 0);
+	assert(a2id_tostr(output, outputsz, idp) < outputsz);
 	assert(strcmp(output, "@.") == 0);
 }
 
