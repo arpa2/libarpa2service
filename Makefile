@@ -27,8 +27,8 @@ liba2id.a: a2id.o
 liba2acl.a: a2acl_dbm.o a2id.o a2acl.o
 	ar -rs liba2acl.a a2acl_dbm.o a2id.o a2acl.o
 
-testa2id: a2id.o test/testa2id.c
-	${CC} ${CFLAGS} a2id.o test/testa2id.c -o $@
+testa2id: src/a2id.c src/a2id.h test/testa2id.c
+	${CC} ${CFLAGS} test/testa2id.c -o $@
 
 testa2acl: a2acl.o a2id.o test/testa2acl.c
 	${CC} ${CFLAGS} a2id.o a2acl.o test/testa2acl.c -o $@
