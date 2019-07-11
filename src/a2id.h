@@ -32,14 +32,14 @@ typedef struct {
 	uint8_t a2id[((A2ID_MAXLEN) + 128)];
 } a2id;
 
-int a2id_hassignature(const a2id *);
-size_t a2id_tostr(char *, size_t, const a2id *);
+int a2id_hassignature(const a2id *a2id);
+size_t a2id_tostr(char *dst, size_t dstsz, const a2id *a2id);
 
-int a2id_coreform(char *, const a2id *, size_t *);
-int a2id_generalize(a2id *);
-int a2id_match(const a2id *, const a2id *);
-int a2id_parsestr(a2id *, const char *, int);
-void a2id_print(FILE *, const a2id *);
-size_t a2id_optsegments(const char **, const a2id *);
+int a2id_coreform(char *dst, const a2id *a2id, size_t *dstsize);
+int a2id_generalize(a2id *a2id);
+int a2id_match(const a2id *subject, const a2id *selector);
+int a2id_parsestr(a2id *a2id, const char *in, int isselector);
+void a2id_print(FILE *fp, const a2id *a2id);
+size_t a2id_optsegments(const char **optseg, const a2id *a2id);
 
 #endif /* A2ID_H */
