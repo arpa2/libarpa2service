@@ -865,21 +865,19 @@ a2id_coreform(char *dst, size_t dstsz, const a2id *a2id)
 }
 
 /*
- * Determine the start and length of optional segments, excluding any sigflags
- * segment.
- *
- * "optseg" will be set to point to the first character of the first option,
- * right after it's leading '+'. If "id" has no optional segments then "optseg"
- * is not set.
+ * Get a pointer into "a2id" that points to the start of the first optional
+ * segment, right after it's leading '+'. If "a2id" has no optional segments
+ * then "optseg" is not set.
+ * "optseg", when set, contains all all optional segments but is *not* nul
+ * terminated.
  *
  * Returns the length of "optseg" or 0 if "optseg" is not set.
  *
  * XXX might want to make this part of a2id_parsestr
  */
-size_t
-a2id_optsegments(const char **optseg, const a2id *a2id)
+static size_t
+a2id_optsegments(const char **optseg, const struct a2id *id)
 {
-	const struct a2id *id = (const struct a2id *)a2id;
 	size_t s;
 
 	if (id->firstoptlen <= 1)
