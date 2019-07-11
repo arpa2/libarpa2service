@@ -29,21 +29,23 @@
 #include "a2id.h"
 
 /*
- * The ARPA2 Identifier. Each string must be null terminated. The lengths are
- * excluding the terminating nul byte. Each string must have at least the
- * terminating null byte and must never be NULL.
+ * The ARPA2 Identifier. Each string is nul terminated. The lengths are
+ * excluding the terminating nul byte. Each string will point to either the
+ * start of the respective part in the a2id, or to the terminating nul byte in
+ * _str.
  *
- * Note: keep the size in sync with the public opaque a2id type.
+ * Note: the size of the public opaque a2id must be kept in sync with this
+ * struct.
  */
 struct a2id {
 	enum A2ID_TYPE type;
 	int hassig;	/* whether the ID has a signature */
 	int nropts;	/* total number of options, may exceed three */
 	int generalized;	/* total times this a2id is generalized */
-	char *localpart;	/* points to '+' or '\0' in str */
-	char *basename;	/* points to '+' or NULL in str */
-	char *firstopt;	/* points to '+' or NULL in str */
-	char *sigflags;	/* points to '+' or NULL in str */
+	char *localpart;	/* points to '+' or terminating nul in str */
+	char *basename;	/* points to '+' or terminating nul in str */
+	char *firstopt;	/* points to '+' or terminating nul in str */
+	char *sigflags;	/* points to '+' or terminating nul in str */
 	char *domain;	/* points to '@' in str */
 	char _str[A2ID_MAXLEN + 1];	/* contains the actual id, might be
 					 * broken up by generalization */
