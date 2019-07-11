@@ -59,6 +59,20 @@ struct a2id {
 };
 
 /*
+ * Return 1 if "a2id" has a signature, 0 otherwise.
+ */
+int
+a2id_hassignature(const a2id *a2id)
+{
+	const struct a2id *id = (const struct a2id *)a2id;
+
+	if (id->hassig)
+		return 1;
+
+	return 0;
+}
+
+/*
  * Copy an a2id structure.
  *
  * Note: domain, localpart, basename, firstopt and sigflags all point into the

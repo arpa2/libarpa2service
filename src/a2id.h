@@ -36,6 +36,8 @@ typedef struct {
 	uint8_t a2id[((A2ID_MAXLEN) + 128)];
 } a2id;
 
+int a2id_hassignature(const a2id *);
+
 int a2id_coreform(char *, const a2id *, size_t *);
 int a2id_generalize(a2id *);
 int a2id_match(const a2id *, const a2id *);
