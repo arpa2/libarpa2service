@@ -906,3 +906,49 @@ a2id_optsegments(const char **optseg, const a2id *a2id)
 
 	return s;
 }
+
+/*
+ * Write the local option segments of "a2id" into "dst". Up to "dstsz" - 1
+ * characters are copied. It is guaranteed that "dst" is terminated with a nul
+ * byte, unless "dstsz" is 0. Furthermore, if "dstsz" >= A2ID_MAXOPTSEGLEN + 1,
+ * then all options of every valid A2ID will always fit. The leading '+' of the
+ * first option is never copied.
+ *
+ * If "nropts" is not NULL it will be updated to the number of options in
+ * "a2id".
+ *
+ * Returns the length of the options segment (not including the leading '+' or
+ * terminating nul byte). Thus, if the return value is 0, there are no option
+ * segments in "a2id", otherwise if the return value is >= "dstsz", then "dst"
+ * was truncated.
+ *
+ * XXX if there is a plus but no value, ie. foo+@, then s is 0, but nropts is 1,
+ * this is not very intuitive and is something that should be straightened up in
+ * the specs and parser.
+ * Make prototype public via header file once satisfied with the interface.
+ */
+size_t
+a2id_localpart_options(char *dst, size_t dstsz, int *nropts, const a2id *a2id)
+{
+	const struct a2id *id = (const struct a2id *)a2id;
+	const char *cp;
+	size_t s, len;
+
+	s = a2id_optsegments(&cp, id);
+
+	if (dstsz == 0) {
+		*nropts = id->nropts;
+		return s;
+	}
+
+	len = dstsz - 1 > s ? s : dstsz - 1;
+
+	memcpy(dst, cp, len);
+
+	dst[len] = '\0';
+
+	if (nropts)
+		*nropts = id->nropts;
+
+	return s;
+}

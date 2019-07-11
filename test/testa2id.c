@@ -680,6 +680,42 @@ test_a2id_coreform(void)
 	assert(strcmp(output, "foo@some.example.org") == 0);
 }
 
+void
+test_a2id_localpart_options(void)
+{
+	struct a2id id;
+	a2id *idp = (a2id *)&id;
+	char output[128];
+	const char *input;
+	const size_t outputsz = sizeof(output);
+	int r, opts;
+
+	input = "foo+bar+other+signflags+@some.example.org";
+
+	r = a2id_parsestr(idp, input, 1);
+	assert(r == 0);
+	assert(a2id_tostr(output, outputsz, idp) < outputsz);
+	assert(strcmp(output, input) == 0);
+
+	assert(a2id_localpart_options(output, outputsz, &opts, idp) == 9);
+	assert(strcmp(output, "bar+other") == 0);
+	assert(opts == 2);
+
+	input = "foo+a@some.example.org";
+
+	a2id_parsestr(idp, input, 1);
+	assert(a2id_localpart_options(output, outputsz, &opts, idp) == 1);
+	assert(strcmp(output, "a") == 0);
+	assert(opts == 1);
+
+	input = "foo+@some.example.org";
+
+	a2id_parsestr(idp, input, 1);
+	assert(a2id_localpart_options(output, outputsz, &opts, idp) == 0);
+	assert(strcmp(output, "") == 0);
+	assert(opts == 1);
+}
+
 int
 main(void)
 {
@@ -687,6 +723,7 @@ main(void)
 	test_a2id_parsestr_selector();
 	test_a2id_generalize();
 	test_a2id_coreform();
+	test_a2id_localpart_options();
 
 	return 0;
 }
