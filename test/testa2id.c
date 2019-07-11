@@ -659,12 +659,34 @@ test_a2id_generalize(void)
 	assert(strcmp(output, "@.") == 0);
 }
 
+void
+test_a2id_coreform(void)
+{
+	struct a2id id;
+	a2id *idp = (a2id *)&id;
+	char output[128];
+	const char *input;
+	const size_t outputsz = sizeof(output);
+	int r;
+
+	input = "foo+bar++@some.example.org";
+
+	r = a2id_parsestr(idp, input, 1);
+	assert(r == 0);
+	assert(a2id_tostr(output, outputsz, idp) < outputsz);
+	assert(strcmp(output, input) == 0);
+
+	assert(a2id_coreform(output, outputsz, idp) < outputsz);
+	assert(strcmp(output, "foo@some.example.org") == 0);
+}
+
 int
 main(void)
 {
 	test_a2id_parsestr();
 	test_a2id_parsestr_selector();
 	test_a2id_generalize();
+	test_a2id_coreform();
 
 	return 0;
 }

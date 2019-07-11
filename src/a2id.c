@@ -81,6 +81,8 @@ a2id_hassignature(const a2id *a2id)
  *
  * Returns the length of the id in "a2id", excluding the terminating nul byte.
  * If the return value is >= "dstsz", then "dst" contains a truncated copy.
+ *
+ * sync with description of a2id_coreform.
  */
 size_t
 a2id_tostr(char *dst, size_t dstsz, const a2id *a2id)
@@ -815,46 +817,51 @@ a2id_dprint(int d, const a2id *a2id)
 }
 
 /*
- * Write the core form of "id" as a string into "dst". "dstsize" is a
- * value/result parameter and should be at least A2ID_MAXLEN + 1 bytes to ensure
- * it will not fail.
+ * Write the core form of "a2id" into "dst". Up to "dstsz" - 1 characters of the
+ * id are copied. It is guaranteed that "dst" is terminated with a nul byte,
+ * unless "dstsz" is 0. Furthermore, if "dstsz" >= A2ID_MAXLEN + 1, then every
+ * valid A2ID will always fit.
  *
- * Return 0 on success, -1 if dst is too short.
+ * Returns the length of the string that would have been output, if the size
+ * were unlimited (not including the terminating nul byte). Thus, if the return
+ * value is >= "dstsz", then "dst" was truncated.
+ *
+ * XXX replace snprintf with memcpy which can not fail.
  */
-int
-a2id_coreform(char *dst, const a2id *a2id, size_t *dstsize)
+size_t
+a2id_coreform(char *dst, size_t dstsz, const a2id *a2id)
 {
 	const struct a2id *id = (const struct a2id *)a2id;
-	size_t r;
+	int r;
 
 	switch (id->type) {
 	case A2IDT_GENERIC:
-		r = snprintf(dst, *dstsize, "%.*s%.*s", (int)id->basenamelen,
+		r = snprintf(dst, dstsz, "%.*s%.*s", (int)id->basenamelen,
 		    id->basename, (int)id->domainlen, id->domain);
 
-		if (r >= *dstsize)
-			return -1;
-		*dstsize = r;
-		return 0;
+		if (r < 0)
+			abort();
+
+		return (size_t)r;
 	case A2IDT_SERVICE:
-		r = snprintf(dst, *dstsize, "+%.*s%.*s", (int)id->basenamelen,
+		r = snprintf(dst, dstsz, "+%.*s%.*s", (int)id->basenamelen,
 		    id->basename, (int)id->domainlen, id->domain);
 
-		if (r >= *dstsize)
-			return -1;
-		*dstsize = r;
-		return 0;
+		if (r < 0)
+			abort();
+
+		return (size_t)r;
 	case A2IDT_DOMAINONLY:
-		r = snprintf(dst, *dstsize, "%.*s", (int)id->domainlen,
+		r = snprintf(dst, dstsz, "%.*s", (int)id->domainlen,
 		    id->domain);
 
-		if (r >= *dstsize)
-			return -1;
-		*dstsize = r;
-		return 0;
+		if (r < 0)
+			abort();
+
+		return (size_t)r;
 	}
 
-	return -1;
+	abort();
 }
 
 /*
