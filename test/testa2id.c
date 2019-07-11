@@ -607,16 +607,13 @@ test_a2id_generalize(void)
 	struct a2id id;
 	a2id *idp = (a2id *)&id;
 	char output[128];
-	const char *input;
 	const size_t outputsz = sizeof(output);
-	int r;
 
-	input = "foo+bar++@some.example.org";
+	a2id_fromstr(idp, "foo+bar+asig+@some.example.org", 0);
 
-	r = a2id_parsestr(idp, input, 1);
-	assert(r == 0);
+	assert(a2id_generalize(idp) == 1);
 	assert(a2id_tostr(output, outputsz, idp) < outputsz);
-	assert(strcmp(output, input) == 0);
+	assert(strcmp(output, "foo+bar++@some.example.org") == 0);
 
 	assert(a2id_generalize(idp) == 1);
 	assert(a2id_tostr(output, outputsz, idp) < outputsz);
