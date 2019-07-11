@@ -17,12 +17,8 @@
 #ifndef A2ID_H
 #define A2ID_H
 
-#include <assert.h>
-#include <errno.h>
-#include <limits.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include <stddef.h>
+#include <stdint.h>
 
 /*
  * Practial upper bound to the lenght of an ARPA2 ID (not including an optional
