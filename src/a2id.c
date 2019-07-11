@@ -48,7 +48,7 @@ struct a2id {
 	char *firstopt;	/* points to '+' or terminating nul in str */
 	char *sigflags;	/* points to '+' or terminating nul in str */
 	char *domain;	/* points to '@' in str */
-	char _str[A2ID_MAXLEN + 1];	/* contains the actual id, might be
+	char _str[A2ID_MAXSZ];	/* contains the actual id, might be
 					 * broken up by generalization */
 	size_t localpartlen;
 	size_t basenamelen;
@@ -76,8 +76,8 @@ a2id_hassignature(const a2id *a2id)
 /*
  * Copy the full string representation of "a2id" into "dst". Up to "dstsz" - 1
  * characters of the id are copied. It is guaranteed that "dst" is terminated
- * with a nul byte, unless "dstsz" is 0. Furthermore, if "dstsz" >= A2ID_MAXLEN
- * + 1, then every imaginable valid A2ID will fit.
+ * with a nul byte, unless "dstsz" is 0. Furthermore, if "dstsz" >= A2ID_MAXSZ,
+ * then every imaginable valid A2ID will fit.
  *
  * Returns the length of the id in "a2id", excluding the terminating nul byte.
  * If the return value is >= "dstsz", then "dst" contains a truncated copy.
@@ -819,8 +819,8 @@ a2id_dprint(int d, const a2id *a2id)
 /*
  * Write the core form of "a2id" into "dst". Up to "dstsz" - 1 characters of the
  * id are copied. It is guaranteed that "dst" is terminated with a nul byte,
- * unless "dstsz" is 0. Furthermore, if "dstsz" >= A2ID_MAXLEN + 1, then every
- * valid A2ID will always fit.
+ * unless "dstsz" is 0. Furthermore, if "dstsz" >= A2ID_MAXSZ, then every valid
+ * A2ID will always fit.
  *
  * Returns the length of the string that would have been output, if the size
  * were unlimited (not including the terminating nul byte). Thus, if the return
@@ -908,9 +908,9 @@ a2id_optsegments(const char **optseg, const struct a2id *id)
 /*
  * Write the local option segments of "a2id" into "dst". Up to "dstsz" - 1
  * characters are copied. It is guaranteed that "dst" is terminated with a nul
- * byte, unless "dstsz" is 0. Furthermore, if "dstsz" >= A2ID_MAXOPTSEGLEN + 1,
- * then all options of every valid A2ID will always fit. The leading '+' of the
- * first option is never copied.
+ * byte, unless "dstsz" is 0. Furthermore, if "dstsz" >=
+ * A2ID_MAXLOCALPART_OPTIONSSZ, then all options of every valid A2ID will
+ * always fit. The leading '+' of the first option is never copied.
  *
  * If "nropts" is not NULL it will be updated to the number of options in
  * "a2id".

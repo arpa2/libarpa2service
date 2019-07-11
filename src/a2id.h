@@ -34,6 +34,9 @@
  * The maximum length of an A2ID is 512 bytes, excluding a terminating nul byte.
  */
 #define A2ID_MAXLEN 512
+#define A2ID_MAXSZ ((A2ID_MAXLEN) + 1)
+#define A2ID_MAXLOCALPART_OPTIONSLEN 497
+#define A2ID_MAXLOCALPART_OPTIONSSZ ((A2ID_MAXLOCALPART_OPTIONSLEN) + 1)
 
 enum A2ID_TYPE { A2IDT_DOMAINONLY, A2IDT_GENERIC, A2IDT_SERVICE };
 
