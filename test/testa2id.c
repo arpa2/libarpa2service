@@ -324,6 +324,16 @@ test_a2id_parsestr(void)
 	assert(id.idlen == 3);
 	assert(a2id_parsestr(idp, "fred@example.net@example.net", 0) == -1);
 	assert(id.idlen == 16);
+
+	/*
+	 * Regressions
+	 */
+
+	/*
+	 * A trailing dot is only accepted in selectors.
+	 */
+	assert(a2id_fromstr(idp, "foo@example.org.", 0) == -1);
+	assert(a2id_fromstr(idp, "foo@example.org.", 1) == 0);
 }
 
 void
