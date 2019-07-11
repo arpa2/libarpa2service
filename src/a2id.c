@@ -233,7 +233,7 @@ static const char basechar[256] = {
  * Static ARPA2 ID parser.
  *
  * Parse the string "in" and writes the result in "out". "in" must be a nul
- * terminated string. "selector" is a boolean that indicates wheter or not the
+ * terminated string. "isselector" is a boolean that indicates wheter or not the
  * input should be parsed as a selector. A selector is a generalization of an
  * A2ID.
  *
@@ -263,8 +263,8 @@ static const char basechar[256] = {
  *
  * Return 0 if "in" is a valid A2ID and could be parsed, -1 otherwise.
  */
-int
-a2id_parsestr(a2id *a2id, const char *in, int selector)
+static int
+a2id_parsestr(a2id *a2id, const char *in, int isselector)
 {
 	struct a2id *out = (struct a2id *)a2id;
 	enum states { S, SERVICE, LOCALPART, OPTION, NEWLABEL, DOMAIN } state;
@@ -319,10 +319,10 @@ a2id_parsestr(a2id *a2id, const char *in, int selector)
 			if (basechar[c] || c == '.') {
 				out->basename = &out->_str[i];
 				state = LOCALPART;
-			} else if (selector && c == '@') {
+			} else if (isselector && c == '@') {
 				out->domain = &out->_str[i];
 				state = NEWLABEL;
-			} else if (selector && c == '+') {
+			} else if (isselector && c == '+') {
 				curopt = &out->_str[i];
 				out->firstopt = &out->_str[i];
 				out->nropts++;
@@ -377,7 +377,7 @@ a2id_parsestr(a2id *a2id, const char *in, int selector)
 		case NEWLABEL:
 			if (basechar[c]) {
 				state = DOMAIN;
-			} else if (selector && c == '.') {
+			} else if (isselector && c == '.') {
 				/* keep going */
 			} else
 				goto done;
@@ -401,7 +401,7 @@ done:
 	if (in[i] != '\0')
 		return -1;
 
-	if (selector) {
+	if (isselector) {
 		if (state != DOMAIN && state != NEWLABEL)
 			return -1;
 	} else {
