@@ -22,31 +22,30 @@
 #include "../src/a2id.c"
 
 void
-test_a2id_parsestr(void)
+test_parsestr(void)
 {
 	struct a2id id;
-	a2id *idp = (a2id *)&id;
 	const char *input;
 	int r;
 
 	/* Run some tests. */
 
 	input = "foo@example.org";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == 0);
 	assert(strcmp(id.localpart, &input[0]) == 0);
 	assert(strcmp(id.domain, &input[3]) == 0);
 	assert(id.nropts == 0);
 
 	input = "!foo@example.com";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == 0);
 	assert(strcmp(id.localpart, &input[0]) == 0);
 	assert(strcmp(id.domain, &input[4]) == 0);
 	assert(id.nropts == 0);
 
 	input = "a+b@example.com";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == 0);
 	assert(strcmp(id.localpart, &input[0]) == 0);
 	assert(strcmp(id.domain, &input[3]) == 0);
@@ -55,7 +54,7 @@ test_a2id_parsestr(void)
 	assert(id.nropts == 1);
 
 	input = "a+b+@example.com";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == 0);
 	assert(strcmp(id.localpart, &input[0]) == 0);
 	assert(strcmp(id.domain, &input[4]) == 0);
@@ -65,7 +64,7 @@ test_a2id_parsestr(void)
 	assert(id.nropts == 0);
 
 	input = "a+b+c@example.com";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == 0);
 	assert(strcmp(id.localpart, &input[0]) == 0);
 	assert(strcmp(id.domain, &input[5]) == 0);
@@ -74,41 +73,41 @@ test_a2id_parsestr(void)
 	assert(id.nropts == 2);
 
 	input = "~@example.com";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == 0);
 	assert(strcmp(id.localpart, &input[0]) == 0);
 	assert(strcmp(id.domain, &input[1]) == 0);
 	assert(id.nropts == 0);
 
 	input = " @example.com";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == -1);
 	assert(id.idlen == 0);
 
 	input = "@";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == -1);
 	assert(id.idlen == 1);
 
 	input = "\x7f@example.com";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == -1);
 	assert(id.idlen == 0);
 
 	input = "+a@example.com";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == 0);
 	assert(strcmp(id.localpart, &input[0]) == 0);
 	assert(strcmp(id.domain, &input[2]) == 0);
 	assert(id.nropts == 0);
 
 	input = "+@example.com";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == -1);
 	assert(id.idlen == 1);
 
 	input = "a+@example.com";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == 0);
 	assert(strcmp(id.localpart, &input[0]) == 0);
 	assert(strcmp(id.domain, &input[2]) == 0);
@@ -117,7 +116,7 @@ test_a2id_parsestr(void)
 	assert(id.nropts == 1);
 
 	input = "a++b@example.com";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == 0);
 	assert(strcmp(id.localpart, &input[0]) == 0);
 	assert(strcmp(id.domain, &input[4]) == 0);
@@ -126,7 +125,7 @@ test_a2id_parsestr(void)
 	assert(id.nropts == 2);
 
 	input = "+a++b@example.com";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == 0);
 	assert(strcmp(id.localpart, &input[0]) == 0);
 	assert(strcmp(id.domain, &input[5]) == 0);
@@ -135,26 +134,26 @@ test_a2id_parsestr(void)
 	assert(id.nropts == 2);
 
 	input = "++@example.com";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == -1);
 	assert(id.idlen == 1);
 
 	input = "foo! bar~\177@example.com";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == -1);
 	assert(id.idlen == 4);
 
 	/* test valid ids */
 	input = "@example.com";
 	input = "@example.com";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == 0);
 	assert(strncmp(id.localpart, "", id.localpartlen) == 0);
 	assert(strncmp(id.domain, "@example.com", id.domainlen) == 0);
 	assert(id.type == A2IDT_DOMAINONLY);
 
 	input = "user@example.com";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == 0);
 	assert(strncmp(id.localpart, "user", 4) == 0);
 	assert(*id.firstopt == '\0');
@@ -163,7 +162,7 @@ test_a2id_parsestr(void)
 	assert(id.type == A2IDT_GENERIC);
 
 	input = "user+subid@example.com";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == 0);
 	assert(strncmp(id.localpart, "user+subid", id.localpartlen) == 0);
 	assert(*id.firstopt == '+');
@@ -172,7 +171,7 @@ test_a2id_parsestr(void)
 	assert(id.type == A2IDT_GENERIC);
 
 	input = "user+flags+signature@example.com";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == 0);
 	assert(strncmp(id.localpart, "user+flags+signature", id.localpartlen) == 0);
 	assert(*id.firstopt == '+');
@@ -181,7 +180,7 @@ test_a2id_parsestr(void)
 	assert(id.type == A2IDT_GENERIC);
 
 	input = "+service+arg1+arg2@example.com";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == 0);
 	assert(strncmp(id.localpart, "+service+arg1+arg2", id.localpartlen) == 0);
 	assert(*id.firstopt == '+');
@@ -191,7 +190,7 @@ test_a2id_parsestr(void)
 
 	/* Adapted list from RFC 4282 */
 	input = "joe@example.com";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == 0);
 	assert(strncmp(id.localpart, "joe", id.localpartlen) == 0);
 	assert(*id.firstopt == '\0');
@@ -200,7 +199,7 @@ test_a2id_parsestr(void)
 	assert(id.type == A2IDT_GENERIC);
 
 	input = "fred@foo-9.example.com";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == 0);
 	assert(strncmp(id.localpart, "fred", id.localpartlen) == 0);
 	assert(*id.firstopt == '\0');
@@ -209,7 +208,7 @@ test_a2id_parsestr(void)
 	assert(id.type == A2IDT_GENERIC);
 
 	input = "jack@3rd.depts.example.com";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == 0);
 	assert(strncmp(id.localpart, "jack", id.localpartlen) == 0);
 	assert(*id.firstopt == '\0');
@@ -218,7 +217,7 @@ test_a2id_parsestr(void)
 	assert(id.type == A2IDT_GENERIC);
 
 	input = "fred.smith@example.com";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == 0);
 	assert(strncmp(id.localpart, "fred.smith", id.localpartlen) == 0);
 	assert(*id.firstopt == '\0');
@@ -227,7 +226,7 @@ test_a2id_parsestr(void)
 	assert(id.type == A2IDT_GENERIC);
 
 	input = "fred_smith@example.com";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == 0);
 	assert(strncmp(id.localpart, "fred_smith", id.localpartlen) == 0);
 	assert(*id.firstopt == '\0');
@@ -236,7 +235,7 @@ test_a2id_parsestr(void)
 	assert(id.type == A2IDT_GENERIC);
 
 	input = "fred$@example.com";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == 0);
 	assert(strncmp(id.localpart, "fred$", id.localpartlen) == 0);
 	assert(*id.firstopt == '\0');
@@ -245,7 +244,7 @@ test_a2id_parsestr(void)
 	assert(id.type == A2IDT_GENERIC);
 
 	input = "fred=?#$&*+-/^smith@example.com";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == 0);
 	assert(strncmp(id.localpart, "fred=?#$&*+-/^smith", id.localpartlen) == 0);
 	assert(*id.firstopt == '+');
@@ -254,7 +253,7 @@ test_a2id_parsestr(void)
 	assert(id.type == A2IDT_GENERIC);
 
 	input = "nancy@eng.example.net";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == 0);
 	assert(strncmp(id.localpart, "nancy", id.localpartlen) == 0);
 	assert(*id.firstopt == '\0');
@@ -263,7 +262,7 @@ test_a2id_parsestr(void)
 	assert(id.type == A2IDT_GENERIC);
 
 	input = "eng.example.net!nancy@example.net";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == 0);
 	assert(strncmp(id.localpart, "eng.example.net!nancy", id.localpartlen) == 0);
 	assert(*id.firstopt == '\0');
@@ -272,7 +271,7 @@ test_a2id_parsestr(void)
 	assert(id.type == A2IDT_GENERIC);
 
 	input = "eng%nancy@example.net";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == 0);
 	assert(strncmp(id.localpart, "eng%nancy", id.localpartlen) == 0);
 	assert(*id.firstopt == '\0');
@@ -281,14 +280,14 @@ test_a2id_parsestr(void)
 	assert(id.type == A2IDT_GENERIC);
 
 	input = "@privatecorp.example.net";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == 0);
 	assert(id.localpartlen == 0);
 	assert(strncmp(id.domain, "@privatecorp.example.net", id.domainlen) == 0);
 	assert(id.type == A2IDT_DOMAINONLY);
 
 	input = "\\(user\\)@example.net";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == 0);
 	assert(id.localpart != NULL);
 	assert(*id.firstopt == '\0');
@@ -298,7 +297,7 @@ test_a2id_parsestr(void)
 	assert(id.type == A2IDT_GENERIC);
 
 	input = "<user>@example.net";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == 0);
 	assert(id.localpart != NULL);
 	assert(*id.firstopt == '\0');
@@ -308,7 +307,7 @@ test_a2id_parsestr(void)
 	assert(id.type == A2IDT_GENERIC);
 
 	input = "alice@xn--tmonesimerkki-bfbb.example.net";
-	r = a2id_parsestr(idp, input, 0);
+	r = parsestr(&id, input, 0);
 	assert(r == 0);
 	assert(strncmp(id.localpart, "alice", id.localpartlen) == 0);
 	assert(*id.firstopt == '\0');
@@ -318,11 +317,11 @@ test_a2id_parsestr(void)
 	assert(id.type == A2IDT_GENERIC);
 
 	/* test invalid ids */
-	assert(a2id_parsestr(idp, "", 0) == -1);
+	assert(parsestr(&id, "", 0) == -1);
 	assert(id.idlen == 0);
-	assert(a2id_parsestr(idp, "joe", 0) == -1);
+	assert(parsestr(&id, "joe", 0) == -1);
 	assert(id.idlen == 3);
-	assert(a2id_parsestr(idp, "fred@example.net@example.net", 0) == -1);
+	assert(parsestr(&id, "fred@example.net@example.net", 0) == -1);
 	assert(id.idlen == 16);
 
 	/*
@@ -332,22 +331,21 @@ test_a2id_parsestr(void)
 	/*
 	 * A trailing dot is only accepted in selectors.
 	 */
-	assert(a2id_fromstr(idp, "foo@example.org.", 0) == -1);
-	assert(a2id_fromstr(idp, "foo@example.org.", 1) == 0);
+	assert(parsestr(&id, "foo@example.org.", 0) == -1);
+	assert(parsestr(&id, "foo@example.org.", 1) == 0);
 }
 
 void
-test_a2id_parsestr_selector(void)
+test_parsestr_selector(void)
 {
 	struct a2id id;
-	a2id *idp = (a2id *)&id;
 	const char *input;
 	int r;
 
 	/* Run some tests. */
 
 	input = "foo@example.org";
-	r = a2id_parsestr(idp, input, 1);
+	r = parsestr(&id, input, 1);
 	assert(r == 0);
 	assert(strcmp(id.localpart, &input[0]) == 0);
 	assert(strcmp(id.domain, &input[3]) == 0);
@@ -356,7 +354,7 @@ test_a2id_parsestr_selector(void)
 	assert(id.type == A2IDT_GENERIC);
 
 	input = "!foo@example.com";
-	r = a2id_parsestr(idp, input, 1);
+	r = parsestr(&id, input, 1);
 	assert(r == 0);
 	assert(strcmp(id.localpart, &input[0]) == 0);
 	assert(strcmp(id.domain, &input[4]) == 0);
@@ -365,7 +363,7 @@ test_a2id_parsestr_selector(void)
 	assert(id.type == A2IDT_GENERIC);
 
 	input = "a+b@example.com";
-	r = a2id_parsestr(idp, input, 1);
+	r = parsestr(&id, input, 1);
 	assert(r == 0);
 	assert(strcmp(id.localpart, &input[0]) == 0);
 	assert(strcmp(id.domain, &input[3]) == 0);
@@ -375,7 +373,7 @@ test_a2id_parsestr_selector(void)
 	assert(id.type == A2IDT_GENERIC);
 
 	input = "a+b+@example.com";
-	r = a2id_parsestr(idp, input, 1);
+	r = parsestr(&id, input, 1);
 	assert(r == 0);
 	assert(id.basenamelen == 1);
 	assert(id.nropts == 0);
@@ -387,7 +385,7 @@ test_a2id_parsestr_selector(void)
 	assert(id.type == A2IDT_GENERIC);
 
 	input = "a+b+c@example.com";
-	r = a2id_parsestr(idp, input, 1);
+	r = parsestr(&id, input, 1);
 	assert(r == 0);
 	assert(strcmp(id.localpart, &input[0]) == 0);
 	assert(strcmp(id.domain, &input[5]) == 0);
@@ -397,7 +395,7 @@ test_a2id_parsestr_selector(void)
 	assert(id.type == A2IDT_GENERIC);
 
 	input = "~@example.com";
-	r = a2id_parsestr(idp, input, 1);
+	r = parsestr(&id, input, 1);
 	assert(r == 0);
 	assert(strcmp(id.localpart, &input[0]) == 0);
 	assert(strcmp(id.domain, &input[1]) == 0);
@@ -406,12 +404,12 @@ test_a2id_parsestr_selector(void)
 	assert(id.type == A2IDT_GENERIC);
 
 	input = " @example.com";
-	r = a2id_parsestr(idp, input, 1);
+	r = parsestr(&id, input, 1);
 	assert(r == -1);
 	assert(id.idlen == 0);
 
 	input = "@.";
-	r = a2id_parsestr(idp, input, 1);
+	r = parsestr(&id, input, 1);
 	assert(r == 0);
 	assert(id.localpartlen == 0);
 	assert(strcmp(id.domain, &input[0]) == 0);
@@ -420,7 +418,7 @@ test_a2id_parsestr_selector(void)
 	assert(id.type == A2IDT_DOMAINONLY);
 
 	input = "@";
-	r = a2id_parsestr(idp, input, 1);
+	r = parsestr(&id, input, 1);
 	assert(r == 0);
 	assert(id.localpartlen == 0);
 	assert(strcmp(id.domain, &input[0]) == 0);
@@ -429,12 +427,12 @@ test_a2id_parsestr_selector(void)
 	assert(id.type == A2IDT_DOMAINONLY);
 
 	input = "\x7f@example.com";
-	r = a2id_parsestr(idp, input, 1);
+	r = parsestr(&id, input, 1);
 	assert(r == -1);
 	assert(id.idlen == 0);
 
 	input = "+a@example.com";
-	r = a2id_parsestr(idp, input, 1);
+	r = parsestr(&id, input, 1);
 	assert(r == 0);
 	assert(strcmp(id.localpart, &input[0]) == 0);
 	assert(strcmp(id.domain, &input[2]) == 0);
@@ -443,7 +441,7 @@ test_a2id_parsestr_selector(void)
 	assert(id.type == A2IDT_SERVICE);
 
 	input = "+@example.com";
-	r = a2id_parsestr(idp, input, 1);
+	r = parsestr(&id, input, 1);
 	assert(r == 0);
 	assert(strcmp(id.localpart, &input[0]) == 0);
 	assert(strcmp(id.domain, &input[1]) == 0);
@@ -452,7 +450,7 @@ test_a2id_parsestr_selector(void)
 	assert(id.type == A2IDT_SERVICE);
 
 	input = "+@.";
-	r = a2id_parsestr(idp, input, 1);
+	r = parsestr(&id, input, 1);
 	assert(r == 0);
 	assert(strcmp(id.localpart, &input[0]) == 0);
 	assert(strcmp(id.domain, &input[1]) == 0);
@@ -461,7 +459,7 @@ test_a2id_parsestr_selector(void)
 	assert(id.type == A2IDT_SERVICE);
 
 	input = "a+@example.com";
-	r = a2id_parsestr(idp, input, 1);
+	r = parsestr(&id, input, 1);
 	assert(r == 0);
 	assert(strcmp(id.localpart, &input[0]) == 0);
 	assert(strcmp(id.domain, &input[2]) == 0);
@@ -471,7 +469,7 @@ test_a2id_parsestr_selector(void)
 	assert(id.type == A2IDT_GENERIC);
 
 	input = "a++b@example.com";
-	r = a2id_parsestr(idp, input, 1);
+	r = parsestr(&id, input, 1);
 	assert(r == 0);
 	assert(strcmp(id.localpart, &input[0]) == 0);
 	assert(strcmp(id.domain, &input[4]) == 0);
@@ -481,7 +479,7 @@ test_a2id_parsestr_selector(void)
 	assert(id.type == A2IDT_GENERIC);
 
 	input = "+a++b@example.com";
-	r = a2id_parsestr(idp, input, 1);
+	r = parsestr(&id, input, 1);
 	assert(r == 0);
 	assert(strcmp(id.localpart, &input[0]) == 0);
 	assert(strcmp(id.domain, &input[5]) == 0);
@@ -491,7 +489,7 @@ test_a2id_parsestr_selector(void)
 	assert(id.type == A2IDT_SERVICE);
 
 	input = "++@example.com";
-	r = a2id_parsestr(idp, input, 1);
+	r = parsestr(&id, input, 1);
 	assert(r == 0);
 	assert(strcmp(id.localpart, &input[0]) == 0);
 	assert(strcmp(id.domain, &input[2]) == 0);
@@ -502,7 +500,7 @@ test_a2id_parsestr_selector(void)
 	assert(id.type == A2IDT_SERVICE);
 
 	input = "+++++@";
-	r = a2id_parsestr(idp, input, 1);
+	r = parsestr(&id, input, 1);
 	assert(r == 0);
 	assert(strcmp(id.localpart, &input[0]) == 0);
 	assert(strcmp(id.domain, &input[5]) == 0);
@@ -513,7 +511,7 @@ test_a2id_parsestr_selector(void)
 	assert(id.type == A2IDT_SERVICE);
 
 	input = "foo! bar~\177@example.com";
-	r = a2id_parsestr(idp, input, 1);
+	r = parsestr(&id, input, 1);
 	assert(r == -1);
 	assert(id.idlen == 4);
 	assert(strcmp(id.localpart, "foo!") == 0);
@@ -521,7 +519,7 @@ test_a2id_parsestr_selector(void)
 	assert(id.type == A2IDT_GENERIC);
 
 	input = "+abc++++@";
-	r = a2id_parsestr(idp, input, 1);
+	r = parsestr(&id, input, 1);
 	assert(r == 0);
 	assert(strcmp(id.localpart, &input[0]) == 0);
 	assert(strcmp(id.domain, &input[8]) == 0);
@@ -533,7 +531,7 @@ test_a2id_parsestr_selector(void)
 
 	/* leading '+' is always a service */
 	input = "+@";
-	r = a2id_parsestr(idp, input, 1);
+	r = parsestr(&id, input, 1);
 	assert(r == 0);
 	assert(id.type == A2IDT_SERVICE);
 	assert(id.localpartlen == 1);
@@ -544,7 +542,7 @@ test_a2id_parsestr_selector(void)
 
 	/* trailing single '+' is always an option */
 	input = "++@";
-	r = a2id_parsestr(idp, input, 1);
+	r = parsestr(&id, input, 1);
 	assert(r == 0);
 	assert(id.type == A2IDT_SERVICE);
 	assert(id.localpartlen == 2);
@@ -555,7 +553,7 @@ test_a2id_parsestr_selector(void)
 
 	/* two trailing '+'s are always a signature */
 	input = "+++@";
-	r = a2id_parsestr(idp, input, 1);
+	r = parsestr(&id, input, 1);
 	assert(r == 0);
 	assert(id.type == A2IDT_SERVICE);
 	assert(id.localpartlen == 3);
@@ -566,7 +564,7 @@ test_a2id_parsestr_selector(void)
 
 	/* any '+'s except service and signature are options */
 	input = "++++@";
-	r = a2id_parsestr(idp, input, 1);
+	r = parsestr(&id, input, 1);
 	assert(r == 0);
 	assert(id.type == A2IDT_SERVICE);
 	assert(id.localpartlen == 4);
@@ -579,7 +577,7 @@ test_a2id_parsestr_selector(void)
 
 	/* trailing single '+' is always an option */
 	input = "G+@";
-	r = a2id_parsestr(idp, input, 1);
+	r = parsestr(&id, input, 1);
 	assert(r == 0);
 	assert(id.type == A2IDT_GENERIC);
 	assert(id.localpartlen == 2);
@@ -590,7 +588,7 @@ test_a2id_parsestr_selector(void)
 
 	/* two trailing '+'s are always a signature */
 	input = "G++@";
-	r = a2id_parsestr(idp, input, 1);
+	r = parsestr(&id, input, 1);
 	assert(r == 0);
 	assert(id.type == A2IDT_GENERIC);
 	assert(id.localpartlen == 3);
@@ -601,7 +599,7 @@ test_a2id_parsestr_selector(void)
 
 	/* any '+'s preceeding a signature are options */
 	input = "G+++@";
-	r = a2id_parsestr(idp, input, 1);
+	r = parsestr(&id, input, 1);
 	assert(r == 0);
 	assert(id.type == A2IDT_GENERIC);
 	assert(id.localpartlen == 4);
@@ -678,7 +676,7 @@ test_a2id_coreform(void)
 
 	input = "foo+bar++@some.example.org";
 
-	r = a2id_parsestr(idp, input, 1);
+	r = a2id_fromstr(idp, input, 1);
 	assert(r == 0);
 	assert(a2id_tostr(output, outputsz, idp) < outputsz);
 	assert(strcmp(output, input) == 0);
@@ -699,7 +697,7 @@ test_a2id_localpart_options(void)
 
 	input = "foo+bar+other+signflags+@some.example.org";
 
-	r = a2id_parsestr(idp, input, 1);
+	r = a2id_fromstr(idp, input, 1);
 	assert(r == 0);
 	assert(a2id_tostr(output, outputsz, idp) < outputsz);
 	assert(strcmp(output, input) == 0);
@@ -710,14 +708,14 @@ test_a2id_localpart_options(void)
 
 	input = "foo+a@some.example.org";
 
-	a2id_parsestr(idp, input, 1);
+	a2id_fromstr(idp, input, 1);
 	assert(a2id_localpart_options(output, outputsz, &opts, idp) == 1);
 	assert(strcmp(output, "a") == 0);
 	assert(opts == 1);
 
 	input = "foo+@some.example.org";
 
-	a2id_parsestr(idp, input, 1);
+	a2id_fromstr(idp, input, 1);
 	assert(a2id_localpart_options(output, outputsz, &opts, idp) == 0);
 	assert(strcmp(output, "") == 0);
 	assert(opts == 1);
@@ -726,8 +724,8 @@ test_a2id_localpart_options(void)
 int
 main(void)
 {
-	test_a2id_parsestr();
-	test_a2id_parsestr_selector();
+	test_parsestr();
+	test_parsestr_selector();
 	test_a2id_generalize();
 	test_a2id_coreform();
 	test_a2id_localpart_options();

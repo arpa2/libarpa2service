@@ -122,8 +122,8 @@ a2id_tostr(char *dst, size_t dstsz, const a2id *a2id)
  *
  * Return 0 on success, -1 on failure with errno set.
  */
-int
-a2id_copy(struct a2id *out, const struct a2id *id)
+static int
+copy(struct a2id *out, const struct a2id *id)
 {
 	if (out == NULL || id == NULL) {
 		errno = EINVAL;
@@ -266,7 +266,7 @@ static const char basechar[256] = {
  * Return 0 if "in" is a valid A2ID and could be parsed, -1 otherwise.
  */
 static int
-a2id_parsestr(a2id *a2id, const char *in, int isselector)
+parsestr(struct a2id *a2id, const char *in, int isselector)
 {
 	struct a2id *out = (struct a2id *)a2id;
 	enum states { S, SERVICE, LOCALPART, OPTION, NEWLABEL, DOMAIN } state;
@@ -492,7 +492,7 @@ done:
 int
 a2id_fromstr(a2id *a2id, const char *in, int isselector)
 {
-	return a2id_parsestr(a2id, in, isselector);
+	return parsestr((struct a2id*)a2id, in, isselector);
 }
 
 /*
@@ -873,10 +873,10 @@ a2id_coreform(char *dst, size_t dstsz, const a2id *a2id)
  *
  * Returns the length of "optseg" or 0 if "optseg" is not set.
  *
- * XXX might want to make this part of a2id_parsestr
+ * XXX might want to make this part of parsestr
  */
 static size_t
-a2id_optsegments(const char **optseg, const struct a2id *id)
+optsegments(const char **optseg, const struct a2id *id)
 {
 	size_t s;
 
@@ -932,7 +932,7 @@ a2id_localpart_options(char *dst, size_t dstsz, int *nropts, const a2id *a2id)
 	const char *cp;
 	size_t s, len;
 
-	s = a2id_optsegments(&cp, id);
+	s = optsegments(&cp, id);
 
 	if (dstsz == 0) {
 		*nropts = id->nropts;
