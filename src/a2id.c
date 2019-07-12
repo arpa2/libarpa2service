@@ -784,29 +784,34 @@ a2id_generalize(a2id *a2id)
 }
 
 /*
- * Print the different parts of "id" to "fp".
+ * Write info about "a2id" to "d".
  */
 void
-a2id_print(FILE *fp, const a2id *a2id)
+a2id_dprint(int d, const a2id *a2id)
 {
 	const struct a2id *id = (const struct a2id *)a2id;
 
-	fprintf(fp, "type %d\n", id->type);
-	fprintf(fp, "hassig %d\n", id->hassig);
-	fprintf(fp, "nropts %d\n", id->nropts);
-	fprintf(fp, "generalized %d\n", id->generalized);
-
-	fprintf(fp, "localpart %zu %.*s\n", id->localpartlen, (int)id->localpartlen,
-	    id->localpart);
-	fprintf(fp, "basename %zu %.*s\n", id->basenamelen, (int)id->basenamelen,
-	    id->basename);
-	fprintf(fp, "firstopt %zu %.*s\n", id->firstoptlen, (int)id->firstoptlen,
-	    id->firstopt);
-	fprintf(fp, "sigflags %zu %.*s\n", id->sigflagslen, (int)id->sigflagslen,
-	    id->sigflags);
-	fprintf(fp, "domain %zu %.*s\n", id->domainlen, (int)id->domainlen,
-	    id->domain);
-	fprintf(fp, "str %zu %.*s\n", id->idlen, (int)id->idlen, id->_str);
+	dprintf(d,
+	    "type %d\n"
+	    "hassig %d\n"
+	    "nropts %d\n"
+	    "generalized %d\n"
+	    "localpart %zu %.*s\n"
+	    "basename %zu %.*s\n"
+	    "firstopt %zu %.*s\n"
+	    "sigflags %zu %.*s\n"
+	    "domain %zu %.*s\n"
+	    "str %zu %.*s\n",
+	    id->type,
+	    id->hassig,
+	    id->nropts,
+	    id->generalized,
+	    id->localpartlen, (int)id->localpartlen, id->localpart,
+	    id->basenamelen, (int)id->basenamelen, id->basename,
+	    id->firstoptlen, (int)id->firstoptlen, id->firstopt,
+	    id->sigflagslen, (int)id->sigflagslen, id->sigflags,
+	    id->domainlen, (int)id->domainlen, id->domain,
+	    id->idlen, (int)id->idlen, id->_str);
 }
 
 /*
