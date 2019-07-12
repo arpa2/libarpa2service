@@ -67,12 +67,12 @@ main(int argc, char *argv[])
 		exit(1);
 	}
 
-	if (a2id_parsestr(&id, argv[0], 0) == -1) {
+	if (a2id_fromstr(&id, argv[0], 0) == -1) {
 		fprintf(stderr, "illegal a2id: %s\n", argv[0]);
 		exit(1);
 	}
 
-	if (a2id_parsestr(&selector, argv[1], 1) == -1) {
+	if (a2id_fromstr(&selector, argv[1], 1) == -1) {
 		fprintf(stderr, "illegal selector: %s\n", argv[1]);
 		exit(1);
 	}

@@ -479,6 +479,21 @@ done:
 }
 
 /*
+ * Read and parse a string into an ARPA2 ID.
+ *
+ * "in" must be a nul terminated string. "isselector" is a boolean that
+ * indicates whether or not the input should be parsed as a selector. A valid ID
+ * is always a valid selector, but the opposite is not necessarily true.
+ *
+ * Return 0 if "in" is a valid A2ID, -1 otherwise.
+ */
+int
+a2id_fromstr(a2id *a2id, const char *in, int isselector)
+{
+	return a2id_parsestr(a2id, in, isselector);
+}
+
+/*
  * Match an ARPA2 ID with an ARPA2 ID Selector.
  *
  * Return 1 if the subject matches the selector, 0 otherwise. If the localpart
