@@ -133,7 +133,7 @@ Furthermore, if
 >= A2ID_MAXSZ, then every valid A2ID will always fit.
 .Sh RETURN VALUES
 .Fn a2id_coreform
-returns the length of the string that would have been output, if the size
+returns the length of the string that would have been output, as if the size
 were unlimited (not including the terminating nul byte). Thus, if the return
 value is >=
 .Fa dstsz ,
@@ -159,7 +159,7 @@ returns 1 if
 has a signature or 0 if not.
 .Pp
 .Fn a2id_tostr
-returns the length of the string that would have been output, if the size
+returns the length of the string that would have been output, as if the size
 were unlimited (not including the terminating nul byte). Thus, if the return
 value is >=
 .Fa dstsz ,

@@ -822,7 +822,7 @@ a2id_dprint(int d, const a2id *a2id)
  * unless "dstsz" is 0. Furthermore, if "dstsz" >= A2ID_MAXSZ, then every valid
  * A2ID will always fit.
  *
- * Returns the length of the string that would have been output, if the size
+ * Returns the length of the string that would have been output, as if the size
  * were unlimited (not including the terminating nul byte). Thus, if the return
  * value is >= "dstsz", then "dst" was truncated.
  *
