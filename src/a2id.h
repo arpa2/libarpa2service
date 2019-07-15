@@ -50,7 +50,7 @@ int a2id_fromstr(a2id *a2id, const char *in, int isselector);
 size_t a2id_tostr(char *dst, size_t dstsz, const a2id *a2id);
 
 int a2id_hassignature(const a2id *a2id);
-size_t a2id_coreform(char *dst, size_t dstsize, const a2id *a2id);
+size_t a2id_coreform(char *dst, size_t dstsz, const a2id *a2id);
 int a2id_generalize(a2id *a2id);
 int a2id_match(const a2id *subject, const a2id *selector);
 void a2id_dprint(int d, const a2id *a2id);
