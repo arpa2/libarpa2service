@@ -12,54 +12,80 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd $Mdocdate: February 7 2019 $
+.Dd $Mdocdate: July 15 2019 $
 .Dt A2ID 3
 .Os
 .Sh NAME
 .Nm a2id_coreform ,
+.Nm a2id_fromstr ,
 .Nm a2id_generalize ,
-.Nm a2id_optsegments ,
-.Nm a2id_print ,
+.Nm a2id_hassignature ,
+.Nm a2id_dprint ,
 .Nm a2id_tostr
 .Nd library to work with A2IDs and A2ID Selectors
 .Sh SYNOPSIS
 .In arpa2/a2id.h
-.Ft int
+.Ft size_t
 .Fo a2id_coreform
 .Fa "char *dst"
-.Fa "const struct a2id *id"
-.Fa "size_t *dstsize"
+.Fa "size_t dstsz"
+.Fa "const a2id *id"
+.Fc
+.Ft int
+.Fo a2id_fromstr
+.Fa "a2id *id"
+.Fa "const char *in"
+.Fa "int isselector"
 .Fc
 .Ft int
 .Fo a2id_generalize
-.Fa "struct a2id *id"
-.Fc
-.Ft size_t
-.Fo a2id_optsegments
-.Fa "const char **optseg"
-.Fa "const struct a2id *id"
-.Fc
-.Ft void
-.Fo a2id_print
-.Fa "FILE *fp"
-.Fa "const struct a2id *id"
+.Fa "a2id *id"
 .Fc
 .Ft int
+.Fo a2id_hassignature
+.Fa "const a2id *id"
+.Fc
+.Ft void
+.Fo a2id_dprint
+.Fa "int d"
+.Fa "const a2id *id"
+.Fc
+.Ft size_t
 .Fo a2id_tostr
 .Fa "char *dst"
-.Fa "const struct a2id *id"
-.Fa "size_t *dstsize"
+.Fa "size_t dstsz"
+.Fa "const a2id *id"
 .Fc
 .Sh DESCRIPTION
 The
 .Fn a2id_coreform
 function writes the core form of
-.Fa id
-as a string into
+.Fa a2id
+into
 .Fa dst .
-.Fa dstsize
-is a value/result parameter and should be at least A2ID_MAXLEN + 1 bytes to
-ensure it will not fail.
+Up to
+.Fa dstsz
+- 1 characters of the id are copied.
+It is guaranteed that
+.Fa dst
+is terminated with a nul byte, unless
+.Fa dstsz
+is 0.
+Furthermore, if
+.Fa dstsz
+>= A2ID_MAXSZ, then every valid A2ID will always fit.
+.Pp
+The
+.Fn a2id_fromstr
+function parses the string
+.Fa in
+and writes the result in the opaque object
+.Fa id .
+.Fa in
+must be a nul terminated string.
+.Fa isselector
+is a boolean that indicates whether or not the input should be treated as a
+selector.
 .Pp
 The
 .Fn a2id_generalize
@@ -72,28 +98,21 @@ localpart from right to left.
 As soon as the localpart can't be generalized any further, domain labels are
 removed from left to right, until no labels are left.
 .Fa id
-is a value/result parameter.
+will be directly modified.
 .Pp
 The
-.Fn a2id_optsegments
-function determines the start and length of optional segments, excluding any
-sigflags segment.
-.Fa optseg
-will be set to point to the first character of the first option, right after
-it's leading
-.Sq + .
-If
+.Fn a2id_hassignature
+function determines whether or not
 .Fa id
-has no optional segments then
-.Fa optseg
-is not set.
+has a signature.
+Note that signatures must be validated by the caller.
 .Pp
 The
-.Fn a2id_print
+.Fn a2id_dprint
 function prints the different parts of
 .Fa id
-to
-.Fa fp .
+to descriptor
+.Fa d .
 .Pp
 The
 .Fn a2id_tostr
@@ -101,38 +120,128 @@ function writes the string representation of
 .Fa id
 into
 .Fa dst .
-.Fa dstsize
-is a value/result parameter and should be at least A2ID_MAXLEN + 1 bytes to
-ensure it will not fail.
+Up to
+.Fa dstsz
+- 1 characters of the id are copied.
+It is guaranteed that
+.Fa dst
+is terminated with a nul byte, unless
+.Fa dstsz
+is 0.
+Furthermore, if
+.Fa dstsz
+>= A2ID_MAXSZ, then every valid A2ID will always fit.
 .Sh RETURN VALUES
 .Fn a2id_coreform
-returns 0 on success, -1 if
+returns the length of the string that would have been output, if the size
+were unlimited (not including the terminating nul byte). Thus, if the return
+value is >=
+.Fa dstsz ,
+then
 .Fa dst
-is too short.
+was truncated.
+.Pp
+.Fn a2id_fromstr
+returns 0 if
+.Fa in
+could be parsed and is a valid A2ID.
+On error -1 is returned.
 .Pp
 .Fn a2id_generalize
 returns 1 if a component is removed from the localpart or the domain.
-Returns 0 if
+Returns 0 if nothing was removed because
 .Fa id
 can not be further generalized.
 .Pp
-.Fn a2id_optsegments
-returns the length of
-.Fa optseg
-or 0 if
-.Fa optseg
-is not set.
+.Fn a2id_hassignature
+returns 1 if
+.Fa id
+has a signature or 0 if not.
 .Pp
 .Fn a2id_tostr
-returns 0 on success, -1 if
+returns the length of the string that would have been output, if the size
+were unlimited (not including the terminating nul byte). Thus, if the return
+value is >=
+.Fa dstsz ,
+then
 .Fa dst
-is too short.
+was truncated.
+.Sh EXAMPLES
+.Pp
+Load an A2ID into
+.Fa id
+and write out it's core form.
+.Bd -literal -offset indent
+a2id id;
+char buf[A2ID_MAXSZ];
+
+if (a2id_fromstr(&id, "foo+opt1+opt2@example.com", 0) == -1)
+	err(1, "invalid A2ID");
+
+coreform(buf, sizeof buf, &id);
+printf("core form: %s\\n", buf);
+.Ed
+.Pp
+Write a nul terminated copy of the core form of
+.Fa id
+into a buffer
+.Fa buf
+that might not be large enough to hold the result.
+.Bd -literal -offset indent
+a2id id;
+char buf[100];
+
+/* ensure id is set with a2id_fromstr */
+
+if (coreform(buf, sizeof buf, &id) >= sizeof buf)
+	err(1, "buf too small");
+.Ed
+.Pp
+Dynamically allocate room for a nul terminated copy of the core form of
+.Fa id .
+.Bd -literal -offset indent
+a2id id;
+size_t len;
+char *cp;
+
+/* ensure id is set with a2id_fromstr */
+
+len = coreform(NULL, 0, &id);
+if ((cp = malloc(len + 1)) == NULL)
+	err(1, "malloc");
+
+coreform(cp, len + 1, &id);
+.Ed
+.Pp
+Print information about an A2ID to stderr.
+.Bd -literal -offset indent
+a2id id;
+
+/* ensure id is set with a2id_fromstr */
+
+a2id_dprint(STDERR_FILENO, &id);
+.Ed
 .Sh SEE ALSO
 .Xr a2idmatch 1 ,
 .Xr a2id_match 3 ,
-.Xr a2id_parsestr 3
+.Xr isgraph 3
 .Pp
 .Lk https://github.com/arpa2/libarpa2service/blob/master/doc/design/a2idacl-intro.md "ARPA2 Identifier and ACL introduction"
+.Pp
+.Lk https://github.com/arpa2/libarpa2service/blob/master/doc/design/a2idgrammar.txt "ARPA2 ID Grammar"
+.Pp
+.Lk https://github.com/arpa2/libarpa2service/blob/master/doc/design/a2idselgrammar.txt "ARPA2 ID Selector Grammar"
+.Sh STANDARDS
+The ARPA2 ID is based on the Network Access Identifier as specified in
+RFC 4282.
 .Sh AUTHORS
 .An -nosplit
 .An Tim Kuijsten
+.Sh CAVEATS
+The current grammar of an A2ID only supports a subset of US-ASCII, notably the
+set supported by
+.Xr isgraph 3 .
+In the future UTF-8 should probably be supported, but special care needs to be
+taken for any Unicode characters that have the same visual representation.
+A good pointer to start with would be RFC 8265 and 7542 and the notes about
+normalization in these documents.

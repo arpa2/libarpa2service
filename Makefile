@@ -49,7 +49,7 @@ install: liba2id.a liba2acl.a a2idmatch
 	$(INSTALL_LIB) src/a2id.h src/a2acl.h $(DESTDIR)$(INCDIR)
 	$(INSTALL_BIN) a2acl a2idmatch $(DESTDIR)$(BINDIR)
 	$(INSTALL_MAN) doc/man/a2acl.3 doc/man/a2id.3 doc/man/a2id_match.3 \
-		doc/man/a2id_parsestr.3 $(DESTDIR)$(MANDIR)/man3
+		$(DESTDIR)$(MANDIR)/man3
 	$(INSTALL_MAN) doc/man/a2acl.1 doc/man/a2idmatch.1 \
 		$(DESTDIR)$(MANDIR)/man1
 	$(INSTALL_MAN) doc/man/a2acl.conf.5 $(DESTDIR)$(MANDIR)/man5
@@ -62,7 +62,6 @@ uninstall:
 	rm -f $(DESTDIR)$(MANDIR)/man3/a2acl.3
 	rm -f $(DESTDIR)$(MANDIR)/man3/a2id.3
 	rm -f $(DESTDIR)$(MANDIR)/man3/a2id_match.3
-	rm -f $(DESTDIR)$(MANDIR)/man3/a2id_parsestr.3
 	rm -f $(DESTDIR)$(MANDIR)/man1/a2acl.1
 	rm -f $(DESTDIR)$(MANDIR)/man1/a2idmatch.1
 	rm -f $(DESTDIR)$(MANDIR)/man1/a2acl.conf.5
@@ -75,8 +74,6 @@ manhtml:
 		../../a2id.3.html
 	cd doc/man && mandoc -T html -Ostyle=man.css a2id_match.3 > \
 		../../a2id_match.3.html
-	cd doc/man && mandoc -T html -Ostyle=man.css a2id_parsestr.3 > \
-		../../a2id_parsestr.3.html
 	cd doc/man && mandoc -T html -Ostyle=man.css a2acl.1 > \
 		../../a2acl.1.html
 	cd doc/man && mandoc -T html -Ostyle=man.css a2idmatch.1 > \
