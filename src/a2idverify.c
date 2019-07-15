@@ -37,8 +37,8 @@ void printusage(FILE *);
 int
 main(int argc, char *argv[])
 {
+	a2id id;
 	char input[1024];
-	const char *localpart, *domain, *firstopt, *err;
 	int c;
 
 	if ((progname = basename(argv[0])) == NULL) {
@@ -75,34 +75,12 @@ main(int argc, char *argv[])
 		/* replace potential \n */
 		input[strcspn(input, "\n")] = '\0';
 
-		if (a2id_parsestr(input, &localpart, &domain, &firstopt, NULL) == 0) {
+		if (a2id_fromstr(&id, input, 0) == 0) {
 			printf("OK\n");
 			continue;
 		}
 
-		printf("FAIL");
-
-		err = NULL;
-		if (localpart != NULL) {
-			err = localpart;
-		} else if (domain != NULL) {
-			err = domain;
-		}
-
-		if (err && verbose > 0) {
-			if (*err == '\0') {
-				printf(" unexpected end of %s",
-				    localpart ? "localpart" : (domain ? "domain" :
-				    "input"));
-			} else {
-				printf(" \"%c\" is an invalid character at "
-				    "position %ld in \"%s\"", *err,
-				    (err - input) + 1,
-				    input);
-			}
-		}
-
-		printf("\n");
+		printf("FAIL\n");
 	}
 
 	if (ferror(stdin) != 0) {
