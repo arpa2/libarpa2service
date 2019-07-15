@@ -4,10 +4,10 @@ This repository contains command-line tools and libraries to work with [ARPA2]
 Identities, Selectors and ACLs.
 
 Features:
-* a2acl - command-line tool to test if communication between two A2IDs is allowed
-* a2idmatch - command-line tool to test if an A2ID matches a selector
-* liba2acl - library to work with A2ACLs
 * liba2id - library to parse and match A2IDs
+* a2acl - command-line tool to test if communication between two A2IDs is allowed
+* liba2acl - library to work with A2ACLs
+* a2idmatch - command-line tool to test if an A2ID matches a selector
 * Libraries are POSIX C89 without extra dependencies
 
 Status: **beta**
@@ -51,7 +51,6 @@ and the manpages:
 * [a2acl(3)]
 * [a2id(3)]
 * [a2id_match(3)]
-* [a2id_parsestr(3)]
 * [a2acl.conf(5)]
 
 ## Examples
@@ -207,7 +206,6 @@ THIS SOFTWARE.
 [a2id(3)]: https://netsend.nl/arpa2/a2id.3.html
 [a2acl(3)]: https://netsend.nl/arpa2/a2acl.3.html
 [a2id_match(3)]: https://netsend.nl/arpa2/a2id_match.3.html
-[a2id_parsestr(3)]: https://netsend.nl/arpa2/a2id_parsestr.3.html
 [a2acl.conf(5)]: https://netsend.nl/arpa2/a2acl.conf.5.html
 [a2idgrammar.txt]: /doc/design/a2idgrammar.txt
 [a2idselgrammar.txt]: /doc/design/a2idselgrammar.txt
