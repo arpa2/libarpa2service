@@ -108,7 +108,7 @@ install(DIRECTORY doc/man/ DESTINATION share/man/man5 FILES_MATCHING PATTERN "*.
 # TEST
 
 # tests use no real db backend, but a mock
-add_executable(testa2id test/testa2id.c src/a2id.c)
+add_executable(testa2id test/testa2id.c)
 add_executable(testa2acl test/testa2acl.c src/a2acl.c src/a2id.c)
 
 add_test(testa2id testa2id)
