@@ -1,0 +1,27 @@
+2019-07-15, Version 0.6.0
+
+Breaking changes to the API in order to preserve freedom to refactor and hide
+internal implementation details from the user. This lowers the cognitive load
+required and time needed to understand this library. In previous versions the
+ostensibly clear a2id structure could be perceived as seriously broken once a
+user had used a2id_generalize(3). In fact the structure has never been broken,
+but details about whether or not strings we're either nul terminated or NULL,
+and whether the localpart got efficiently broken up by generalization splitting
+the localpart and domain of the id, never got communicated to the user because
+this structure was intended for internal use only. This fact is now solidified
+in code by removing visibility of the structure and resorting to internal
+linkage, further simplifying the public API. The only thing the user needs is a
+new opaque a2id type. If an id needs to be converted back to a string the new
+and more powerful a2id_tostr(3) function can be used.
+
+Future additions to the API might include export possibilities of more fields,
+but this will be driven by practical demand of popular use-cases and usage
+patterns.
+
+Look at arpa2/a2id.h and the associated manpages in a2id(3) for the new and
+revamped API.
+
+
+2019-02-20, Version 0.5.0
+
+* First public release
