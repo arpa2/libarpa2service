@@ -1,5 +1,7 @@
 # ARPA2 ID library
 
+*As of 2019-10-03 development has moved to https://gitlab.com/arpa2/liba2common*
+
 This repository contains command-line tools and libraries to work with [ARPA2]
 Identities, Selectors and ACLs.
 
