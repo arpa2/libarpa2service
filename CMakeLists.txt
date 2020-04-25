@@ -3,6 +3,7 @@
 #
 # SPDX-License-Identifier: ISC
 # License-Filename: LICENSE
+message(FATAL_ERROR "This repository has moved to GitLab\n\nGet the (renamed) project from\n\thttps://gitlab.com/arpa2/libarpa2common/\n")
 cmake_minimum_required (VERSION 3.3)
 project ("ARPA2 Service Libraries" C)
 
